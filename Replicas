@@ -1,0 +1,42 @@
+// Read JSON file with VendorConfig array in GatewayScript
+
+// Specify the path to your JSON file
+var filePath = "/path/to/your/example.json";
+
+// Use the 'fs' module to read the file
+var fs = require('fs');
+
+// Read the JSON file synchronously
+try {
+    var jsonData = fs.readFileSync(filePath, 'utf8');
+    var parsedData = JSON.parse(jsonData);
+
+    // Check if the "VendorConfig" array exists
+    if (parsedData && Array.isArray(parsedData.VendorConfig)) {
+        var vendorConfigurations = parsedData.VendorConfig;
+
+        // Loop through each vendor configuration in the array
+        for (var i = 0; i < vendorConfigurations.length; i++) {
+            var config = vendorConfigurations[i];
+
+            // Access properties of each configuration
+            var merchantListLikeCard = config.merchantlistlikecard;
+            var routingUrl = config.RoutingUrl;
+            var protocolMethod = config.ProtocolMethod;
+
+            // Log the values (modify as needed)
+            console.info('Configuration', i + 1);
+            console.info('Merchant List Like Card:', merchantListLikeCard);
+            console.info('Routing URL:', routingUrl);
+            console.info('Protocol Method:', protocolMethod);
+            console.info('---');
+        }
+
+        // You can use the configuration properties in further processing
+    } else {
+        console.warn('Invalid or missing "VendorConfig" array in the JSON data.');
+    }
+} catch (error) {
+    // Handle errors if any
+    console.error('Error reading or parsing JSON file:', error);
+}
