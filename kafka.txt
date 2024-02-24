@@ -17,3 +17,16 @@ sudo systemctl status confluent-*
 
 sudo systemctl list-units --type=service --state=failed
 sudo systemctl reset-failed confluent-control-center
+---
+connect-console-sink.properties    connect-file-source.properties  log4j.properties        trogdor.conf
+connect-console-source.properties  connect-log4j.properties        producer.properties     zookeeper.properties
+connect-distributed.properties     connect-standalone.properties   server.properties
+connect-file-sink.properties       consumer.properties             tools-log4j.properties
+cloud_user@ip-10-0-1-101:/etc/kafka$ cat zookeeper.properties
+tickTime=2000
+dataDir=/var/lib/zookeeper/
+clientPort=2181
+initLimit=5
+syncLimit=2
+server.1=zoo1:2888:3888
+autopurge.snapRetainCount=3
