@@ -1,5 +1,19 @@
+
+sudo systemctl enable confluent-zookeeper
+sudo systemctl enable confluent-server
 sudo systemctl enable confluent-schema-registry
-sudo systemctl enable confluent-kafka-connect
-sudo systemctl enable confluent-kafka-rest
-sudo systemctl enable confluent-ksqldb
+
 sudo systemctl enable confluent-control-center
+
+sudo systemctl list-unit-files confluent-*
+
+sudo systemctl list-units --type=service --all confluent-*
+
+sudo systemctl status confluent-*
+
+######################################################################
+
+### failed state
+
+sudo systemctl list-units --type=service --state=failed
+sudo systemctl reset-failed confluent-control-center
