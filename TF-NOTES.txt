@@ -1,0 +1,133 @@
+`terraform apply -lock=false` — Do not hold a state lock during the Terraform apply operation. Use with caution if other engineers might run concurrent commands against the same workspace.
+
+`terraform apply -parallelism=<n>` — Specify the number of operations run in parallel.
+
+`terraform apply -var="domainpassword=password123"` — Pass in a variable value.
+
+`terraform apply -var-file="varfile.tfvars"` — Pass in variables contained in a file.
+
+`terraform apply -target=”module.appgw.0"` — Apply changes only to the targeted resource.
+
+
+$ terraform apply -var foo=bar -var foo=baz
+$ terraform apply -var 'foo={quux="bar"}' -var 'foo={bar="baz"}'
+
+$ terraform apply -var-file=foo.tfvars -var-file=bar.tfvars
+
+-----
+
+PUB_API_KEY=`terraform output -json |jq -r '."pub-app-manager-api-key"."value"'`
+PUB_API_SECRET=`terraform output -json |jq -r '."pub-app-manager-api-secret"."value"'`
+
+---
+
+# Zookeeper configuration
+    zookeeper.metadata.migration.enable=true
+    inter.broker.protocol.version=3.4
+    inter.broker.protocol.version={{ default (regexFind "^[0-9].[0-9]+" .Chart.AppVersion) .Values.interBrokerProtocolVersion }}
+    {{- include "kafka.zookeeperConfig" . | nindent 4 }}
+    {{- end }}
+    # Kafka data logs directory
+    log.dir={{ printf "%s/data" .Values.controller.persistence.mountPath }}
+    # Kafka application logs directory
+    logs.dir={{ .Values.controller.logPersistence.mountPath }}
+    {{- include "kafka.commonConfig" . | nindent 4 }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.extraConfig "context" $ ) | nindent 4 }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.controller.extraConfig "context" $ ) | nindent 4 }}
+	
+	
+	curl -sSL https://raw.githubusercontent.com/drycc-containers/containers/main/containers/APP/docker-compose.yml > docker-compose.yml
+docker-compose up -d
+
+
+kafka-properties.adoc
+------
+
+ for_each = {
+    a = "0"
+    b = "16"
+    c = "32"
+  }
+  
+  -----
+  https://docs.confluent.io/platform/current/control-center/installation/c3-logging.html#control-center-logging-settings
+  
+  The rolling log file creates three, size-limited log files that isolate information:
+
+control-center.log - Control Center, HTTP activity, anything not related to streams, REST API calls
+control-center-streams.log - Streams
+control-center-kafka.log - Client, ZooKeeper, and Kafka
+The following shows an example of what the rolling log file contains:
+
+
+
+https://docs.confluent.io/platform/current/control-center/installation/auto-update-ui.html
+
+Disabling auto-updates
+
+
+cp-ansible/roles/variables/defaults/main.yml  ports, packages infor
+
+ log.dirs: "/var/lib/controller/data"
+      kafka.rest.enable: "{{kafka_controller_rest_proxy_enabled|string|lower}}"
+      process.roles: controller
+      controller.quorum.voters: "{{ kafka_controller_quorum_voters }}"
+      controller.listener.names: "{{kafka_controller_listeners['controller']['name']}}
+	  
+	  ---|
+	  
+	   export KAFKA_HEAP_OPTS="-Xmx1G -Xms1G"    
+    export JMX_PORT=9999  # 增加这个配置, 这里的数值并不一定是要9999 
+	netstat - tunl : grep jolokiaport
+	netstat -tunl | grep jmxport
+	p -ef | grep kafka-controller
+	
+	synclimit for zkp
+	get latest offset form topic
+	set /get retention periosd
+	
+	The JMX Port value of the broker list is -1, and the JMX corresponding to the Broker is not enabled.
+-----	
+	Modify the following kafka-run-class.shfiles in the bin directory of kafka:
+
+# JMX settings 
+if [ -z "$KAFKA_JMX_OPTS" ]; then
+    KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=当前机器的IP" 
+fi  
+
+# JMX port to use 
+if [  $JMX_PORT ]; then
+    KAFKA_JMX_OPTS="$KAFKA_JMX_OPTS -Dcom.sun.management.jmxremote.port=$JMX_PORT -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT" 
+fi
+	
+	----
+	
+	Step 4: Write some events to the topic
+
+Kafka clients communicate with Kafka Broker over the network to write (or read) events. Once received, the Broker stores events in a durable and fault-tolerant manner for as long as you need them - or even forever.
+
+
+$ bin/kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092
+This is the first message
+This is the second message
+You can stop the producer client at any time Ctrl-C.
+
+Step 5: Read the event
+
+Open another terminal session and run the console consumer client to read the events you just created:
+
+$ bin/kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092
+This is the first message
+This is the second message
+You can stop the consumer client at any time with Ctrl-C.
+-----
+
+Configuration: To enable write-through caching in Kafka, you may need to adjust configuration parameters related to disk I/O, such as setting unclean.leader.election.enable=false to ensure data durability and adjusting flush.messages, flush.ms, and segment.ms settings to control the frequency of data flushes to disk.
+----
+
+nstead of maintaining as much as possible in memory and flushing it all to the file system when space is low, you can invert it. All data is written immediately to the persistent log on the file system without having to be flushed to disk. Effectively this just means that it is moved to the kernel's page cache.
+
+
+-----
+  
+  https://doc.knowstreaming.com/product/5-user-doc#54114%E6%96%B0%E5%A2%9E-kafka-user   ----  chinese kafka 
