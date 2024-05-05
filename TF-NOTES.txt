@@ -125,7 +125,9 @@ You can stop the consumer client at any time with Ctrl-C.
 Configuration: To enable write-through caching in Kafka, you may need to adjust configuration parameters related to disk I/O, such as setting unclean.leader.election.enable=false to ensure data durability and adjusting flush.messages, flush.ms, and segment.ms settings to control the frequency of data flushes to disk.
 ----
 
-nstead of maintaining as much as possible in memory and flushing it all to the file system when space is low, you can invert it. All data is written immediately to the persistent log on the file system without having to be flushed to disk. Effectively this just means that it is moved to the kernel's page cache.
+nstead of maintaining as much as possible in memory and flushing it all to the file system when space is low, you can invert it. All data is written immediately to the persistent log on the file system without having to be flushed to disk. Effectively this just means that it is moved to the kernel's page cache.------
+---
+ If ZooKeeper and KRaft Controller are colocated, use the variables kafka_controller_jolokia_port and kafka_controller_jmxexporter_port to define different ports for ZooKeeper and KRaft. For example, kafka_controller_jolokia_port: 7777 and kafka_controller_jmxexporter_port: 8081.
 
 
 -----
