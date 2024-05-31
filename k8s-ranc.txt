@@ -1,0 +1,11 @@
+export KUBECONFIG=/etc/rancher/rfo/rfo.yml
+export PATH=/var/lib/rancher/rfo/bin:$PATH
+kubectl get pods --all-namespaces
+helm ls --all-namespaces
+
+
+
+或在指令中指定 kubeconfig 文件位置：
+kubectl --kubeconfig /etc/rancher/rfo/rfo.yml get pods --all-namespaces
+helm --kubeconfig /etc/rancher/rfo/rfo.yml ls --all-namespaces
+dium=geek_search&utm_source=geek_search&utm_term=geek_search
