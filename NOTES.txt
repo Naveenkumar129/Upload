@@ -1,0 +1,82 @@
+===status, monitoring===
+kubectl top node
+kubectl get cs
+kubectl get nodes --show-labels
+kubectl get po,deploy,svc,pvc,cm --output=wide
+kubectl get pods,deployments,service --all-namespaces
+kubectl get po,deploy,rs,svc,pvc,cm --output=wide -l app=jira
+kubectl get all --output=wide -l app=jira
+kubectl describe deploy/bitbucket
+kubectl logs po/jira-2128014098-0rphd
+
+===Single running===
+kubectl run httpd --port=80 --port=443 --image=httpd && \
+kubectl expose deployments httpd --port=80 --type=NodePort
+#-----------------------------------
+kubectl run bitbucket --port=7990 --port=7999 --image=atlassian/bitbucket-server
+kubectl expose deployments bitbucket --port=7990 --type=LoadBalancer
+#-----------------------------------
+kubectl run jira --port=8080 --image=cptactionhank/atlassian-jira:latest
+kubectl expose deployments jira --port=8080 --type=LoadBalancer
+#-----------------------------------
+kubectl run bamboo --port=8085 --image=cptactionhank/atlassian-bamboo:latest
+kubectl expose deployments bamboo --port=8085 --type=LoadBalancer
+#-----------------------------------
+kubectl run confluence --port=8090 --image=cptactionhank/atlassian-confluence:latest
+kubectl expose deployments confluence --port=8090 --type=LoadBalancer
+
+#===Running from YAML===
+kubectl create -f /opt/atlassian/jira.yaml
+kubectl apply -f /opt/atlassian/jira.yaml
+kubectl scale deploy/jira --replicas=3
+kubectl delete deploy,svc jira
+kubectl exec -it jira-4096791679-f4pcd -- /bin/bash
+kubectl create configmap nginxconfigmap --from-file=/opt/atlassian/nginx/default.conf
+
+#===Make the node Ready,SchedulingDisabled or Ready===
+kubectl cordon k8s-agent-ec080979-0
+kubectl uncordon k8s-agent-ec080979-0
+
+#===kubernetes-dashboard activating===
+kubectl get po,svc --output=wide --namespace kube-system
+kubectl apply -f /etc/kubernetes/addons/kubernetes-dashboard-service.yaml
+
+#===Postgres===
+Create a database for JIRA (for example)
+CREATE USER admin WITH SUPERUSER PASSWORD 'admin';
+CREATE DATABASE jiradb WITH ENCODING 'UNICODE' LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0;
+or
+createdb -E UNICODE -l C -T template0 jira
+----
+# Create cluster with Ingress
+kind create cluster --config cluster.yaml --wait 120s
+
+# Alternatively,
+cat <<EOF | kind create cluster --config=-
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 80
+    protocol: TCP
+  - containerPort: 443
+    hostPort: 443
+    protocol: TCP
+EOF
+
+# Install Ingress Nginx
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
+
+# Test using the Ingress
+kubectl apply -f example.yaml
+
+curl localhost/foo
+curl localhost/bar
