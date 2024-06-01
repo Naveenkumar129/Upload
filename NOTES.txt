@@ -59,6 +59,11 @@ Ensure the following:
 Replace <your-haproxy-hostname> with the actual hostname or IP address of your HAProxy server.
 Replace /path/to/your/server.crt and /path/to/your/etcd-ca.crt with the actual paths to your certificate files.
 These commands will help you verify the health of your etcd cluster and perform basic key-value operations.
+
+ etcdctl --endpoints=http://127.0.0.1:2379 put foo bar
+
+etcdctl --endpoints=http://127.0.0.1:2379 get foo
+
 ============status, monitoring===
 kubectl top node
 kubectl get cs
