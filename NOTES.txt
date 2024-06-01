@@ -1,4 +1,65 @@
-===status, monitoring===
+Checking the Health of the Cluster
+Replace <your-haproxy-hostname> with your HAProxy hostname and update the certificate paths accordingly.
+
+Checking Cluster Health:
+
+sh
+Copy code
+etcdctl --endpoints https://<your-haproxy-hostname>:2379 --cert /path/to/your/server.crt --cacert /path/to/your/etcd-ca.crt endpoint health
+Viewing the Member List:
+
+sh
+Copy code
+etcdctl --endpoints https://<your-haproxy-hostname>:2379 --cert /path/to/your/server.crt --cacert /path/to/your/etcd-ca.crt member list
+Testing Storing, Getting, and Deleting Objects
+Storing a Key-Value Pair:
+
+sh
+Copy code
+etcdctl --endpoints https://<your-haproxy-hostname>:2379 --cert /path/to/your/server.crt --cacert /path/to/your/etcd-ca.crt put foo "Hello, etcd"
+Getting the Value of a Key:
+
+sh
+Copy code
+etcdctl --endpoints https://<your-haproxy-hostname>:2379 --cert /path/to/your/server.crt --cacert /path/to/your/etcd-ca.crt get foo
+Deleting a Key:
+
+sh
+Copy code
+etcdctl --endpoints https://<your-haproxy-hostname>:2379 --cert /path/to/your/server.crt --cacert /path/to/your/etcd-ca.crt del foo
+Example Commands with Placeholder Replacement
+Check Cluster Health:
+
+sh
+Copy code
+etcdctl --endpoints https://haproxy.example.com:2379 --cert /etc/etcd/server.crt --cacert /etc/etcd/etcd-ca.crt endpoint health
+View Member List:
+
+sh
+Copy code
+etcdctl --endpoints https://haproxy.example.com:2379 --cert /etc/etcd/server.crt --cacert /etc/etcd/etcd-ca.crt member list
+Store a Key-Value Pair:
+
+sh
+Copy code
+etcdctl --endpoints https://haproxy.example.com:2379 --cert /etc/etcd/server.crt --cacert /etc/etcd/etcd-ca.crt put testkey "Hello, etcd"
+Retrieve a Key-Value Pair:
+
+sh
+Copy code
+etcdctl --endpoints https://haproxy.example.com:2379 --cert /etc/etcd/server.crt --cacert /etc/etcd/etcd-ca.crt get testkey
+Delete a Key-Value Pair:
+
+sh
+Copy code
+etcdctl --endpoints https://haproxy.example.com:2379 --cert /etc/etcd/server.crt --cacert /etc/etcd/etcd-ca.crt del testkey
+Summary
+Ensure the following:
+
+Replace <your-haproxy-hostname> with the actual hostname or IP address of your HAProxy server.
+Replace /path/to/your/server.crt and /path/to/your/etcd-ca.crt with the actual paths to your certificate files.
+These commands will help you verify the health of your etcd cluster and perform basic key-value operations.
+============status, monitoring===
 kubectl top node
 kubectl get cs
 kubectl get nodes --show-labels
