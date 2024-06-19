@@ -1,0 +1,890 @@
+
+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 --git token
+
+[
+  {
+    "cloudName": "AzureCloud",
+    "id": "b82322c9-f112-4586-9fe3-c5cb3f991ac5",
+    "isDefault": true,
+    "name": "Free Trial",
+    "state": "Enabled",
+    "tenantId": "485fbb65-a1df-4a7b-ba1b-d916df901304",
+    "user": {
+      "name": "abhilashaamgowda@gmail.com",
+      "type": "user"
+    }
+  }
+]
+
+23rd Feb:
+1. kubeconfig file setup
+2. try minikube --least
+3. PF nominee declare
+
+
+28th feb:
+https://github.com/goharbor/
+https://www.cloudsavvyit.com/14600/how-to-harden-docker-images-for-maximum-security/
+
+
+4th March:
+what is helm chart?
+https://longhorn.io/docs/1.2.3/advanced-resources/deploy/customizing-default-settings/ --longhorn(install and uninstall -helm)
+https://ruzickap.github.io/k8s-harbor/part-06/#upload-helm-chart-using-cli
+https://dataflow.spring.io/docs/installation/kubernetes/helm/ --harbor
+https://github.com/bitnami/charts/blob/master/bitnami/spring-cloud-dataflow/values.yaml --harbor-values.yaml
+https://hub.docker.com/r/bitnami/bitnami-shell/
+https://hub.docker.com/layers/bitnami/bitnami-shell/10-debian-10-r309/images/sha256-88f3ba3c135370b485421e1f09b2ab87eb8942e25f573e64ca1e391e31102788?context=explore
+
+--add helm chart to harbor
+https://bitnami.com/stack/postgresql/helm 
+https://goharbor.io/docs/1.10/working-with-projects/working-with-images/managing-helm-charts/
+
+######### Install Harbor
+https://goharbor.io/docs/1.10/install-config/
+https://artifacthub.io/packages/helm/bitnami/harbor --default values
+https://helm.sh/
+
+https://github.com/goharbor/harbor-helm
+https://github.com/bitnami/charts/tree/master/bitnami/postgresql/#installing-the-chart --helm-chart-install-psql
+
+####### long-horn delete issue
+https://github.com/longhorn/longhorn/issues/2119
+https://github.com/longhorn/longhorn/tree/master/deploy  --longhorn.yml
+https://longhorn.io/docs/1.2.3/best-practices/ --install
+https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/ --change default storage class
+
+
+#####  Force delete a namespace in k8s
+https://computingforgeeks.com/how-to-force-delete-a-kubernetes-namespace/
+
+### Longhorn uninstall issue
+https://githubhot.com/repo/longhorn/longhorn/issues/3441 
+
+###### Parameters changed in harbor-values.yaml
+externalUrl -- by default harbor wants to access the harbor site in hub.ics.com
+adminpassword
+commonname -- used in certificate generation time
+
+
+
+#### Questions to Ajai
+1. what to demo? 2. we don't have test cluster
+what are you expecting in repo?
+longhorn-front end svc yaml file is different in repo from what you have deployed
+about the postgress, tariq latest mail
+
+https://arctype.com/blog/deploy-postgres-kubernetes/
+
+#### port already in use /can't listen issue
+
+first check the process netstat -lt
+check process id fuser <port number>/tcp
+kill the process running on the port kill <process id>
+
+
+#### Requirements from Microservices as per discussion with Sreejith:
+Like Hippo, they want different dbs with different users with super user privilages.
+sales: password:
+1) DB Name: household_db
+USER: household
+here user household should have all privilages for db household right?
+2) username with apssword
+
+###### postgresql installation and setup:
+
+>> helm install postgresql bitnami/postgresql --values postgresql-values.yaml --namespace postgres --create-namespace
+
+** Please be patient while the chart is being deployed **
+
+PostgreSQL can be accessed via port 5432 on the following DNS names from within your cluster:
+
+    postgresql.postgres.svc.cluster.local - Read/Write connection
+
+To get the password for "postgres" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace postgres postgresql -o jsonpath="{.data.postgres-password}" | base64 --decode)
+
+To connect to your database run the following command:
+
+    kubectl run postgresql-client --rm --tty -i --restart='Never' --namespace postgres --image docker.io/bitnami/postgresql:14.2.0-debian-10-r31 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
+      --command -- psql --host postgresql -U postgres -d postgres -p 5432
+
+    > NOTE: If you access the container using bash, make sure that you execute "/opt/bitnami/scripts/entrypoint.sh /bin/bash" in order to avoid the error "psql: local user with ID 1001} does not exist"
+
+To connect to your database from outside the cluster execute the following commands:
+
+    kubectl port-forward --namespace postgres svc/postgresql 5432:5432 &
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432
+
+pgadmin helm chart: https://artifacthub.io/packages/helm/runix/pgadmin4
+# parameters changed:
+1. host : chart-example.local --> psql-assetmark.local
+2. email: chart@example.local --> psql@assetmark.local
+3. password: SuperSecret --> AssetMark
+4. Service type: clusterIP --> LoadBalancer
+
+>> helm install pgadmin runix/pgadmin4 --values pgadmin4-vales.yaml -n postgres
+
+NOTES:
+1. Get the application URL by running these commands:
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace postgres svc -w pgadmin-pgadmin4'
+  export SERVICE_IP=$(kubectl get svc --namespace postgres pgadmin-pgadmin4 -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  echo http://$SERVICE_IP:80
+
+######## http://20.121.241.189/browser/
+ # can be email or nickname
+  email: chart@example.local
+  password: SuperSecret
+
+####  email: chart@assetmark
+  password: assetmark
+
+*****connect postgres to pgadmin: https://www.youtube.com/watch?v=6N7KUzIRO2k&t=268s
+
+https://www.postgresql.org/docs/8.1/sql-createrole.html
+https://www.postgresql.org/docs/11/sql-createdatabase.html
+
+CREATE USER document1 WITH PASSWORD 'document1';
+CREATE DATABASE document_db OWNER document1;
+GRANT ALL PRIVILEGES ON DATABASE document_db TO document1;
+
+>> GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO my_user;
+>> GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO my_user;
+https://stackoverflow.com/questions/22483555/postgresql-give-all-permissions-to-a-user-on-a-postgresql-database
+
+
+25th march:
+
+To create a Kafka cluster refer to the following documentation.
+
+https://strimzi.io/docs/operators/latest/deploying.html#deploying-cluster-operator-helm-chart-str
+
+28th March:
+Kong ingress controller
+NAME: kong-1648461151
+LAST DEPLOYED: Mon Mar 28 09:52:40 2022
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+NOTES:
+To connect to Kong, please execute the following commands:
+
+HOST=$(kubectl get svc --namespace default kong-1648461151-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+PORT=$(kubectl get svc --namespace default kong-1648461151-kong-proxy -o jsonpath='{.spec.ports[0].port}')
+export PROXY_IP=${HOST}:${PORT}
+curl $PROXY_IP
+
+http://20.121.75.9/foo ---kong svc on customer rg
+
+Once installed, please follow along the getting started guide to start using
+Kong: https://docs.konghq.com/kubernetes-ingress-controller/latest/guides/getting-started/
+
+############# PSQL on datahub rg
+NAME: postgresql
+LAST DEPLOYED: Mon Mar 28 15:32:57 2022
+NAMESPACE: psql
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: postgresql
+CHART VERSION: 11.1.11
+APP VERSION: 14.2.0
+
+** Please be patient while the chart is being deployed **
+
+PostgreSQL can be accessed via port 5432 on the following DNS names from within your cluster:
+
+    postgresql.psql.svc.cluster.local - Read/Write connection
+
+To get the password for "postgres" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace psql postgresql -o jsonpath="{.data.postgres-password}" | base64 --decode)
+
+To connect to your database run the following command:
+
+    kubectl run postgresql-client --rm --tty -i --restart='Never' --namespace psql --image docker.io/bitnami/postgresql:14.2.0-debian-10-r31 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
+      --command -- psql --host postgresql -U postgres -d postgres -p 5432
+
+    > NOTE: If you access the container using bash, make sure that you execute "/opt/bitnami/scripts/entrypoint.sh /bin/bash" in order to avoid the error "psql: local user with ID 1001} does not exist"
+
+To connect to your database from outside the cluster execute the following commands:
+
+    kubectl port-forward --namespace psql svc/postgresql 5432:5432 &
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432
+
+###########pgadmin4
+NAME: pgadmin4
+LAST DEPLOYED: Mon Mar 28 16:26:06 2022
+NAMESPACE: psql
+STATUS: deployed
+REVISION: 1
+NOTES:
+1. Get the application URL by running these commands:
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace psql svc -w pgadmin4'
+  export SERVICE_IP=$(kubectl get svc --namespace psql pgadmin4 -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  echo http://$SERVICE_IP:80
+
+
+
+
+Schema Registry:
+W0329 09:19:59.995095     657 warnings.go:67] policy/v1beta1 PodDisruptionBudget is deprecated in v1.21+, unavailable in v1.25+; use policy/v1 PodDisruptionBudget
+W0329 09:20:00.266592     657 warnings.go:67] policy/v1beta1 PodDisruptionBudget is deprecated in v1.21+, unavailable in v1.25+; use policy/v1 PodDisruptionBudget
+NAME: my-confluent
+LAST DEPLOYED: Tue Mar 29 09:19:59 2022
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+NOTES:
+## ------------------------------------------------------
+## Zookeeper
+## ------------------------------------------------------
+Connection string for Confluent Kafka:
+  my-confluent-cp-zookeeper-0.my-confluent-cp-zookeeper-headless:2181,my-confluent-cp-zookeeper-1.my-confluent-cp-zookeeper-headless:2181,...
+
+To connect from a client pod:
+
+1. Deploy a zookeeper client pod with configuration:
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: zookeeper-client
+      namespace: default
+    spec:
+      containers:
+      - name: zookeeper-client
+        image: confluentinc/cp-zookeeper:6.0.1
+        command:
+          - sh
+          - -c
+          - "exec tail -f /dev/null"
+
+2. Log into the Pod
+
+  kubectl exec -it zookeeper-client -- /bin/bash
+
+3. Use zookeeper-shell to connect in the zookeeper-client Pod:
+
+  zookeeper-shell my-confluent-cp-zookeeper:2181
+
+4. Explore with zookeeper commands, for example:
+
+  # Gives the list of active brokers
+  ls /brokers/ids
+
+  # Gives the list of topics
+  ls /brokers/topics
+
+  # Gives more detailed information of the broker id '0'
+  get /brokers/ids/0## ------------------------------------------------------
+## Kafka
+## ------------------------------------------------------
+To connect from a client pod:
+
+1. Deploy a kafka client pod with configuration:
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: kafka-client
+      namespace: default
+    spec:
+      containers:
+      - name: kafka-client
+        image: confluentinc/cp-enterprise-kafka:6.0.1
+        command:
+          - sh
+          - -c
+          - "exec tail -f /dev/null"
+
+2. Log into the Pod
+
+  kubectl exec -it kafka-client -- /bin/bash
+
+3. Explore with kafka commands:
+
+  # Create the topic
+  kafka-topics --zookeeper my-confluent-cp-zookeeper-headless:2181 --topic my-confluent-topic --create --partitions 1 --replication-factor 1 --if-not-exists
+
+  # Create a message
+  MESSAGE="`date -u`"
+
+  # Produce a test message to the topic
+  echo "$MESSAGE" | kafka-console-producer --broker-list my-confluent-cp-kafka-headless:9092 --topic my-confluent-topic
+
+  # Consume a test message from the topic
+  kafka-console-consumer --bootstrap-server my-confluent-cp-kafka-headless:9092 --topic my-confluent-topic --from-beginning --timeout-ms 2000 --max-messages 1 | grep "$MESSAGE"
+
+https://ibm-cloud-architecture.github.io/refarch-container-inventory/debezium-postgresql/
+https://arctype.com/blog/deploy-postgres-kubernetes/ ---postgres pvc configuration
+
+  $ kubectl exec kafka-client -- kafka-topics --zookeeper kafka-zookeeper:2181 --topic connect-offsets --create --partitions 1 --replication-factor 1
+
+
+############## psql on customer
+
+NAME: postgresql
+LAST DEPLOYED: Mon Apr  4 06:49:20 2022
+NAMESPACE: appsdk
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: postgresql
+CHART VERSION: 11.1.15
+APP VERSION: 14.2.0
+
+** Please be patient while the chart is being deployed **
+
+PostgreSQL can be accessed via port 5432 on the following DNS names from within your cluster:
+
+    postgresql.appsdk.svc.cluster.local - Read/Write connection
+
+To get the password for "postgres" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace appsdk postgresql -o jsonpath="{.data.postgres-password}" | base64 --decode)
+
+To connect to your database run the following command:
+
+    kubectl run postgresql-client --rm --tty -i --restart='Never' --namespace appsdk --image docker.io/bitnami/postgresql:14.2.0-debian-10-r31 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
+      --command -- psql --host postgresql -U postgres -d postgres -p 5432
+
+    > NOTE: If you access the container using bash, make sure that you execute "/opt/bitnami/scripts/entrypoint.sh /bin/bash" in order to avoid the error "psql: local user with ID 1001} does not exist"
+
+To connect to your database from outside the cluster execute the following commands:
+
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        Watch the status with: 'kubectl get svc --namespace appsdk -w postgresql'
+
+    export SERVICE_IP=$(kubectl get svc --namespace appsdk postgresql --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host $SERVICE_IP --port 5432 -U postgres -d postgres
+
+###### to enter kafka
+>> kubectl exec -it broker-0 bash -n <suite namespace>
+
+## list kafka topics 
+https://stackoverflow.com/questions/64874588/how-to-list-kafka-topics-while-i-am-using-strimzi-operator
+
+###### strimzi-kafka-debezium
+  https://medium.com/@sincysebastian/setup-kafka-with-debezium-using-strimzi-in-kubernetes-efd494642585
+
+  13th April:
+    https://ehsaniara.medium.com/cdc-with-postgres-debezium-to-kafka-strimzi-bf9212ae9d78
+
+https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/1.0.0.Final/
+
+##### try this
+https://debezium.io/documentation/reference/stable/install.html
+https://kafka.apache.org/documentation/#connect_rest
+
+https://strimzi.io/blog/2020/01/27/deploying-debezium-with-kafkaconnector-resource/
+https://strimzi.io/docs/0.16.2/full.html
+
+https://strimzi.io/docs/0.16.2/full.html#assembly-deployment-configuration-kafka-str
+https://strimzi.io/docs/0.16.2/full.html#proc-enabling-kafkaconnectors-deployment-configuration-kafka-connect
+https://github.com/strimzi/strimzi-kafka-operator/releases
+https://github.com/strimzi/strimzi-kafka-operator/blob/main/examples/connect/kafka-connect.yaml
+https://github.com/CDCgov/kafka-connect/blob/master/openshift/kafka-connect-persistent.yml
+
+
+
+############# keycloak
+NAME: keycloak
+LAST DEPLOYED: Tue Apr  5 12:15:06 2022
+NAMESPACE: keycloak
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: keycloak
+CHART VERSION: 7.1.12
+APP VERSION: 16.1.1
+
+** Please be patient while the chart is being deployed **
+
+Keycloak can be accessed through the following DNS name from within your cluster:
+
+    keycloak.keycloak.svc.cluster.local (port 80)
+
+To access Keycloak from outside the cluster execute the following commands:
+
+1. Get the Keycloak URL by running these commands:
+
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        You can watch its status by running 'kubectl get --namespace keycloak svc -w keycloak'
+
+    export SERVICE_PORT=$(kubectl get --namespace keycloak -o jsonpath="{.spec.ports[0].port}" services keycloak)
+    export SERVICE_IP=$(kubectl get svc --namespace keycloak keycloak -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    echo "http://${SERVICE_IP}:${SERVICE_PORT}/auth"
+
+2. Access Keycloak using the obtained URL.
+3. Access the Administration Console using the following credentials:
+
+  echo Username: user
+  echo Password: $(kubectl get secret --namespace keycloak keycloak -o jsonpath="{.data.admin-password}" | base64 --decode)
+  ##### Password: rWmg9xaAt4
+
+http://52.226.230.170:80/auth
+
+################################ Postgres on Datahub
+NAME: postgresql
+LAST DEPLOYED: Tue Apr  5 12:29:14 2022
+NAMESPACE: postgres
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: postgresql
+CHART VERSION: 11.1.15
+APP VERSION: 14.2.0
+
+** Please be patient while the chart is being deployed **
+
+PostgreSQL can be accessed via port 5432 on the following DNS names from within your cluster:
+
+    postgresql.postgres.svc.cluster.local - Read/Write connection
+
+To get the password for "postgres" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace postgres postgresql -o jsonpath="{.data.postgres-password}" | base64 --decode)
+
+To connect to your database run the following command:
+
+    kubectl run postgresql-client --rm --tty -i --restart='Never' --namespace postgres --image docker.io/bitnami/postgresql:14.2.0-debian-10-r31 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
+      --command -- psql --host postgresql -U postgres -d postgres -p 5432
+
+    > NOTE: If you access the container using bash, make sure that you execute "/opt/bitnami/scripts/entrypoint.sh /bin/bash" in order to avoid the error "psql: local user with ID 1001} does not exist"
+
+To connect to your database from outside the cluster execute the following commands:
+
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        Watch the status with: 'kubectl get svc --namespace postgres -w postgresql'
+
+    export SERVICE_IP=$(kubectl get svc --namespace postgres postgresql --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host $SERVICE_IP --port 5432 -U postgres -d postgres
+###### http://40.76.174.216:80
+
+############ kong on customer rg
+NAME: kong
+LAST DEPLOYED: Tue Apr  5 14:30:25 2022
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+NOTES:
+To connect to Kong, please execute the following commands:
+
+HOST=$(kubectl get svc --namespace default kong-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+PORT=$(kubectl get svc --namespace default kong-kong-proxy -o jsonpath='{.spec.ports[0].port}')
+export PROXY_IP=${HOST}:${PORT}
+curl $PROXY_IP
+###### 20.81.104.80:80
+###### http://20.81.104.80/foo
+
+Once installed, please follow along the getting started guide to start using
+Kong: https://docs.konghq.com/kubernetes-ingress-controller/latest/guides/getting-started/
+
+
+######### 5th march
+1. deploy plugins from kong ?
+2. install kafka, schema
+
+###########Kafka on customer RG
+W0406 05:52:35.196384     248 warnings.go:67] policy/v1beta1 PodDisruptionBudget is deprecated in v1.21+, unavailable in v1.25+; use policy/v1 PodDisruptionBudget
+W0406 05:52:35.480196     248 warnings.go:67] policy/v1beta1 PodDisruptionBudget is deprecated in v1.21+, unavailable in v1.25+; use policy/v1 PodDisruptionBudget
+NAME: my-confluent
+LAST DEPLOYED: Wed Apr  6 05:52:34 2022
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+NOTES:
+## ------------------------------------------------------
+## Zookeeper
+## ------------------------------------------------------
+Connection string for Confluent Kafka:
+  my-confluent-cp-zookeeper-0.my-confluent-cp-zookeeper-headless:2181,my-confluent-cp-zookeeper-1.my-confluent-cp-zookeeper-headless:2181,...
+
+To connect from a client pod:
+
+1. Deploy a zookeeper client pod with configuration:
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: zookeeper-client
+      namespace: default
+    spec:
+      containers:
+      - name: zookeeper-client
+        image: confluentinc/cp-zookeeper:6.0.1
+        command:
+          - sh
+          - -c
+          - "exec tail -f /dev/null"
+
+2. Log into the Pod
+
+  kubectl exec -it zookeeper-client -- /bin/bash
+
+3. Use zookeeper-shell to connect in the zookeeper-client Pod:
+
+  zookeeper-shell my-confluent-cp-zookeeper:2181
+
+4. Explore with zookeeper commands, for example:
+
+  # Gives the list of active brokers
+  ls /brokers/ids
+
+  # Gives the list of topics
+  ls /brokers/topics
+
+  # Gives more detailed information of the broker id '0'
+  get /brokers/ids/0## ------------------------------------------------------
+## Kafka
+## ------------------------------------------------------
+To connect from a client pod:
+
+1. Deploy a kafka client pod with configuration:
+
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: kafka-client
+      namespace: default
+    spec:
+      containers:
+      - name: kafka-client
+        image: confluentinc/cp-enterprise-kafka:6.0.1
+        command:
+          - sh
+          - -c
+          - "exec tail -f /dev/null"
+
+2. Log into the Pod
+
+  kubectl exec -it kafka-client -- /bin/bash
+
+3. Explore with kafka commands:
+
+  # Create the topic
+  kafka-topics --zookeeper my-confluent-cp-zookeeper-headless:2181 --topic my-confluent-topic --create --partitions 1 --replication-factor 1 --if-not-exists
+
+  # Create a message
+  MESSAGE="`date -u`"
+
+  # Produce a test message to the topic
+  echo "$MESSAGE" | kafka-console-producer --broker-list my-confluent-cp-kafka-headless:9092 --topic my-confluent-topic
+
+  # Consume a test message from the topic
+   kafka-console-consumer --bootstrap-server my-confluent-cp-kafka-headless:9092 --topic my-confluent-topic --from-beginning --timeout-ms 2000 --max-messages 1 | grep "$MESSAGE"
+
+############### postgres secret
+cat <<EOF > debezium-postgres-credentials.properties
+postgres_username: postgres
+postgres_password: assetmark
+EOF
+
+############ KafkaConnect
+
+cat <<EOF | kubectl apply -f -
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+  annotations:
+  # use-connector-resources configures this KafkaConnect
+  # to use KafkaConnector resources to avoid
+  # needing to call the Connect REST API directly
+    strimzi.io/use-connector-resources: "true"
+spec:
+  image: shivaswaroopk/debezium-postgres
+  replicas: 1
+  bootstrapServers: assetmark-kafka-cluster-kafka-external-bootstrap:9094
+  tls:
+    trustedCertificates:
+      - secretName: assetmark-kafka-cluster-cluster-ca-cert
+        certificate: ca.crt
+  config:
+    config.storage.replication.factor: 3
+    offset.storage.replication.factor: 3
+    status.storage.replication.factor: 3
+    config.providers: file
+    config.providers.file.class: org.apache.kafka.common.config.provider.FileConfigProvider
+  externalConfiguration:
+    volumes:
+      - name: connector-config
+        secret:
+          secretName: postgres-credentials
+
+EOF
+
+############### schema registry
+https://github.com/confluentinc/schema-registry --after dpeloy got this link for details
+
+########### keycloak
+helm repo add codecentric https://codecentric.github.io/helm-charts
+# https://git.app.uib.no/caleno/helm-charts/-/tree/2767dfc5763b49e84c51ce6a62c870e4d11ce83e/stable/keycloak
+
+
+###############New
+WARNING: This chart is deprecated
+W0407 08:03:45.423426     264 warnings.go:67] policy/v1beta1 PodDisruptionBudget is deprecated in v1.21+, unavailable in v1.25+; use policy/v1 PodDisruptionBudget
+W0407 08:03:45.566463     264 warnings.go:67] policy/v1beta1 PodDisruptionBudget is deprecated in v1.21+, unavailable in v1.25+; use policy/v1 PodDisruptionBudget
+NAME: my-kafka
+LAST DEPLOYED: Thu Apr  7 08:03:44 2022
+NAMESPACE: kafka-connect-tutorial
+STATUS: deployed
+REVISION: 1
+NOTES:
+### Connecting to Kafka from inside Kubernetes
+
+You can connect to Kafka by running a simple pod in the K8s cluster like this with a configuration like this:
+
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: testclient
+    namespace: kafka-connect-tutorial
+  spec:
+    containers:
+    - name: kafka
+      image: confluentinc/cp-kafka:5.0.1
+      command:
+        - sh
+        - -c
+        - "exec tail -f /dev/null"
+
+Once you have the testclient pod above running, you can list all kafka
+topics with:
+
+  kubectl -n kafka-connect-tutorial exec testclient -- ./bin/kafka-topics.sh --zookeeper my-kafka-zookeeper:2181 --list
+
+To create a new topic:
+
+  kubectl -n kafka-connect-tutorial exec testclient -- ./bin/kafka-topics.sh --zookeeper my-kafka-zookeeper:2181 --topic test1 --create --partitions 1 --replication-factor 1
+
+To listen for messages on a topic:
+
+  kubectl -n kafka-connect-tutorial exec -ti testclient -- ./bin/kafka-console-consumer.sh --bootstrap-server my-kafka:9092 --topic test1 --from-beginning
+
+To stop the listener session above press: Ctrl+C
+
+To start an interactive message producer session:
+  kubectl -n kafka-connect-tutorial exec -ti testclient -- ./bin/kafka-console-producer.sh --broker-list my-kafka-headless:9092 --topic test1
+
+To create a message in the above session, simply type the message and press "enter"
+To end the producer session try: Ctrl+C
+
+If you specify "zookeeper.connect" in configurationOverrides, please replace "my-kafka-zookeeper:2181" with the value of "zookeeper.connect", or you will get error.
+
+
+### Connecting to Kafka from outside Kubernetes
+
+You have enabled the external access feature of this chart.
+
+**WARNING:** By default this feature allows Kafka clients outside Kubernetes to
+connect to Kafka via NodePort(s) in `PLAINTEXT`.
+
+Please see this chart's README.md for more details and guidance.
+
+If you wish to connect to Kafka from outside please configure your external Kafka
+clients to point at the following brokers. Please allow a few minutes for all
+associated resources to become healthy.
+  
+  my-kafka.cluster.local:31090
+  my-kafka.cluster.local:31091
+  my-kafka.cluster.local:31092
+
+kubectl -n kafka-connect-tutorial exec kafka-client -- kafka-topics --zookeeper my-kafka-zookeeper:2181 --topic connect-status --create --partitions 1 --replication-factor 1
+
+WARNING: This chart is deprecated
+NAME: postgres
+LAST DEPLOYED: Thu Apr  7 08:39:13 2022
+NAMESPACE: kafka-connect-tutorial
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+This Helm chart is deprecated
+
+Given the `stable` deprecation timeline (https://github.com/helm/charts#deprecation-timeline), the Bitnami maintained Helm chart is now located at bitnami/charts (https://github.com/bitnami/charts/).
+
+The Bitnami repository is already included in the Hubs and we will continue providing the same cadence of updates, support, etc that we've been keeping here these years. Installation instructions are very similar, just adding the _bitnami_ repo and using it during the installation (`bitnami/<chart>` instead of `stable/<chart>`)
+
+```bash
+$ helm repo add bitnami https://charts.bitnami.com/bitnami
+$ helm install my-release bitnami/<chart>           # Helm 3
+$ helm install --name my-release bitnami/<chart>    # Helm 2
+```
+
+To update an exisiting _stable_ deployment with a chart hosted in the bitnami repository you can execute
+
+```bash
+$ helm repo add bitnami https://charts.bitnami.com/bitnami
+$ helm upgrade my-release bitnami/<chart>
+```
+
+Issues and PRs related to the chart itself will be redirected to `bitnami/charts` GitHub repository. In the same way, we'll be happy to answer questions related to this migration process in this issue (https://github.com/helm/charts/issues/20969) created as a common place for discussion.
+
+** Please be patient while the chart is being deployed **
+
+PostgreSQL can be accessed via port 5432 on the following DNS name from within your cluster:
+
+    postgres-postgresql.kafka-connect-tutorial.svc.cluster.local - Read/Write connection
+
+To get the password for "postgres" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace kafka-connect-tutorial postgres-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+
+To connect to your database run the following command:
+
+    kubectl run postgres-postgresql-client --rm --tty -i --restart='Never' --namespace kafka-connect-tutorial --image docker.io/bitnami/postgresql:11.7.0-debian-10-r9 --env="PGPASSWORD=$POSTGRES_PASSWORD" --command -- psql --host postgres-postgresql -U postgres -d postgres -p 5432
+
+
+
+To connect to your database from outside the cluster execute the following commands:
+
+    export NODE_IP=$(kubectl get nodes --namespace kafka-connect-tutorial -o jsonpath="{.items[0].status.addresses[0].address}")
+    export NODE_PORT=$(kubectl get --namespace kafka-connect-tutorial -o jsonpath="{.spec.ports[0].nodePort}" services postgres-postgresql)
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host $NODE_IP --port $NODE_PORT -U postgres -d postgres
+
+
+########## delete evicted pods
+kubectl -n default get pods --no-headers --field-selector=status.phase=Failed | \
+awk '{system("kubectl -n default delete pods " $1)}'     
+
+helm install postgres --namespace kafka-connect-tutorial --set extendedConfConfigMap=postgresql-config --set service.type=NodePort --set service.nodePort=30600 --set postgresqlPassword=passw0rd stable/postgresql
+
+curl -X POST \
+  http://20.232.72.158:8083/connectors \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "containers-connector",
+    "config": {
+            "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+            "plugin.name": "pgoutput", ##is the standard logical decoding output plug-in in PostgreSQL
+            "database.hostname": "postgres-postgresql",
+            "database.port": "5432",
+            "database.user": "postgres",
+            "database.password": "passw0rd",
+            "database.dbname": "postgres",
+            "database.server.name": "postgres",
+            "table.whitelist": "public.containers"
+      }
+}'
+
+INSERT INTO containers (containerid, type, status, brand, capacity) VALUES ('C11','finall','Operational','containerbrand',100);
+update containers set status='COMPLETED' where containerid = 'C11');
+, ('C02','Dry','Operationnerbrand',20), ('C03','Dry','Operational','containerbrand',40), ('C04','FlatRack','Operational','containerbrand',40), ('C05','OpenTop','Operational','containerbrand',40), ('C06','OpenSide','Operational','containerbrand',40), ('C07','Tunnel','Operational','containerbrand',40), ('C08','Tank','Operational','containerbrand',40), ('C09','Thermal','Operational','containerbrand',21);
+
+
+################ worked ##############
+https://ibm-cloud-architecture.github.io/refarch-container-inventory/debezium-postgresql/
+
+
+
+###########
+cat <<EOF | kubectl -n postgres apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: postgres-deployment
+spec:
+ selector:
+   matchLabels:
+     app: postgres-container
+ template:
+   metadata:
+     labels:
+       app: postgres-container
+   spec:
+     containers:
+       - name: postgres-container
+         image: debezium/example-postgres:1.0
+         ports:
+           - containerPort: 5432
+         env:
+           - name: POSTGRES_USER
+             value: data_engineer
+           - name: POSTGRES_PASSWORD
+             value: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: postgres
+spec:
+ ports:
+   - port: 5432
+ selector:
+   app: postgres-container
+EOF
+
+>> curl -L https://github.com/strimzi/strimzi-kafka-operator/releases/download/0.16.1/strimzi-cluster-operator-0.16.1.yaml | sed ‘s/namespace: .*/namespace: kafka-connect/’ | kubectl apply -f — -n kafka-connect
+
+
+
+cat <<EOF | kubectl -n default apply -f -
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaConnect
+metadata:
+  name: postgres-connect-cluster
+  annotations:
+    strimzi.io/use-connector-resources: "false"
+spec:
+  image: ehsaniara/postgres-connect-debezium:latest
+  replicas: 3
+  imagePullPolicy: Always
+  bootstrapServers: assetmark-kafka-cluster-kafka-bootstrap:9092
+  tls:
+    trustedCertificates:
+      - secretName: assetmark-kafka-cluster-cluster-ca-cert
+        certificate: ca.crt
+  config:
+    config.storage.replication.factor: 3
+    offset.storage.replication.factor: 3
+    status.storage.replication.factor: 3
+    config.providers: file
+    config.providers.file.class: org.apache.kafka.common.config.provider.FileConfigProvider
+EOF
+
+## error : error: unable to recognize "STDIN": no matches for kind "KafkaConnect" in version "kafka.strimzi.io/v1beta1"
+
+
+*********************** https://strimzi.io/docs/operators/0.21.1/deploying.html **************************************
+
+#### assetmark-kafka-cluster-operator.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: assetmark-kafka-cluster-operator
+  labels:
+    app: strimzi
+subjects:
+  - kind: ServiceAccount
+    name: assetmark-kafka-cluster-operator
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: assetmark-kafka-cluster-operator-namespaced
+  apiGroup: rbac.authorization.k8s.io
+
+
+service/assetmark-kafka-cluster-kafka-0                    LoadBalancer   10.2.46.110    20.121.84.221   9094:31544/TCP               8d
+service/assetmark-kafka-cluster-kafka-1  service/assetmark-kafka-cluster-kafka-2  service/assetmark-kafka-cluster-kafka-bootstrap service/assetmark-kafka-cluster-kafka-brokers service/assetmark-kafka-cluster-kafka-external-bootstrap   service/assetmark-kafka-cluster-zookeeper-client service/assetmark-kafka-cluster-zookeeper-nodes service/assetmark-schema-registry-cp-schema-registry 
+
+https://strimzi.io/docs/0.16.2/full.html#deploying-cluster-operator-helm-chart-str
+https://ehsaniara.medium.com/cdc-with-postgres-debezium-to-kafka-strimzi-bf9212ae9d78
+
+sed -i 's/\r//'  /opt/api/bin/wrapper.sh
+export KUBECONFIG=<kube-config>
+ chmod +x 3-postgresql/*
+
+https://stackoverflow.com/questions/36650642/did-you-specify-the-right-host-or-port-error-on-kubernetes
+https://stackoverflow.com/questions/52197246/wsl-redis-encountered-system-has-not-been-booted-with-systemd-as-init-system-pi
+
+harbor.dev.ewm3.assetmark.local
