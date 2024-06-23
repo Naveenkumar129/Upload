@@ -1,3 +1,4 @@
+var hm = require('header-metadata');
 var crypto = require('crypto');
 
 // Constants
@@ -5,7 +6,7 @@ var EMPTY_STRING = "";
 var SHA_BITS = "256";
 
 // Main function to calculate OAuth header
-function getAuthorizationHeader(uri, method, payload, consumerKey, signingKey) {
+function getAuthorizationHeader(uri, method, payload, consumerKey, signingKeyName) {
     var queryParams = extractQueryParams(uri);
     var oauthParams = getOAuthParams(consumerKey, payload);
 
@@ -19,7 +20,7 @@ function getAuthorizationHeader(uri, method, payload, consumerKey, signingKey) {
     var sbs = getSignatureBaseString(method, baseUri, paramString);
 
     // Signature
-    var signature = signSignatureBaseString(sbs, signingKey);
+    var signature = signSignatureBaseString(sbs, signingKeyName);
     var encodedSignature = encodeURIComponent(signature);
     oauthParams["oauth_signature"] = encodedSignature;
 
@@ -69,10 +70,13 @@ function getSignatureBaseString(httpMethod, baseUri, paramString) {
 }
 
 // Sign the Base String
-function signSignatureBaseString(sbs, signingKey) {
-    var signer = crypto.createSign("RSA-SHA256");
-    signer.update(Buffer.from(sbs));
-    return signer.sign(signingKey, "base64");
+function signSignatureBaseString(sbs, signingKeyName) {
+    var signParams = {
+        key: signingKeyName, // Name of the Crypto Key object
+        algorithm: 'RSA-SHA256'
+    };
+    var signature = crypto.sign(signParams, sbs, 'base64');
+    return signature;
 }
 
 // Create the Authorization Header
@@ -97,10 +101,10 @@ function getBodyHash(payload) {
 function getNonce() {
     var NONCE_LENGTH = 8;
     var VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    var bytes = crypto.randomBytes(NONCE_LENGTH);
     var nonce = [];
     for (var i = 0; i < NONCE_LENGTH; i++) {
-        nonce.push(VALID_CHARS[bytes[i] % VALID_CHARS.length]);
+        var randomIndex = Math.floor(Math.random() * VALID_CHARS.length);
+        nonce.push(VALID_CHARS[randomIndex]);
     }
     return nonce.join("");
 }
@@ -151,6 +155,6 @@ var uri = "https://example.com/resource?param=value";
 var method = "GET";
 var payload = "";
 var consumerKey = "your_consumer_key";
-var signingKey = "your_private_key";
-var oauthHeader = getAuthorizationHeader(uri, method, payload, consumerKey, signingKey);
-console.log(oauthHeader);
+var signingKeyName = "your_crypto_key_name"; // Name of the Crypto Key object
+var oauthHeader = getAuthorizationHeader(uri, method, payload, consumerKey, signingKeyName);
+hm.current.set('Authorization', oauthHeader);
