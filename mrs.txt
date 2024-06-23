@@ -267,3 +267,21 @@ function toOAuthParamString(queryParamsMap, oauthParamsMap) {
 
     return allParams;
 }
+======
+
+// Example usage:
+var queryParamsMap = {
+    "param1": ["value1", "value2"],
+    "param2": ["value3"]
+};
+
+var oauthParamsMap = {
+    "oauth_consumer_key": "your_consumer_key",
+    "oauth_nonce": "generated_nonce",
+    "oauth_signature_method": "HMAC-SHA1",
+    "oauth_timestamp": "generated_timestamp",
+    "oauth_version": "1.0"
+};
+
+var result = toOAuthParamString(queryParamsMap, oauthParamsMap);
+console.log(result);
