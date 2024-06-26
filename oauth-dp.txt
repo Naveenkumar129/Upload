@@ -1,15 +1,14 @@
-var hm = require('header-metadata');
-var crypto = require('crypto');
-
-// Generate a nonce
-var nonce = crypto.randomBytes(16).toString('hex');
-
-// Set the nonce in a response header
-hm.response.set('X-Nonce', nonce);
-
-// Send the response
-session.output.write("Nonce generated successfully: " + nonce);
-
+// Generate Nonce function
+function getNonce() {
+    var NONCE_LENGTH = 8;
+    var VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    var nonce = [];
+    for (var i = 0; i < NONCE_LENGTH; i++) {
+        var randomIndex = Math.floor(Math.random() * VALID_CHARS.length);
+        nonce.push(VALID_CHARS[randomIndex]);
+    }
+    return nonce.join("");
+}
 
 
 ----
