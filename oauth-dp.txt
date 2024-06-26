@@ -1,6 +1,21 @@
 var hm = require('header-metadata');
 var crypto = require('crypto');
 
+// Generate a nonce
+var nonce = crypto.randomBytes(16).toString('hex');
+
+// Set the nonce in a response header
+hm.response.set('X-Nonce', nonce);
+
+// Send the response
+session.output.write("Nonce generated successfully: " + nonce);
+
+
+
+----
+var hm = require('header-metadata');
+var crypto = require('crypto');
+
 // Constants
 var EMPTY_STRING = "";
 var SHA_BITS = "256";
