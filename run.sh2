@@ -30,3 +30,33 @@ kubectl apply -f example.yaml
 
 curl localhost/foo
 curl localhost/bar
+-------------
+
+var hm = require('header-metadata');
+var crypto = require('crypto');
+var fs = require('fs');
+
+// Define the alias for your private key
+var keyAlias = 'myPrivateKey';
+
+// Load the private key from the configured Crypto Key object
+var privateKey = fs.readFileSync('cert:///' + keyAlias, 'ascii');
+
+// Example data to be signed
+var data = "This is some data to be signed";
+
+// Create a signer object
+var signer = crypto.createSign('SHA256');
+
+// Update the signer with the data
+signer.update(data);
+
+// Sign the data using the private key
+var signature = signer.sign(privateKey, 'base64');
+
+// Set the signature in a response header
+hm.response.set('X-Signature', signature);
+
+// Send the response
+session.output.write("Data signed successfully.");
+
