@@ -1,3 +1,34 @@
+// Function to combine and sort query and OAuth parameters
+function toOAuthParamString(queryParamsMap, oauthParamsMap) {
+    var consolidatedParams = {};
+
+    // Combine query and OAuth parameters
+    Object.keys(queryParamsMap).forEach(function(key) {
+        consolidatedParams[key] = queryParamsMap[key];
+    });
+    Object.keys(oauthParamsMap).forEach(function(key) {
+        if (consolidatedParams[key]) {
+            consolidatedParams[key].push(oauthParamsMap[key]);
+        } else {
+            consolidatedParams[key] = [oauthParamsMap[key]];
+        }
+    });
+
+    // Sort keys
+    var sortedKeys = Object.keys(consolidatedParams).sort();
+    var allParams = "";
+    sortedKeys.forEach(function(key) {
+        var values = consolidatedParams[key].sort();
+        values.forEach(function(value) {
+            allParams += key + "=" + value + "&";
+        });
+    });
+
+    return allParams.slice(0, -1); // Remove trailing ampersand
+}
+
+
+
 // Load required modules
 var urlopen = require('urlopen');
 var hm = require('header-metadata');
