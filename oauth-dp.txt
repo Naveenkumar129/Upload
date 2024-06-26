@@ -1,3 +1,32 @@
+// Load required modules
+var urlopen = require('urlopen');
+var hm = require('header-metadata');
+
+// Function to extract query parameters from a URI
+function extractQueryParams(uri) {
+    var queryParams = uri.split('?')[1] || "";
+    if (!queryParams) {
+        return {};
+    }
+
+    var queryPairs = {};
+    var pairs = queryParams.split("&").sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
+    pairs.forEach(function(pair) {
+        var idx = pair.indexOf("=");
+        var key = idx > 0 ? pair.substring(0, idx) : pair;
+        if (!queryPairs[key]) {
+            queryPairs[key] = [];
+        }
+        var value = idx > 0 && pair.length > idx + 1 ? pair.substring(idx + 1) : "";
+        queryPairs[key].push(value);
+    });
+
+    return queryPairs;
+}
+
+
+
 // Generate Nonce function
 function getNonce() {
     var NONCE_LENGTH = 8;
