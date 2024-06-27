@@ -1,3 +1,23 @@
+const fs = require('fs');
+const path = require('path');
+
+// Replace with the path to your local file
+const filePath = path.join(__dirname, 'path/to/mastercard-postman-encryption-lib.min.js');
+
+// Read the local file
+fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+        console.error(`Error reading file: ${err}`);
+        return;
+    }
+    
+    // Print the file content to the console
+    console.log(data);
+});
+
+
+
+
 // Function to combine and sort query and OAuth parameters
 function toOAuthParamString(queryParamsMap, oauthParamsMap) {
     var consolidatedParams = {};
