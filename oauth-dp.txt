@@ -1,3 +1,41 @@
+// Require necessary modules
+var hm = require('header-metadata');
+var crypto = require('crypto');
+
+// Set up response headers
+hm.response.headers['Content-Type'] = 'application/json';
+
+// Example private key stored in DataPower crypto key store
+var privateKey = 'local:///your-private-key.pem';
+
+// Function to sign the payload
+function signPayload(payload, privateKey) {
+    var sign = crypto.createSign('RSA-SHA256');
+    sign.update(payload);
+    var signature = sign.sign(privateKey, 'base64');
+    return signature;
+}
+
+// Read JSON payload from the request
+session.input.readAsJSON(function (error, jsonPayload) {
+    if (error) {
+        session.output.write(JSON.stringify({error: 'Error reading JSON payload'}));
+    } else {
+        // Convert JSON payload to string
+        var payloadString = JSON.stringify(jsonPayload);
+
+        // Sign the payload
+        var signature = signPayload(payloadString, privateKey);
+
+        // Send back the signature
+        session.output.write(JSON.stringify({signature: signature}));
+    }
+});
+
+
+
+
+--------
 const fs = require('fs');
 const path = require('path');
 
