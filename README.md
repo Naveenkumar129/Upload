@@ -1,3 +1,9 @@
+ker 4- partition on broker 4
+ish-4.25 ./kafka-producer-perf-test.sh -.throughput 2000 --record-size 80000 --topic petros-test-1p-0rf-b --producer.config /config/producer.properties --num-records 2400
+props batch.size=524288 linger.ms=20
+2022-10-10 15:20:50,024] INFO ProducerConfig values:
+
+
 **6. Troubleshooting Kubernetes Networking**
 Common Issues and Solutions
 
