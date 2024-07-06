@@ -1,0 +1,305 @@
+NAMESPACE:
+    
+kubectl get pods
+kubectl get pods --all-namespaces
+kubectl get namespaces
+kubectl get ns
+kubectl create ns prod
+kubectl get ns
+kubectl run pod1 --image httpd -n prod
+kubectl get pods
+kubectl get pods -n prod
+kubectl get pods -n kube-system
+kubectl run pod1 --image httpd
+kubectl run pod1 --image nginx
+kubectl get all -A
+clear
+kubectl get ns
+kubectl delete ns prod
+kubectl get ns
+
+kubectl create ns gagan
+
+=====================================
+
+useradd abc -m -s /bin/bash
+passwd abc
+mkdir /home/abc/.kube
+cp /root/.kube/config /home/abc/.kube/
+chown abc:abc -R /home/abc
+su - abc
+
+kubectl config set-context --current --namespace=abc
+source <(kubectl completion bash) # setup autocomplete in bash into the current shell, bash-completion package should be installed first.
+echo "source <(kubectl completion bash)" >> ~/.bashrc # add autocomplete permanently to your bash shell.
+alias k=kubectl
+complete -o default -F __start_kubectl k
+
+===================================
+
+KUBERNETES SERVICE:
+    
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-lb
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+      # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
+    - port: 80
+      targetPort: 80
+      # Optional field
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-backend-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: myapp-container
+        image: httpd:2.4.46
+
+========================
+EKS CLuster:
+
+bash
+mv $HOME/.kube/config $HOME/.kube/config_old
+
+aws configure
+aws eks --region us-east-1 update-kubeconfig --name gagan-eks
+k get nodes
+cat /home/gagan/.kube/config
+k run pod1 --image httpd
+k get pods
+k get pods
+k get pods -A
+k get nodes
+
+=========================
+
+DNS Resolver:
+
+ k get pods -n kube-system
+ k get svc -n kube-system
+ k get pods
+ k exec -it my-frontend-app-85b5f697c9-44zqk -- /bin/bash
+ ## RUN Inside a pod to verify dns entry
+ 
+cat /etc/resolv.conf
+env | grep -i app-lb
+env | grep -i web
+curl app-lb
+curl web-lb
+
+=========================
+
+Kubernetes Health Check
+
+Liveness Probe: if there is a deadlock in the kubernetes cluster and container is not able to restart automatically.
+                then it instructs kubernetes to restart the pod.
+                it is responsible for container.
+                If the Liveness Probe fails, the pod will be restarted (read more about failureThreshold).
+
+                Use case: Restart pod, if the pod is dead.
+
+                 Best practices: Only include basic checks in the liveness probe. Never include checks on connections to other services (e.g. database). 
+                 The check shouldn't take too long to complete. 
+                  Always specify a light Liveness Probe to make sure that the pod will be restarted, if the pod is really dead.
+
+readiness Probe: consider it a doorkeeper for the incoming traffic.
+                 it tells the kubernetes if the pod is not ready to receive the traffic then delete it from the service.
+                 it responsbile for the pod.
+                 it does not restart the pod, it will remove the pod from the service only.
+                 In contrast to Startup Probes Readiness Probes check, if the pod is available during the complete lifecycle. In contrast to Liveness Probes only the traffic to the pod is stopped, if the Readiness probe fails, but there will be no restart.
+
+                 Use case: Stop sending traffic to the pod, if the pod can not temporarily serve because a connection to another service (e.g. database) fails and the pod will recover later.
+
+                 Best practices: Include all necessary checks including connections to other services. Nevertheless the check shouldn't take too long to complete. Always specify a Readiness Probe to make sure that the pod only gets traffic,
+                 if the pod can properly handle incoming requests.
+                          
+
+Startup Probe: it is responsible for the application running in the docker container.
+               if the application is not working then there is no point of keeping a container.
+               so keep liveness and readiness disabled.
+               if application start working then start liveness and readiness probe.
+               Startup Probes check, when the pod is available after startup.
+
+                  Use case: Send traffic to the pod, as soon as the pod is available after startup. 
+                 Startup probes might take longer to complete, because they are only called on initializing. They might call a warmup task (but also consider init containers for initialization).
+
+                Best practices: Specify a Startup Probe, if the pod takes a long time to start. The Startup and Liveness Probe can use the same endpoint, 
+                but the Startup Probe will have a less strict failure threshhold which prevents a failure on startup 
+
+  startupProbe:
+     httpdGet:
+        Path: /hello
+        port: 8080
+     failureThreshold: 30  (k8s will try in case proble fails)
+     periodSeconds: 10     (how often the check is performed)
+
+application will have max 5 minutes (30 * 10= 300 seconds)
+
+
+Types of Probes:
+1. HTTP
+2. Command
+3. TCP
+
+can use any of them for liveness and readiness probe.
+ 
+HTTP >>> most common type of custom probe, even if your server is not an HTTP server, you can install a light 
+         weight http server for liveness probe.
+         kubernetes will ping a path and and if it gets the result in 200 and 300 range then it marks it healthy.
+         other marks it unhealthy.
+
+Command : kubernetes execute the command inside the container, if the command probe give exit code 0 then it is 
+          marked as healthy otherwise it is marked unhealthy.
+
+          spec:
+            containers:
+              - name: container1
+                livenessProbe:
+                  exec:
+                    command:
+                    - myprogram
+
+TCP probe : Kubernetes will try to establish a TCP connection on a specified port. it establish the connection
+            then container is healthy, if not then container is unhealthy.
+             grpc, FTP server
+
+
+Configuring Probes:
+ 1. initialDelaySeconds : how long to wait befor starting helath checks
+    default 0
+    minimum 0
+ 2. periodSeconds : how often to perform the check
+    default: 10s
+    minimum: 1s
+ 3. timeoutSeconds: how long to wait for a response before timing out the check
+    default : 1s
+    minimum: 1s
+ 4. successThreshould : number of consecutive successses before the workload is considered to be up
+    default: 1
+    minimum: 1
+ 5. failureThreshold : number of consecutive successes before the workload is considered to be up
+    default: 1
+    minimum: 1
+
+
+ 
+
+---------------------------------------------------------------------
+gagan@master:~$ cat hc.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-frontend-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: myapp-container
+        image: nginx
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-frontend-app2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: myapp-container
+        image: nginx
+        livenessProbe:
+          httpGet:
+            path: /abc
+            port: 80
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+
+=============================================
+
+Network Policy in K8S:
+    
+    https://kubernetes.io/docs/tasks/administer-cluster/declare-network-policy/
+    
+=============================================
+
+Static PODs 
+
+   39  cd /etc/kubernetes/manifests/
+   40  ls -l
+   41  vi gagan-pod.yaml
+   42  cd /
+   43  history
+root@worker1:/# cat /etc/kubernetes/manifests/gagan-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gagan-test-pod
+  labels:
+    owner: gagandeep
+    env: dev
+    a: b
+spec:
+  containers:
+    - name: container1
+      image: httpd:2.4
+
+root@worker1:/#
+
+============================================
+
+DAEMONSET:
+    
+gagan@master:~$ cat daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: gagan-daemonset
+spec:
+  selector:
+    matchLabels:
+      name: monitoring
+  template:
+    metadata:
+      labels:
+        name: monitoring
+    spec:
+      containers:
+      - name: fluentd-elasticsearch
+        image: quay.io/fluentd_elasticsearch/fluentd:v2.5.2
+

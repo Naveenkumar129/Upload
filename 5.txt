@@ -1,0 +1,375 @@
+init containers:
+https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+
+=======================
+
+
+==========================
+SECRETS:
+ echo -n "gagandeep" | base64
+ echo -n "gagandeep@123" | base64
+ vi secret.yaml
+ kubectl get secrets
+ kubectl apply -f secret.yaml
+ kubectl get secrets
+ kubectl describe secret my-secrets
+ vi pod-secret.yaml
+ kubectl apply -f pod-secret.yaml
+ kubectl get pods
+ kubectl exec -it myapp-pod -- /bin/bash
+ cat pod-secret.yaml
+
+[root@gagan-master app1]# cat secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secrets
+type: Opaque
+data:
+  username: Z2FnYW5kZWVw
+  password: Z2FnYW5kZWVwQDEyMw==
+
+[root@gagan-master app1]# cat pod-secret.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: httpd-container
+    image: httpd
+    volumeMounts:
+    - name: credentials
+      mountPath: /tmp/creds
+      readOnly: true
+  volumes:
+  - name: credentials
+    secret:
+      secretName: my-secrets
+
+[root@gagan-master app1]#
+=================================================
+
+SECRET MOUNTING AS ENV VARIABLE:
+    
+[root@gagan-master app1]# cat pod-secret-env.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod2
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  containers:
+  - name: httpd-container
+    image: httpd
+    env:
+    - name: SECRET_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: my-secrets
+          key: username
+    - name: SECRET_PASSWD
+      valueFrom:
+        secretKeyRef:
+          name: my-secrets
+          key: password
+          
+============================
+
+==========================
+CONFIG MAPS:
+
+it will be providing the static data if provided as env variable, if we change the information in the file we have recreate the configmap again.
+even pods will be reflecting the old data. you to recreate the pod again to get the latest information from the configmap if used as env variable.
+
+
+CONFIGMAPS:
+
+echo "Hello from production" > prod.html
+echo "Hello from dev" > dev.html
+kubectl get configmaps
+kubectl create configmap prod.cmap --from-file=prod.html
+kubectl create configmap dev.cmap --from-file=dev.html
+kubectl get configmaps
+kubectl get configmap dev.cmap -o yaml
+kubectl get configmap prod.cmap -o yaml
+vi pods.yaml
+
+----
+
+root@gagan-master:/gagan/cmap# cat pods.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prod-nginx
+  labels:
+    app: prod-nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: config-volume
+      mountPath: /usr/share/nginx/html
+  volumes:
+    - name: config-volume
+      configMap:
+        name: prod.cmap
+        items:
+        - key: prod.html
+          path: index.html
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dev-nginx
+  labels:
+    app: dev-nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: config-volume
+      mountPath: /usr/share/nginx/html
+  volumes:
+    - name: config-volume
+      configMap:
+        name: dev.cmap
+        items:
+        - key: dev.html
+          path: index.html
+
+
+root@gagan-master:/gagan/cmap#
+
+
+
+kubectl apply -f pods.yaml
+kubectl get pods -o wide
+root@gagan-master:/gagan# curl 192.168.27.116
+Hello from dev
+root@gagan-master:/gagan# curl 192.168.27.117
+Hello from production
+root@gagan-master:/gagan#
+
+============================================
+
+=============================
+PV / PVC
+
+### CREARE DIRECTORIES ON WORKER NODE
+sudo mkdir /mnt/gagan
+sudo sh -c "echo 'Hello from Gagan Kubernetes storage' > /mnt/gagan/index.html"
+cat /mnt/gagan/index.html
+
+//Create PV ON MASTER NODE
+
+cat > pv-volume.yaml << EOF
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/gagan"
+EOF
+
+kubectl apply -f pv-volume.yaml
+kubectl get pv task-pv-volume
+
+//Create PVC
+
+cat > pv-claim.yaml << EOF
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+EOF
+
+kubectl apply -f pv-claim.yaml
+kubectl get pv task-pv-volume
+kubectl get pvc task-pv-claim
+  
+
+//Create a POD with volume
+
+cat > pv-pod.yaml << EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-pv-pod
+spec:
+  volumes:
+    - name: task-pv-storage
+      persistentVolumeClaim:
+        claimName: task-pv-claim
+  containers:
+    - name: task-pv-container
+      image: nginx
+      ports:
+        - containerPort: 80
+          name: "http-server"
+      volumeMounts:
+        - mountPath: "/usr/share/nginx/html"
+          name: task-pv-storage
+EOF
+
+kubectl apply -f pv-pod.yaml
+kubectl get pod task-pv-pod
+//curl to POD IP
+kubectl exec -it task-pv-pod -- /bin/bash
+
+=====================================================
+Kubernetes dashboard
+https://github.com/kubernetes/dashboard
+
+## Get the user token
+
+ kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+ 
+=============================
+Node addition:
+    
+kubeadm token create --print-join-command
+
+============================
+
+Tainting
+
+kubectl taint nodes worker3 special=yes:NoSchedule
+
+kubectl describe node worker3 | head -20
+
+
+root@master:~# cat deploy.yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-backend-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: myapp-container
+        image: httpd:2.4.46
+      tolerations:
+        - key: "special"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+
+root@master:~#
+
+==================================================
+CORDONing and DRAINING:
+    
+kubectl taint nodes worker3 specialxxx=yesxxx:NoSchedule-
+kubectl describe node worker3 | head -20
+kubectl cordon worker3
+kubectl describe node worker3 | head -20
+kubectl get nodes
+kubectl drain worker3
+kubectl drain worker3 --ignore-daemonsets
+kubeadm delete node worker3
+kubectl delete node worker3
+kubectl get nodes
+
+====================================
+
+HELM :
+
+Developers create the charts
+
+install helm from helm.sh and tar it
+
+./helm ls
+mv ./helm /usr/bin
+helm ls
+   
+ helm create gagan
+ ls -l
+ cd gagan/
+ ls -l
+
+ chart.yaml , charts, templates, values.yaml
+
+ cat values.yaml >> it has the variables which can be used to change the configuration
+ ls -l
+ cd templates/ >> have templates like deployment, service, serviceaccount and ingress inside
+ ls -l
+ vi deployment.yaml
+ cd ../..
+ ls -l
+ helm package gagan
+ ls -l
+ 
+ helm install gagan  gagan
+ kubectl get pods
+ kubectl get deployments
+ helm ls
+ helm delete gagan
+ helm ls
+ helm updrade
+ 
+https://helm.sh/docs/intro/quickstart/
+
+===============================================
+
+kubectl create namespace techlanders
+kubectl create deployment voting --image techlanders/voting:v1 --namespace=techlanders
+kubectl create deployment redis --image=techlanders/redis:v1 --namespace=techlanders
+kubectl expose deployment voting --type=NodePort --port 80 --namespace=techlanders
+kubectl expose deployment redis --type=ClusterIP --port 6379 --namespace=techlanders
+kubectl create deployment db --image=techlanders/db:v1 --namespace=techlanders
+kubectl expose deployment db --type=ClusterIP --port 5432 --namespace=techlanders
+kubectl create deployment worker --image=techlanders/worker:v1 --namespace=techlanders
+kubectl create deployment result --image=techlanders/result:v1 --namespace=techlanders
+kubectl expose deployment result --type=NodePort --port 80 --namespace=techlanders
+kubectl get all --namespace techlanders
+
+
+kubectl exec -it pod/voting-56d9775f6-cjplj -n techlanders -- /bin/sh
+cat Dockerfile
+cat app.py
+apk update
+apk add redis
+redis-cli -h redis
+set name "gagan"
+get name
+
+
+===============================================================

@@ -1,0 +1,455 @@
+Ericsson 13-Jun-22
+=====================
+
+
+#!/bin/bash
+sudo echo -e "Tech@2020\nTech@2020" | passwd root;
+sudo cp -p /etc/ssh/sshd_config /etc/ssh/sshd_config_backup;
+sudo sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config;
+sudo sed -i 's/^PermitRootLogin*/PermitRootLogin yes/' /etc/ssh/sshd_config;
+sudo echo "PermitRootLogin yes" >> /etc/ssh/sshd_config;
+sudo systemctl restart sshd;
+sudo yum install -y wget unzip curl;
+
+
+================
+
+
+ sudo -i
+ hostnamectl set-hostname gagan-dockerhost
+ bash
+ 
+ 
+ ############# Install Docker - Amazon Linux ##############
+ yum install docker
+ systemctl start docker
+ systemctl enable docker
+ docker ps 
+ docker run hello-world
+ ###############################
+ 
+  ############# Install Docker - Ubuntu ##############
+sudo apt-get update -y
+sudo apt-get install ca-certificates curl gnupg lsb-release -y
+sudo mkdir -p /etc/apt/keyrings
+
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o  /etc/apt/keyrings/docker.gpg
+
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+sudo apt-get update -y
+
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
+
+
+#############################################
+
+
+ ps -ef | grep -i docker
+ docker ps
+ docker ps -a
+ ls
+ ls /
+ top
+ docker run hello-world
+ docker ps -a
+ docker images
+ docker run --name c1  hello-world
+ docker ps -a
+ docker run --name c1  hello-world   // it should fail due to name conflict
+ docker run --name c2 -d  hello-world
+ docker ps -a
+ docker run --name os-container1 ubuntu   // it should create a exited container because of no terminal
+ docker ps -a
+ docker run --name c3 nginx
+ docker logs c3
+
+docker logs --follow  bce34bb3c617 >> to get the live logs (One of the drawbacks of the above command is that it will contain all the logs from the start)
+
+docker logs --follow --tail 1 bce34bb3c617 (view the continuous log output with the recent records)
+
+docker logs --since 2022-05-16  bce34bb3c617 
+
+docker logs -f containername &> baeldung-postgress.log & 
+(we redirect all the live logs to the baeldung-postgress.log file. Also, we run this command in the background using the &, so it will keep running until it is explicitly stopped.)
+
+ docker run --name os-container2 -it  ubuntu   // it'll take you inside the container
+  ### Exit for container with exit command
+  
+ docker ps -a
+ docker run --name os-container3 -dt  ubuntu
+ docker ps -a
+ 
+ =====================================================
+ 
+  docker ps -a
+ docker stop os-container3
+ docker ps -a
+ docker start os-container3
+ docker ps -a
+ docker restart os-container3
+ docker ps -a
+ docker kill os-container3
+ docker ps -a
+ docker start os-container3
+ docker ps -a
+ docker rm c1
+ docker ps -a
+ docker rm os-container3   // it should through error, in case of running containers
+ docker rm -f os-container3
+ docker ps -a
+ docker ps -l >> last container running
+ docker ps -lq >> last container running ID
+ docker ps -aq >> show all the containers IDs running
+ docker ps -q
+ docker rm -f ` docker ps -aq`  // Single Postoffice quote near to ESC Button on keyboard
+ docker ps -q
+ docker ps -a
+ docker run -it --name c1 ubuntu:20.04
+ docker ps
+ docker run -dt --name c2 --hostname c2 ubuntu:20.04
+ docker ps
+ docker exec -it c2 ls -l / >> execute the command but do not go inside
+ docker exec -it c2 ps -ef >> execute the result but do not go inside
+ docker exec -it c2 /bin/bash >> will go inside to /bin/bash >> after exit it still runs.
+ docker ps
+ docker logs c1
+ docker top c1
+ docker stats
+ 
+ 
+ ===========================================================
+ 
+ Docker Network:
+     
+ docker ps
+ docker run -dt --name c3 --hostname c3 httpd
+
+
+ docker ps
+ docker exec -it c3 /bin/bash
+ ## apt update -y
+ ## apt install iproute2 procps curl -y
+ ## ip addr
+ ## ps -ef
+ ## curl localhost
+ ## exit
+ 
+ curl 172.17.0.4
+ ip addr
+ docker ps
+ docker inspect c1 | more
+ docker inspect c2 | more
+ curl 172.17.0.2
+ curl 172.17.0.4
+ ip route
+ docker inspect c3
+ ip addr
+ docker ps
+ docker rm -f c3
+ docker run -dt --name c3 --hostname c3 httpd
+ docker ps
+ docker run -dt --name c4 --hostname c4 -p 80:80  httpd
+ docker ps
+ docker run -dt --name c5 --hostname c5 -p 80:80  nginx  // it should through error as bounding to existing port
+ docker ps -a
+ docker run -dt --name c6 --hostname c6 -p 81:80  nginx
+ docker run -dt --name c7 --hostname c7 -P  nginx
+ docker ps -a
+ 
+ ================================
+ NETWORK BRIDGE:
+     
+ip route
+docker network ls
+docker inspect c3 | tail -20
+docker network inspect 5f668fb6ec99
+docker network create gagan-net --subnet 10.0.0.0/16 >> making our network
+docker network ls
+ip addr
+ip route
+docker run -dt --name web1 --hostname web1 -P --network gagan-net httpd
+docker inspect web1
+curl 10.0.0.2
+docker ps -a
+
+docker run -dt --network host httpd (will use host network and mapped with the host port as well)
+curl localhost 
+curl host-ipaddress
+curl host-publicIP from the browser
+
+docker network create network1
+docker network create network2
+
+docker run -dt --name d3 --network network1 centos
+docker run -dt --name d4 --network network1 centos
+
+docker run -dt --name d5 --network network2 centos
+docker run -dt --name d6 --network network2 centos
+
+docker network connect network1 d6 (d6 will be able to connect with network1 container via ip and their hostname which is not possible in bridge network)
+docker network disconnect network1 d6
+
+docker exec -it 81019715a2cc ping d3
+docker exec -it 81019715a2cc ping d4
+=====================================
+Docker Volume
+
+
+ docker ps -a
+ docker rm -f ` docker ps -aq`
+ clear
+ docker images
+ mkdir /gagan
+ fdisk -l
+ echo "hello from gagandeep" >> /gagan/index.html
+ cat /gagan/index.html
+ docker run -dt --name web1 -p 80:80 httpd
+ docker exec -it web1 /bin/bash
+ docker run -dt --name web2 -p 81:80 -v /gagan:/usr/local/apache2/htdocs  httpd
+ cat /gagan/index.html
+ echo "Hello from Gagandeep v2" > /gagan/index.html
+ docker run -dt --name web3 -p 82:80 -v /gagan:/usr/local/apache2/htdocs  httpd
+ docker exec -it web3 /bin/bash
+ cd /gagan
+ 
+ ========================================== 
+ DOCKER IMAGE
+ 
+ cd /gagan
+ vi Dockerfile
+ docker images
+ docker build -t myimage:latest -f /gagan >> -f to give the location of Dockerfile
+ docker images
+ docker run -dt --name web1 -p 80:80 myimage
+ docker ps -a
+ curl localhost
+ docker ps
+ 
+ [root@gagan-dockerhost gagan]# cat Dockerfile
+FROM centos:7
+RUN yum install httpd -y
+RUN echo "Hello from gagandeep" > /var/www/html/index.html
+RUN touch /gagandeep
+CMD ["httpd","-D","FOREGROUND"]
+[root@gagan-dockerhost gagan]#
+
+
+================================================
+IMAGE PUSH to DOCKERHUB
+
+
+ docker images
+ docker tag myimage:latest gagandeepthinknyx/myrepo:latest
+ docker images
+ docker login
+ docker push gagandeepthinknyx/myrepo:latest
+ docker rm -f ` docker ps -aq`
+ docker rmi -f ` docker images -q`
+ docker ps -a
+ docker images
+ docker run -dt --name web1 -p 80:80 gagandeepthinknyx/myrepo:latest
+ docker ps
+ curl localhost
+ 
+ ============================================
+
+
+docker commit container-id
+docker tag 0c17f0798823 cloudsihmar/myimages:latest
+docker push cloudsihmar/myimages:latest
+
+=============================================
+
+Dockerfile
+
+FROM ubuntu
+MAINTAINER sandy.2087@gmail.com
+
+RUN apt-get update -y
+RUN apt-get install nginx-light -y
+CMD [“echo”,”Image created is created for testing”]
+
+
+
+FROM ubuntu
+RUN apt-get update -y
+RUN apt-get install alpine -y
+EXPOSE 80
+
+==============================================================
+
+FROM centos:7
+RUN yum -y install httpd
+EXPOSE 80
+CMD ["httpd","-D","FOREGROUND"]
+
+docker build -t httpd5 .
+docker run -dt --name web5 httpd5
+docker inspect e1b132ecec57 | grep -i ipaddress
+curl 172.17.0.4
+
+=============================================================
+
+COPY command :
+
+FROM centos:7
+RUN yum -y install httpd
+COPY ./index.html /var/www/html/index.html
+EXPOSE 80
+CMD ["httpd","-D","FOREGROUND"]
+
+echo "hello from techlanders" > index.html
+docker build -t httpd6 .
+docker run -dt -p 80:80 --name web8 httpd6
+docker inspect 2f5d0759dd95 | grep -i ipaddress
+curl 172.17.0.4
+
+
+Nginx file >>  /usr/share/nginx/html/index.html
+
+
+==============================================================
+
+Command : It is an instruction which is executed when we run a container our of image.
+
+FROM ubuntu:16.04
+CMD echo 'Welcome to this world'
+
+docker build -t app .
+
+docker run -it image-id
+Welcome to this world   >> we will get this output
+
+we can override this command...
+docker run -it image-id echo 'Welcome to AWS'
+
+
+FROM ubuntu:16.04
+CMD echo 'Welcome to this world'
+CMD echo 'Welcome to Home'
+
+in above case, only the latest command will be executed
+
+
+EntryPoint :
+It is also an instruction like runtime instruction like CMD. it has certain differences.
+
+FROM ubuntu:16.04
+ENTRYPOINT ["echo","Hi there"]
+
+docker build -t app .
+
+docker run -it image-id echo 'how are you'
+
+hi there echo how are you  (will not override, it will append the result)
+
+
+FROM ubuntu:16.04
+ENTRYPOINT ["echo"]
+CMD ["HI there"]
+
+it will give us the result as "Hi there" we can override it 
+
+docker run -it image-id 'Hi Sandeep'
+Hi Sandeep  >> will replace the CMD in the dockerfile
+
+
+so we can override the CMD but can not override the Entrypoint, but can be appened.
+
+====================================================================================
+WORKDIR >>
+
+Imagine you have set of instructions which you need to excute in a particular directory or folder.
+It would not be convenient to provide the path of a particular folder every time you run an instruction.
+If you have 10 instructions, then 10 times you do not want to mention the file path. so it can become tiresom.
+
+
+vi Dockerfile
+
+FROM ubuntu
+
+WORKDIR /root/
+RUN touch ./testfile_1.txt
+RUN touch ./testfile_2.txt
+RUN touch ./testfile_3.txt
+
+RUN mkdir /root/testfolder
+WORKDIR /root/testfolder
+RUN mkdir ./child_1
+RUN mkdir ./child_2
+
+==========================================================================================
+
+version: "3.7"
+services:
+  app: 
+    image: petclinic:v3
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=mysql
+    networks:
+      - petclinic
+    links:
+      - db:database
+  db:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_USER=petclinic
+      - MYSQL_PASSWORD=petclinic
+      - MYSQL_DATABASE=petclinic
+    networks:
+      - petclinic
+networks:
+   petclinic:
+     driver: bridge
+
+
+======================================
+
+version: "3.7"
+services:
+  db:
+    # We use a mariadb image which supports both amd64 & arm64 architecture
+    image: mariadb:10.6.4-focal
+    # If you really want to use MySQL, uncomment the following line
+    #image: mysql:8.0.27
+    command: '--default-authentication-plugin=mysql_native_password'
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=somewordpress
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    expose:
+      - 3306
+      - 33060
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - 80:80
+    restart: always
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+volumes:
+  db_data:
+
+
+
+

@@ -1,0 +1,345 @@
+mkdir manifests
+cd manifests
+vi pod.yml
+kubectl apply -f pod.yml
+kubectl get pods
+kubectl describe pod gagan-pod
+
+root@master:~/manifests# cat pod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gagan-pod
+spec:
+  containers:
+    - name: container1
+      image: httpd
+root@master:~/manifests#
+
+http://www.yamllint.com/
+
+=============================================
+
+Multi-container pod
+
+vi mc-pod.yml
+
+root@master:~/manifests# cat mc-pod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gagan-multicontainer-pod2
+spec:
+  containers:
+    - name: container1
+      image: httpd:2.4
+    - name: container2
+      image: redis
+root@master:~/manifests#
+
+
+
+kubectl apply -f mc-pod.yml
+kubectl get pods
+kubectl describe pod gagan-multicontainer-pod
+kubectl get pods -o wide
+kubectl exec -it gagan-multicontainer-pod -- /bin/bash
+
+### RUN Inside the container
+apt update
+apt install procps iproute2 curl
+ps -ef
+hostname
+ip addr
+curl localhost
+curl localhost:8080
+
+
+kubectl describe pod gagan-multicontainer-pod | more
+kubectl exec -it gagan-multicontainer-pod -c container2 -- /bin/bash
+
+### RUN Inside the container
+apt update
+apt install procps iproute2 curl
+ps -ef
+hostname
+ip addr
+curl localhost
+curl localhost:8080
+
+Compare the output of both pods
+
+=======================================
+LABELS and SELECTORS:
+    
+ vi pod.yml
+ kubectl apply -f pod.yml
+ kubectl describe pod "gagan-pod"
+ kubectl get pods --help
+ kubectl get pods -l a=b
+ kubectl get pods
+ cat pod.yml
+ kubectl get pods -l env=dev
+ kubectl delete pods --all
+ vi deploy.yaml
+ kubectl apply -f deploy.yaml
+ kubectl get all
+ kubectl describe pod/gagan-app-deployment-66b6c48dd5-8x4pw | head -20
+ cat deploy.yaml
+ vi deploy.yaml
+ kubectl get all
+ kubectl apply -f deploy.yaml
+ kubectl get all
+ vi deploy.yaml
+ kubectl apply -f deploy.yaml
+ kubectl get all
+ cat deploy.yaml
+ 
+ root@master:~/manifests# cat deploy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gagan-app-deployment
+  labels:
+    app: nginx
+    env: test
+    client: cisco
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+
+root@master:~/manifests# cat pod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gagan-pod
+  labels:
+    owner: gagandeep
+    env: dev
+    a: b
+spec:
+  containers:
+    - name: container1
+      image: httpd:2.4
+root@master:~/manifests#
+
+#############################################################
+RESOURCE ALLOCATION:
+    
+ vi pod.yml
+ kubectl apply -f pod.yml
+ kubectl get pods
+ kubectl describe pod gagan-rsu-pod2
+ kubectl get nodes
+ kubectl describe node worker1
+ kubectl describe node worker2
+ 
+root@master:~/manifests# cat pod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rsu-pod
+  labels:
+    env: dev
+    a: b
+spec:
+  containers:
+    - name: container1
+      image: httpd:2.4
+      resources:
+        requests:
+          cpu: "0.10"
+          memory: "100M"
+        limits:
+          cpu: "1"
+          memory: "500M"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rsu-pod2
+  labels:
+    env: dev
+    a: b
+spec:
+  containers:
+    - name: container1
+      image: httpd:2.4
+      resources:
+        requests:
+          cpu: "4"
+          memory: "100M"
+        limits:
+          cpu: "4"
+          memory: "500M"
+
+root@master:~/manifests#
+
+
+=======================================================
+NODE SELECTOR:
+    
+ kubectl delete deployments --all
+ kubectl delete pods --all
+ kubectl get nodes
+ kubectl describe node worker1
+ kubectl label node worker1 env=prod
+ kubectl label node worker2 env=dev
+ kubectl label node worker1 a=b
+ kubectl describe node worker1
+ vi pod.yml
+ kubectl apply -f pod.yml
+ kubectl get pods
+ kubectl get pods -o wide
+ kubectl describe pod gagan-test-pod
+ kubectl get pods -o wide
+ kubectl describe pod gagan-production-pod
+ 
+ root@master:~/manifests# cat pod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gagan-production-pod
+  labels:
+    owner: gagandeep
+    env: dev
+    a: b
+spec:
+  containers:
+    - name: container1
+      image: httpd:2.4
+  nodeSelector:
+    env: prod
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gagan-development-pod
+  labels:
+    owner: gagandeep
+    env: dev
+    a: b
+spec:
+  containers:
+    - name: container1
+      image: httpd:2.4
+  nodeSelector:
+    env: dev
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gagan-test-pod
+  labels:
+    owner: gagandeep
+    env: dev
+    a: b
+spec:
+  containers:
+    - name: container1
+      image: httpd:2.4
+  nodeSelector:
+    env: test
+
+==================================
+Upgrade Strategy:
+    
+ kubectl delete deployments --all
+ kubectl delete pods --all
+ vi deploy.yaml
+ kubectl apply -f deploy.yaml
+ kubectl get all
+ kubectl describe deployment gagan-app-deployment
+ vi deploy.yaml
+ kubectl apply -f deploy.yaml
+ kubectl get all
+ kubectl describe pod/gagan-app-deployment-644599b9c9-k2sx7
+ kubectl describe deployment gagan-app-deployment
+ kubectl delete -f deploy.yaml
+ kubectl get all
+ vi deploy.yaml
+ kubectl apply -f deploy.yaml
+ kubectl describe deployment gagan-app-deployment
+ vi deploy.yaml
+ kubectl get all
+ kubectl apply -f deploy.yaml
+ kubectl get all
+ kubectl describe deployment gagan-app-deployment
+ ========
+ 
+ apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+spec:
+  replicas: 5
+  strategy:
+    type: Recreate
+#    type: RollingUpdate
+#    rollingUpdate:
+#      maxSurge: 1        # how many pods we can add at a time
+#      maxUnavailable: 1  # maxUnavailable define how many pods can be unavailable
+                         # during the rolling update
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp-container
+        image: httpd:2.4.46
+        ports:
+        - containerPort: 80
+        env:
+        - name: SIMPLE_SERVICE_VERSION
+          value: "1"
+
+ ===============================
+Kubernetes SVC / LOADBALANCER
+
+kubectl delete deployments --all
+kubectl delete pods --all
+kubectl get all
+clear
+kubectl create deployment web --image httpd --replicas=2
+kubectl create deployment app --image nginx --replicas=2
+kubectl get pods -o wide
+cd /root
+ls -l
+cat cluster_initialized.txt
+kubectl get pods -o wide
+curl 192.168.235.153
+curl 192.168.189.90
+curl 192.168.189.89
+curl 192.168.235.152
+kubectl expose deployment app --type ClusterIP --port 80 --target-port 80 --name app-lb
+kubectl get svc
+curl 10.108.121.93
+kubectl describe svc app-lb
+kubectl get pods -o wide
+curl 10.108.121.93
+kubectl scale deployment app --replicas=3
+kubectl get pods -o wide
+kubectl describe svc app-lb
+kubectl scale deployment app --replicas=1
+kubectl describe svc app-lb
+kubectl scale deployment app --replicas=2
+kubectl describe svc app-lb
+
+==============================================

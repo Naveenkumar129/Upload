@@ -1,0 +1,274 @@
+Account id - techlanders
+Username - sandeep
+Password - Techlanders@2025
+
+Putty | mobaxterm >> Download
+
+Kubernetes (K8S)
+ 
+ sudo -i
+ hostnamectl set-hostname master // same way set hostname as worker1 and worker2 for other 2 machines
+ bash
+ 
+ nano script.sh     // ctrl+o to save (ENTER) and ctrl+x  (ENTER) to exit
+ 
+ ### Installation Script  ################
+ create scriptfile vi script.sh
+ 
+ 
+#!/bin/bash 
+sudo apt update -y
+sudo apt install apt-transport-https ca-certificates curl software-properties-common  -y
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+sudo apt update -y
+apt-cache policy docker-ce -y
+sudo apt install docker-ce -y
+wget -q -O - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo deb http://apt.kubernetes.io/ kubernetes-xenial main | sudo tee /etc/apt/sources.list.d/kubernetes.list
+apt update -y
+apt install kubelet=1.21.1-00 kubeadm=1.21.1-00 kubectl=1.21.1-00 -y
+sysctl net.bridge.bridge-nf-call-iptables=1
+
+################
+ 
+sh script.sh  // to run script -- RUN on all machine
+
+#RUN only on master
+
+kubeadm init --pod-network-cidr=192.168.0.0/16 >> cluster_initialized.txt
+
+tail -f cluster_initialized.txt
+---------------
+
+on master node from the above file and also shows the join command.
+
+mkdir -p $HOME/.kube >> Create both .kube and its parent directory
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config  >> copy configuration to kube directoy
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config >> provide user configuration to config file
+
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml >> network
+
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml -O
+
+or 
+
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
+
+
+====================
+If not working then we have to reset kubeadm >>
+
+kubeadm reset
+rm -rf $HOME/.kube/config
+
+=====================
+
+  mkdir -p $HOME/.kube >> Create both .kube and its parent directory
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config  >> copy configuration to kube directoy
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config >> provide user configuration to config file
+
+  kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+  systemctl restart kubelet.service
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Paste join scripts on worker nodes
+
+========================================================================================================================
+
+if getting error >> The connection to the server localhost:8080 was refused 
+
+either not using the correct user or follow below step :
+
+kubeadm reset
+rm -rf $HOME/.kube/config
+
+=====================
+
+  mkdir -p $HOME/.kube >> Create both .kube and its parent directory
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config  >> copy configuration to kube directoy
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config >> provide user configuration to config file
+=========================================================================================================================
+
+important Files :
+
+/etc/kubernetes/pki >> certificates
+/etc/kubernetes/manifests >> static pods
+/etc/kubernetes/ >> below config files where pki has all the certificates
+admin.conf  controller-manager.conf  kubelet.conf  manifests  pki  scheduler.conf
+
+===================================================================================================
+kubectl get pods -A -o wide
+NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE   IP                NODE              NOMINATED NODE   READINESS GATES
+default       pardeep                                    1/1     Running   0          13m   192.168.84.2      sandeep-worker2   <none>           <none>
+default       sandeep                                    1/1     Running   0          16m   192.168.184.129   sandeep-worker1   <none>           <none>
+default       sumit                                      1/1     Running   0          13m   192.168.84.1      sandeep-worker2   <none>           <none>
+kube-system   calico-kube-controllers-69f595f8f8-zzb52   1/1     Running   0          44m   192.168.141.129   sandeep-master    <none>           <none>
+kube-system   calico-node-d6wp4                          1/1     Running   0          26m   172.31.21.253     sandeep-worker1   <none>           <none>
+kube-system   calico-node-hdv8p                          1/1     Running   0          44m   172.31.28.185     sandeep-master    <none>           <none>
+kube-system   calico-node-xhnq9                          1/1     Running   0          27m   172.31.20.178     sandeep-worker2   <none>           <none>
+kube-system   coredns-558bd4d5db-67mz6                   1/1     Running   0          46m   192.168.141.130   sandeep-master    <none>           <none>
+kube-system   coredns-558bd4d5db-z6j2x                   1/1     Running   0          46m   192.168.141.131   sandeep-master    <none>           <none>
+kube-system   etcd-sandeep-master                        1/1     Running   0          47m   172.31.28.185     sandeep-master    <none>           <none>
+kube-system   kube-apiserver-sandeep-master              1/1     Running   0          47m   172.31.28.185     sandeep-master    <none>           <none>
+kube-system   kube-controller-manager-sandeep-master     1/1     Running   0          47m   172.31.28.185     sandeep-master    <none>           <none>
+kube-system   kube-proxy-d5nh5                           1/1     Running   0          46m   172.31.28.185     sandeep-master    <none>           <none>
+kube-system   kube-proxy-l9znx                           1/1     Running   0          26m   172.31.21.253     sandeep-worker1   <none>           <none>
+kube-system   kube-proxy-qd5hk                           1/1     Running   0          27m   172.31.20.178     sandeep-worker2   <none>           <none>
+kube-system   kube-scheduler-sandeep-master              1/1     Running   0          47m   172.31.28.185     sandeep-master    <none>           <none>
+
+
+==================================================================================================
+
+
+then 
+kubectl get nodes
+kubectl label node sandeep-worker1 node-role.kubernetes.io/worker=worker   >> to set the role to the worker node
+kubectl get pods
+kubectl get pods -A
+kubectl get pods -A | grep -i worker1
+
+### Run on worker1 ########
+docker ps and docker rm to remove a container...
+
+#################################
+cat /root/.kube/config
+
+======================================
+
+kubectl get pods -A
+ls -l /root/.kube/config
+docker ps
+ps -ef
+docker ps   >> will show all the pods including the manager pod
+cd /
+clear
+kubectl get pods
+kubectl delete pod pod1
+clear
+kubectl run gagan-app --image httpd
+kubectl get pods
+kubectl get pods -o wide
+curl 192.168.235.130
+kubectl describe pod gagan-app | more
+kubectl get pods
+kubectl logs gagan-app
+kubectl exec -it gagan-app -- /bin/bash
+        to install curl and ping in the container for testing
+        apt update -y
+        apt-get install curl iputils-ping -y
+==================================================
+
+kubectl create deployment myapp1 --image httpd --replicas=2
+kubectl get pods
+kubectl get pods -o wide
+kubectl get deployments
+kubectl describe deploy myapp1
+kubectl get pods
+kubectl delete pod myapp1-7d8bc764bd-nhkwr
+kubectl get pods
+kubectl scale deployment myapp1 --replicas=4
+kubectl get pods
+kubectl get pods -o wide
+kubectl scale deployment myapp1 --replicas=1
+kubectl get pods -o wide
+kubectl delete pod myapp1-7d8bc764bd-szbsm
+kubectl get pods -o wide
+kubectl delete deploy myapp1
+kubectl get pods -o wide
+
+==================================================
+
+kubectl create deployment myapp1 --image httpd:2.4 --replicas=4
+kubectl get deployment
+kubectl describe deploy myapp1
+kubectl get rs
+kubectl get replicaset
+kubectl describe rs myapp1-744c9889bd
+kubectl get pods
+kubectl delete pod myapp1-744c9889bd-tn8ll
+kubectl get pods
+kubectl describe rs myapp1-744c9889bd
+kubectl get pods
+kubectl describe pod myapp1-744c9889bd-fprnq
+kubectl get all
+kubectl delete rs myapp1-744c9889bd
+kubectl get all
+kubectl delete deployment myapp1
+kubectl get all
+
+===================================================
+telecom-app:v1, v2, v3
+
+deployment telecom-app
+rs -- v1, v2, v3
+pods - pod1:v2   pod2:v2   pod3:v2
+
+
+vi pod.yml
+
+apiVersion: v1
+Kind: Pod
+Metadata:
+  Name: sandy-pod
+Spec:
+  Containers:
+    - name: container1
+      Image: httpd
+
+
+
+
+
+
+
+
+
+ 1  clear
+    2  vi script.sh
+    3  sh script.sh
+    4  kubeadm init --pod-network-cidr=10.10.0.0/16 >> cluster_initialized.txt
+    5  ls
+    6  cat cluster_initialized.txt
+    7  mkdir -p $HOME/.kube
+    8  cat $HOME/.kube/config
+    9  kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
+   10  kubectl get nodes
+   11  kubectl get nodes -w
+   12  kubectl get nodes
+   13  kubectl get nodes -w
+   14  kubectl get nodes
+   15  kubectl get pods
+   16  kubectl get ns
+   17  kubectl get pods -n kube-system
+   18  kubectl get pods -n kube-system -o wide
+   19  kubectl run pod1 --image nginx
+   20  kubectl get pods
+   21  kubectl describe pod pod1
+   22  kubectl get pods -o wide
+   23  docker ps
+   24  clear
+   25  kubectl get pods
+   26  kubectl get pods -o wide
+   27  kubectl get pods -n kube-system
+   28  kubectl get pods -all
+   29  kubectl get pods --all
+   30  kubectl get pods -a
+   31  kubectl get pods -A
+   32  kubectl get pods -A -o wide
+   33  docker ps
+   34  clear
+   35  cd /etc/kubernetes/
+   36  ls
+   37  cd manifests/
+   38  ls
+   39  kubectl get pods
+   40  kubectl get pods -o wide
+   41  kubectl get pods -A
+   42  kubectl create deploy frontend --image nginx --replicas=4 --dry-run=client -o yaml > deploy.yaml
+   43  vi deploy.yaml
+   44  kubectl apply -f deploy.yaml
+   45  kubectl get pods
+   46  kubectl get pods -o wide
+   47  kubectl get svc
+   48  history
