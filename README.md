@@ -1,3 +1,45 @@
+// Import the necessary modules
+var request = require('request');
+
+// Define the endpoint and request parameters
+var options = {
+  url: 'https://your-auth-server.com/oauth/token',
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Accepted-Language': 'en'
+  },
+  form: {
+    grant_type: 'password',
+    client_id: 'TO BE PROVIDED DURING TEST',
+    client_secret: 'TO BE PROVIDED DURING TEST',
+    username: 'TO BE PROVIDED DURING TEST',
+    password: 'TO BE PROVIDED DURING TEST'
+  }
+};
+
+// Function to send the request
+function sendRequest() {
+  request(options, function(error, response, body) {
+    if (error) {
+      console.error('Error:', error);
+    } else {
+      console.log('Response:', response.statusCode);
+      console.log('Body:', body);
+    }
+  });
+}
+
+// Call the function to send the request
+sendRequest();
+
+
+
+
+
+
+
+
 ker 4- partition on broker 4
 ish-4.25 ./kafka-producer-perf-test.sh -.throughput 2000 --record-size 80000 --topic petros-test-1p-0rf-b --producer.config /config/producer.properties --num-records 2400
 props batch.size=524288 linger.ms=20
