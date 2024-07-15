@@ -1,40 +1,121 @@
-// Import the necessary modules
-var request = require('request');
+---
+- name: Kafka cluster region switch playbook
+  hosts: all
+  become: yes
+  tasks:
+    - name: Switch to West Cluster - Step 1
+      shell: sudo sh /apps/confluent/scripts/dr/get_leader_count_per_broker.sh
+      register: switch_west_step1
+      ignore_errors: yes
+      tags: switch_west
 
-// Define the endpoint and request parameters
-var options = {
-  url: 'https://your-auth-server.com/oauth/token',
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Accepted-Language': 'en'
-  },
-  form: {
-    grant_type: 'password',
-    client_id: 'TO BE PROVIDED DURING TEST',
-    client_secret: 'TO BE PROVIDED DURING TEST',
-    username: 'TO BE PROVIDED DURING TEST',
-    password: 'TO BE PROVIDED DURING TEST'
-  }
-};
+    - name: Switch to West Cluster - Step 2
+      shell: sudo sh /apps/confluent/scripts/dr/apply_unclean_election_2_noleader_topics.sh
+      register: switch_west_step2
+      ignore_errors: yes
+      tags: switch_west
 
-// Function to send the request
-function sendRequest() {
-  request(options, function(error, response, body) {
-    if (error) {
-      console.error('Error:', error);
-    } else {
-      console.log('Response:', response.statusCode);
-      console.log('Body:', body);
+    - name: Switch to West Cluster - Step 3
+      shell: sudo sh /apps/confluent/scripts/dr/apply_rpp_to_async_topics.sh async-topics-failover-2-us-west-2.json
+      register: switch_west_step3
+      ignore_errors: yes
+      tags: switch_west
+
+    - name: Switch to West Cluster - Step 4
+      shell: sudo sh /apps/confluent/scripts/dr/apply_rpp_to_sync_topics.sh_sync-topics-failover-2-us-west-2.json
+      register: switch_west_step4
+      ignore_errors: yes
+      tags: switch_west
+
+    - name: Switch to West Cluster - Step 5
+      shell: sudo sh /apps/confluent/scripts/dr/apply_auto_data_rebalancer_async_topics.sh
+      register: switch_west_step5
+      ignore_errors: yes
+      tags: switch_west
+
+    - name: Switch to West Cluster - Step 6
+      shell: sudo sh /apps/confluent/scripts/dr/get_leader_count_per_broker.sh
+      register: switch_west_step6
+      ignore_errors: yes
+      tags: switch_west
+
+    - name: Switch to East Cluster - Step 1
+      shell: sudo sh /apps/confluent/scripts/dr/get_leader_count_per_broker.sh
+      register: switch_east_step1
+      ignore_errors: yes
+      tags: switch_east
+
+    - name: Switch to East Cluster - Step 2
+      shell: sudo sh /apps/confluent/scripts/dr/apply_unclean_election_2_noleader_topics.sh
+      register: switch_east_step2
+      ignore_errors: yes
+      tags: switch_east
+
+    - name: Switch to East Cluster - Step 3
+      shell: sudo sh /apps/confluent/scripts/dr/apply_rpp_to_async_topics.sh async-topics-failover-2-us-east-1.json
+      register: switch_east_step3
+      ignore_errors: yes
+      tags: switch_east
+
+    - name: Switch to East Cluster - Step 4
+      shell: sudo sh /apps/confluent/scripts/dr/apply_rpp_to_sync_topics.sh sync-topics-failover-2-us-east-1.json
+      register: switch_east_step4
+      ignore_errors: yes
+      tags: switch_east
+
+    - name: Switch to East Cluster - Step 5
+      shell: sudo sh /apps/confluent/scripts/dr/apply_auto_data_rebalancer_async_topics.sh
+      register: switch_east_step5
+      ignore_errors: yes
+      tags: switch_east
+
+    - name: Switch to East Cluster - Step 6
+      shell: sudo sh /apps/confluent/scripts/dr/get_leader_count_per_broker.sh
+      register: switch_east_step6
+      ignore_errors: yes
+      tags: switch_east
+---------
+
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'ACTION', choices: ['switch_west', 'switch_east'], description: 'Choose the Kafka cluster switch action')
     }
-  });
+
+    environment {
+        INVENTORY = 'path/to/inventory'
+        PLAYBOOK = 'path/to/kafka_cluster_switch_playbook.yml'
+    }
+
+    stages {
+        stage('Run Ansible Playbook') {
+            steps {
+                script {
+                    if (params.ACTION == 'switch_west') {
+                        sh """
+                        ansible-playbook -i ${INVENTORY} ${PLAYBOOK} --tags "switch_west"
+                        """
+                    } else if (params.ACTION == 'switch_east') {
+                        sh """
+                        ansible-playbook -i ${INVENTORY} ${PLAYBOOK} --tags "switch_east"
+                        """
+                    }
+                }
+            }
+        }
+    }
 }
 
-// Call the function to send the request
-sendRequest();
+----
 
+[kafka_clusters]
+kafka-node-1 ansible_host=192.168.1.101 ansible_user=your_user
+kafka-node-2 ansible_host=192.168.1.102 ansible_user=your_user
+kafka-node-3 ansible_host=192.168.1.103 ansible_user=your_user
 
-
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
 
 
 
