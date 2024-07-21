@@ -1,79 +1,41 @@
----
-- name: Kafka cluster region switch playbook
-  hosts: all
-  become: yes
-  tasks:
-    - name: Switch to West Cluster - Step 1
-      shell: sudo sh /apps/confluent/scripts/dr/get_leader_count_per_broker.sh
-      register: switch_west_step1
-      ignore_errors: yes
-      tags: switch_west
+Create topic with rentension policy
 
-    - name: Switch to West Cluster - Step 2
-      shell: sudo sh /apps/confluent/scripts/dr/apply_unclean_election_2_noleader_topics.sh
-      register: switch_west_step2
-      ignore_errors: yes
-      tags: switch_west
+$./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic hello-topic --config retention.ms=20000
 
-    - name: Switch to West Cluster - Step 3
-      shell: sudo sh /apps/confluent/scripts/dr/apply_rpp_to_async_topics.sh async-topics-failover-2-us-west-2.json
-      register: switch_west_step3
-      ignore_errors: yes
-      tags: switch_west
+Produce some events
+ ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic hello-topic
 
-    - name: Switch to West Cluster - Step 4
-      shell: sudo sh /apps/confluent/scripts/dr/apply_rpp_to_sync_topics.sh_sync-topics-failover-2-us-west-2.json
-      register: switch_west_step4
-      ignore_errors: yes
-      tags: switch_west
+consume events
+ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic hello-topic --from-beginning --property print.timestamp=true
 
-    - name: Switch to West Cluster - Step 5
-      shell: sudo sh /apps/confluent/scripts/dr/apply_auto_data_rebalancer_async_topics.sh
-      register: switch_west_step5
-      ignore_errors: yes
-      tags: switch_west
+Wait for 2 mins and check the messages again. you can notice , messages have been log files been deleted
 
-    - name: Switch to West Cluster - Step 6
-      shell: sudo sh /apps/confluent/scripts/dr/get_leader_count_per_broker.sh
-      register: switch_west_step6
-      ignore_errors: yes
-      tags: switch_west
 
-    - name: Switch to East Cluster - Step 1
-      shell: sudo sh /apps/confluent/scripts/dr/get_leader_count_per_broker.sh
-      register: switch_east_step1
-      ignore_errors: yes
-      tags: switch_east
+metimes when you’re working with Kafka, you may find yourself needing to manually inspect the underlying logs of a topic.
 
-    - name: Switch to East Cluster - Step 2
-      shell: sudo sh /apps/confluent/scripts/dr/apply_unclean_election_2_noleader_topics.sh
-      register: switch_east_step2
-      ignore_errors: yes
-      tags: switch_east
+Whether you’re just curious about Kafka internals or you need to debug an issue and verify the content, the kafka-dump-log command is your friend
 
-    - name: Switch to East Cluster - Step 3
-      shell: sudo sh /apps/confluent/scripts/dr/apply_rpp_to_async_topics.sh async-topics-failover-2-us-east-1.json
-      register: switch_east_step3
-      ignore_errors: yes
-      tags: switch_east
+~/kafkatraining/apacheKafka/kafka-3.4.1-src$  ./bin/kafka-dump-log.sh --print-data-log --files /../tmp/kafka-logs/todos-topic-0/00000000000000000000.log
 
-    - name: Switch to East Cluster - Step 4
-      shell: sudo sh /apps/confluent/scripts/dr/apply_rpp_to_sync_topics.sh sync-topics-failover-2-us-east-1.json
-      register: switch_east_step4
-      ignore_errors: yes
-      tags: switch_east
+Dumping /../tmp/kafka-logs/todos-topic-0/00000000000000000000.log
+Log starting offset: 0
+baseOffset: 0 lastOffset: 0 count: 1 baseSequence: 0 lastSequence: 0 producerId: 0 producerEpoch: 0 partitionLeaderEpoch: 0 isTransactional: false isControl: false deleteHorizonMs: OptionalLong.empty position: 0 CreateTime: 1686889885086 size: 79 magic: 2 compresscodec: none crc: 565057828 isvalid: true
+| offset: 0 CreateTime: 1686889885086 keySize: -1 valueSize: 11 sequence: 0 headerKeys: [] payload: Learn Kafka
+baseOffset: 1 lastOffset: 1 count: 1 baseSequence: 1 lastSequence: 1 producerId: 0 producerEpoch: 0 partitionLeaderEpoch: 0 isTransactional: fa
 
-    - name: Switch to East Cluster - Step 5
-      shell: sudo sh /apps/confluent/scripts/dr/apply_auto_data_rebalancer_async_topics.sh
-      register: switch_east_step5
-      ignore_errors: yes
-      tags: switch_east
 
-    - name: Switch to East Cluster - Step 6
-      shell: sudo sh /apps/confluent/scripts/dr/get_leader_count_per_broker.sh
-      register: switch_east_step6
-      ignore_errors: yes
-      tags: switch_east
+
+create topic 
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic order-topic --partitions 2
+
+publish message without key, with null key
+
+open two cmd prompt and try to publish message see in the consumer side
+
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic order-topic
+
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic order-topic
+
 ---------
 
 pipeline {
