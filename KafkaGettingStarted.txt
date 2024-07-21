@@ -1,0 +1,2067 @@
+				Kafka
+.....................................................................................
+Learning Track:
+...............
+
+1.Introduction to kafka 
+2.Kafka Architecture
+3.Kafka Programming using cli
+4.Producers and Consumers
+5.Kafka Connect
+6.Kafka Streams using KsqlDB
+7.kafka Related Design patterns in Microservice Arch
+
+Note: we dont use any programming language to connect to produce and consume kafka messages.
+
+What is Kafka?
+
+Every Enterprise is powered by data.
+We take information in, analyze it, manipulate it and creates more as output.
+Every application creates data, whether it is log messages,metrics,user activity,out going messages, or something else.
+Every byte of data has a story to tell, something of imporatance that will inform the next thing to be done.
+In order to know what that is, we need to get the data from where it is created to where it can be analyzed.
+
+We see this every day on websites like amazon,youtube,facebook, where our "clicks" on on items of interest to use are turned into recommmendations that are shown to us litte later.
+
+The faster we can do this, the more agile and resonsive our organizations can be.
+The less effort we spend on moving data around, the more we can focus on the core business at hand.
+
+      "This is why the pipeline is a critical component in the data driven enterpise"
+....................................................................................
+
+Publish and Subscribe Messaging (data):
+.......................................
+
+Before discussing the Apache Kafka , it is imporant for us to understand the concept of pub/sub messaging and why it is important.
+
+Pub and sub messaging is  a pattern that is characterized by the sender(publisher) of a piece of data (message) not spcificially directing to a reciver, Instead, the publisher classifies the message somewhat, and that receiver(subscriber) subscribes to receive certain of classes of messages.
+
+Pub /Sub systems often have a broker, a central point where messages are published , to facilite this.
+.....................................................................................
+			  How enterprise systems handles data
+			             (Pre Kafka)
+....................................................................................
+
+Many use cases for pub/sub starts with same way.
+
+   With a simple message queue or interprocess communication channel
+
+for eg, you create an application that needs to send montioring information somewhere. How do you send?
+
+You write monitoring message in a direct connection from your application to an application that displays your metrics on a dashboard, push metrics over that connection.
+
+let us say, you have systems, that system has two servers - frontend server,
+back end server
+
+both server sends metrics data to metrics server
+
+		FrontEnd               BackEnd Server
+		  Server
+		    |				|
+		    |				|
+		--------------------------------------
+				|
+			    Mertics Server
+
+
+If your server is running in clustered env
+
+		FrontEnd               FrontEnd Server
+		  Server
+		    |				|
+		    |				|
+		--------------------------------------
+				|
+			    Mertics Server
+
+		 Backend               Backend Server
+		  Server
+		    |				|
+		    |				|
+		--------------------------------------
+				|
+			    Mertics Server
+
+
+A single , direct metric servers irresptive of how many backend and front end server
+
+This looks a simple soultion to a problem that works when you are going to getting started with monitoring.
+
+Before long,you decide you would like to analyze your metircs over a longer term,
+that doesnot work very well in dashboard.
+
+When you introduce new service in your biz and where you have to introduce server,
+Now you have three more apps, that generating metrics data ,then metrics server need connect directly , recive,store,anaylze
+..............................................................................
+			Many Metrics publisher, using direct connections
+.....................................................................................
+
+ FrontEnd server  Database Server  Chat server  Mail Server PaymentServer
+         |            |                |           |            |
+-----------------------------------------------------------------------
+                                |
+			   publish metrics
+				|
+			    Metric Server
+
+
+Here all publisher are publishing "directly" metics to Metrics Servers.
+
+       "What if i want to store front data ,database data,back end data separatly"
+....................................................................................
+			Loosly Coupled Metric publisher and Server
+		         Introduction of Pub/Sub Messing System
+...................................................................................
+
+
+ FrontEnd server  Database Server  Chat server  Mail Server PaymentServer
+         |            |                |           |            |
+-----------------------------------------------------------------------
+                                |
+			   publish metrics
+				 |
+			      Metrics
+			      Sub/Pub
+				|
+			    Metric Server
+
+Every Pub sub system is going to store messages inside "Queue" , the basic data storage model.
+In the above system we have only one /Single /Individual Queue System.
+
+Image one of your coworkers has been doing similar work with log messages, another has been working on tracking user behavior on the frontend website and providing that information to developers who are working on machine learning,
+As well as creating some reports for management.
+...................................................................................
+			 Multi Pub Sub Systems
+...................................................................................
+
+FrontEnd server  Database Server  Chat server  Mail Server PaymentServer
+         |            |                |           |            |
+-----------------------------------------------------------------------
+                                |
+
+Metrics     Logging              Tracking
+Pub/Sub     Pub/Sub              Pub/Sub
+  |           |                    |
+Metric    ---------             ----------       
+Server    |       |                |
+        Secuirty Log Search      MachingLearning 
+	Analysis Server		 and AI server
+         
+
+Now at last , we have refactored our system, but there is lot of "Duplication"
+Your company is maintaining multiple systems for queuing data, all of which have their own individual bugs and limitations.
+You will have more systems in future it will come.
+            
+                 "What if i would like to have single centeralized system
+		     That allows for publishing generic type of data
+		    Which helps your organization to grow as they introduce
+		    new systems"
+....................................................................................
+			Birth of Kafka :Entering into Kafka
+....................................................................................	
+Apache Kafka is pub/sub messaging system designed to solve the above problem.
+Instead of having multiple  Queue System, we can have only one System where we receive message,organize the message,store,process,and produce the report.
+
+Kafka inspired from "Logging System" or Loggers to store messages, instead of storing message in traditional messaging systems.
+
+Traditional Messaging Systems:
+..............................
+
+Traditional Messaging systems are built based on the standards like "AMQP" protocal.
+Any pub/sub messaging product like rabbit mq is built on the standards only.
+
+According to the AMQP Standards.
+ 
+1.Messages are stored in a queue
+2.Queue stores messages which is tranisent by default. if you want you can persit in disk.
+3.The messages can be altered(update,delete)
+4.The messages are deleted once it is consumed
+
+	    "Kafka was not designed based on Traditional Messaging System"
+
+.....................................................................................
+		    "Kafka was designed based on  Loggers"
+	
+What is Log?
+   Tracking activites of an application,store those activites in "memory or in  a disk file" in order to analyze them in furture.
+
+If you are developer, you encounter loggers every day in your development cycle.
+
+Logs gives complete information about the system which is running.
+
+if you are java developer, you might have used various logging implementations.
+We call as "Logging Frameworks"
+
+Log gives just information about what just happened or happing in your system for eg
+some warings,some info,some bugs, some tracking , some tracing..........
+
+Logs :
+2016-06-16 17:02:13 TRACE Trace log message
+2016-06-16 17:02:13 DEBUG Debug log message
+2016-06-16 17:02:13 INFO  Info log message
+2016-06-16 17:02:13 ERROR Error log message
+.....................................................................................
+			 Log structure and its characteristics
+.....................................................................................
+
+Log information is stored in a file called "Log file" - system.log
+Log file is used for future analytics such as debugging,finding warnings,errors...
+
+What is difference between "normal files" and log files?
+
+=>Log files are "append only", you cant add any new entry in between, which makes the file "immutable" - cant be edited or read only.
+=>Normal files are based on "Edit Mode" or Replace mode
+    Files are edited or replaced later.
+
+		  "Kafka is just based on Log System"
+		       Kafka is just Logger System
+
+    Since kafka is logger system is it same as "Slf4j,log4j" Kind of loggers.
+			
+Some what yes, but Kafka is more beyond that....
+
+		Kafka is not based on "traditional log files" 
+
+
+Kafka is fundmentally based on "Commit Logs"
+
+What is commit log?
+    "In data management platforms, a commit is making set of tenative changes permanent".
+    "Making the end of a transaction and providing Durablity to ACID transactions"
+  The record of commits is called "Commit log"
+
+The record of commits is called "Commit Log"
+
+What Kafka is going to record into commit log?
+     Kafka was designed to store informations(data).
+
+What type of information?
+  Any type of information we can store into commit log.
+.....................................................................................
+			  Event
+....................................................................................
+What is Event?
+   An Event is any type of action,incident,or change are happening or just happened
+for eg:
+  Now i am typing,Now i am teaching - happening
+  Just i had coffee,Just i received mail, just i clicked a link, just i search product - happened.
+  
+   An Event is just remainder or notification of  your happenings or happened.
+...................................................................................
+		     Event Driven Architecture(Software system)
+....................................................................................
+
+The Software system can track what is happening, just happended , stores into a file called commit log, later that commit log can be replayed to process those events to produce various reports
+
+Let us imagine, You have mobile apps, which tracks your locations where ever you move, those locations are recorded into a file by "Event Driven System"(Kafka).
+Based on those data , you can get report like that where were you at morning,afternoon,evening...
+
+Eg:
+ Today stock price is $40 at 10Am
+ I met my friend yesterday at east coast road
+ Made payment of $500 to Ramesh
+
+Imgaine i need  somebody or somthing should record every activity of my life from the early moring when i get up and till bed.
+
+	  There is a system to record every events of your life that is called 
+			      Kafka
+
+	 Kafka is Event Processing Software , which process events
+.....................................................................................
+			Event Architecture
+.....................................................................................
+
+How kafka has been implemented?
+
+   "Kafka is a software"
+   "Kafka is a file(Commit log file) processing software
+   "Kafka is written in java and scala" - Kafka is just java application
+   "In order to run Kafka we need JVM"
+
+How event is represented into kafka?
+
+	Event is just a message.
+        Every message has its own arch.
+        In Kafka the Event/Message is called as "Record".
+
+Event Contains Two things:
+..........................
+1.What happened/Happing - Name of the Event
+2.State - Data
+
+State:
+......
+  The state is nothing but data.
+
+
+State Representation:
+
+ In General state(data) is stored in relational databases "as table"
+ A table represents the state of something like 
+    User - id,name,email,password,city
+
+Since User data can be stored and proceed into tables.
+
+Can we store events into table?
+   Events also has state like things(user,customer,product) in real time.
+
+We can but not all types of events into table.
+.....................................................................................
+			    Modern Data Modeling
+.....................................................................................
+     Generally domains are modeled based on "Things(Customer,Order,Payment) first"
+		Now a days People started thinking based on Events first
+          Instead of storing things into database , we store events
+
+Events also has some state like "Things"
+
+   "Events has some description of what happened with it", but Primary idea is that          event is indication in time that thing took place".
+
+How to store events?
+   Logs - Log is structured and the sequence  of the evnets occured in the method calls.
+....................................................................................
+			 kafka Distribution - Kafka Setup
+...................................................................................
+
+Kafka distribution:
+ Kafka is available in two distribution
+
+1.Apache Kafka
+   It is open source version of kafka 
+
+2.Confluent Kafka
+   It is abstraction of apache kafka, Commericial version of apache kafka
+
+Apache kafka vs confluent kafka
+https://www.confluent.io/apache-kafka-vs-confluent/
+
+
+
+Platforms:
+
+Kafka can be installed any platform
+
+1.Bare metal machines
+  Kafak is available for all operating system.
+
+1.Windows - may be good for basic use cases
+2.Linux - recommended for advanced use cases
+3.mac - recommended for advanced use cases
+
+2.VM env
+  You  can setup kafka on any industry standard VMS - oracle virtual box
+
+3.Container based distributed: - docker and kubernetes
+   It is recommened in development env and also can be used in prod
+.................................................................................
+			1.Bare metal machines
+
+Linux: Ubuntu 20.x
+
+If you are working in windows 10 or 11, there is feature called "Windows SubSystem" - WSL 2
+https://learn.microsoft.com/en-us/windows/wsl/install
+
+https://www.confluent.io/blog/set-up-and-run-kafka-on-windows-linux-wsl-2/
+
+After installing linux:
+
+1.java 
+
+jdk 11.
+
+ sudo apt install openjdk-11-jdk -y
+
+subugee@LAPTOP-R2TGGFDL:~$ java --version
+openjdk 11.0.19 2023-04-18
+OpenJDK Runtime Environment (build 11.0.19+7-post-Ubuntu-0ubuntu120.04.1)
+OpenJDK 64-Bit Server VM (build 11.0.19+7-post-Ubuntu-0ubuntu120.04.1, mixed mode, sharing)
+
+Setting up Kafka:
+
+1.Apache Kafka -https://kafka.apache.org/
+  =>Source distribution
+	-you can build from the source
+  =>Binary distribution
+        -you can download already built folder
+
+wget https://downloads.apache.org/kafka/3.4.1/kafka-3.4.1-src.tgz 
+
+wget https://archive.apache.org/dist/kafka/3.4.1/kafka-3.4.1-src.tgz 
+
+After downloading tar(zip) file,we need to extract
+
+tar -xzf kafka-3.4.1-src.tgz
+
+$cd kafka-3.4.1-src/
+
+$subugee@LAPTOP-R2TGGFDL:~/kafkatraining/apacheKafka/kafka-3.4.1-src$ ls -l
+total 408
+-rw-r--r--  1 subugee subugee   720 May 26 07:10 CONTRIBUTING.md
+-rw-r--r--  1 subugee subugee   754 May 26 07:10 HEADER
+-rw-r--r--  1 subugee subugee  7075 May 26 07:10 Jenkinsfile
+-rw-r--r--  1 subugee subugee 11358 May 26 07:10 LICENSE
+-rw-r--r--  1 subugee subugee 14910 May 26 07:10 LICENSE-binary
+-rw-r--r--  1 subugee subugee  1131 May 26 07:10 NOTICE
+-rw-r--r--  1 subugee subugee 28184 May 26 07:10 NOTICE-binary
+-rw-r--r--  1 subugee subugee   570 May 26 07:10 PULL_REQUEST_TEMPLATE.md
+-rw-r--r--  1 subugee subugee 13413 May 26 07:10 README.md
+-rw-r--r--  1 subugee subugee  9177 May 26 07:10 TROGDOR.md
+-rw-r--r--  1 subugee subugee  8271 May 26 07:10 Vagrantfile
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 bin
+-rw-r--r--  1 subugee subugee 93585 May 26 07:10 build.gradle
+drwxr-xr-x  2 subugee subugee  4096 May 26 07:10 checkstyle
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 clients
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 config
+drwxr-xr-x 10 subugee subugee  4096 May 26 07:10 connect
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 core
+-rw-r--r--  1 subugee subugee  3087 May 26 07:10 doap_Kafka.rdf
+drwxr-xr-x  6 subugee subugee  4096 May 26 07:10 docs
+drwxr-xr-x  4 subugee subugee  4096 May 26 07:10 examples
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 generator
+drwxr-xr-x  4 subugee subugee  4096 May 26 07:10 gradle
+-rw-r--r--  1 subugee subugee  1173 May 26 07:10 gradle.properties
+-rwxr-xr-x  1 subugee subugee  8674 May 26 07:10 gradlew
+-rwxr-xr-x  1 subugee subugee   965 May 26 07:10 gradlewAll
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 group-coordinator
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 jmh-benchmarks
+-rwxr-xr-x  1 subugee subugee 19702 May 26 07:10 kafka-merge-pr.py
+drwxr-xr-x  2 subugee subugee  4096 May 26 07:10 licenses
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 log4j-appender
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 metadata
+drwxr-xr-x  5 subugee subugee  4096 May 26 07:10 raft
+-rwxr-xr-x  1 subugee subugee 35399 May 26 07:10 release.py
+-rwxr-xr-x  1 subugee subugee  6162 May 26 07:10 release_notes.py
+-rwxr-xr-x  1 subugee subugee  2150 May 26 07:10 retry_zinc
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 server-common
+-rw-r--r--  1 subugee subugee  2089 May 26 07:10 settings.gradle
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 shell
+drwxr-xr-x  4 subugee subugee  4096 May 26 07:10 storage
+drwxr-xr-x 26 subugee subugee  4096 May 26 07:10 streams
+drwxr-xr-x  7 subugee subugee  4096 May 26 07:10 tests
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 tools
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 trogdor
+drwxr-xr-x  3 subugee subugee  4096 May 26 07:10 vagrant
+-rw-r--r--  1 subugee subugee  3803 May 26 07:10 wrapper.gradle
+....................................................................................
+			   Exploring directories
+.....................................................................................
+
+bin dir
+ contains all shell scripts to run and manage kafka infrastructure
+subugee@LAPTOP-R2TGGFDL:~/kafkatraining/apacheKafka/kafka-3.4.1-src/bin$ ls -l
+total 164
+-rwxr-xr-x 1 subugee subugee  1423 May 26 07:10 connect-distributed.sh
+-rwxr-xr-x 1 subugee subugee  1396 May 26 07:10 connect-mirror-maker.sh
+-rwxr-xr-x 1 subugee subugee  1420 May 26 07:10 connect-standalone.sh
+-rwxr-xr-x 1 subugee subugee   861 May 26 07:10 kafka-acls.sh
+-rwxr-xr-x 1 subugee subugee   873 May 26 07:10 kafka-broker-api-versions.sh
+-rwxr-xr-x 1 subugee subugee   860 May 26 07:10 kafka-cluster.sh
+-rwxr-xr-x 1 subugee subugee   864 May 26 07:10 kafka-configs.sh
+-rwxr-xr-x 1 subugee subugee   945 May 26 07:10 kafka-console-consumer.sh
+-rwxr-xr-x 1 subugee subugee   944 May 26 07:10 kafka-console-producer.sh
+-rwxr-xr-x 1 subugee subugee   871 May 26 07:10 kafka-consumer-groups.sh
+-rwxr-xr-x 1 subugee subugee   948 May 26 07:10 kafka-consumer-perf-test.sh
+-rwxr-xr-x 1 subugee subugee   871 May 26 07:10 kafka-delegation-tokens.sh
+-rwxr-xr-x 1 subugee subugee   869 May 26 07:10 kafka-delete-records.sh
+-rwxr-xr-x 1 subugee subugee   866 May 26 07:10 kafka-dump-log.sh
+-rwxr-xr-x 1 subugee subugee   863 May 26 07:10 kafka-features.sh
+-rwxr-xr-x 1 subugee subugee   865 May 26 07:10 kafka-get-offsets.sh
+-rwxr-xr-x 1 subugee subugee   870 May 26 07:10 kafka-leader-election.sh
+-rwxr-xr-x 1 subugee subugee   863 May 26 07:10 kafka-log-dirs.sh
+-rwxr-xr-x 1 subugee subugee   881 May 26 07:10 kafka-metadata-quorum.sh
+-rwxr-xr-x 1 subugee subugee   873 May 26 07:10 kafka-metadata-shell.sh
+-rwxr-xr-x 1 subugee subugee   862 May 26 07:10 kafka-mirror-maker.sh
+-rwxr-xr-x 1 subugee subugee   959 May 26 07:10 kafka-producer-perf-test.sh
+-rwxr-xr-x 1 subugee subugee   874 May 26 07:10 kafka-reassign-partitions.sh
+-rwxr-xr-x 1 subugee subugee   874 May 26 07:10 kafka-replica-verification.sh
+-rwxr-xr-x 1 subugee subugee 10884 May 26 07:10 kafka-run-class.sh
+-rwxr-xr-x 1 subugee subugee  1376 May 26 07:10 kafka-server-start.sh
+-rwxr-xr-x 1 subugee subugee  1361 May 26 07:10 kafka-server-stop.sh
+-rwxr-xr-x 1 subugee subugee   860 May 26 07:10 kafka-storage.sh
+-rwxr-xr-x 1 subugee subugee   945 May 26 07:10 kafka-streams-application-reset.sh
+-rwxr-xr-x 1 subugee subugee   863 May 26 07:10 kafka-topics.sh
+-rwxr-xr-x 1 subugee subugee   879 May 26 07:10 kafka-transactions.sh
+-rwxr-xr-x 1 subugee subugee   958 May 26 07:10 kafka-verifiable-consumer.sh
+-rwxr-xr-x 1 subugee subugee   958 May 26 07:10 kafka-verifiable-producer.sh
+-rwxr-xr-x 1 subugee subugee  1714 May 26 07:10 trogdor.sh
+drwxr-xr-x 2 subugee subugee  4096 May 26 07:10 windows
+-rwxr-xr-x 1 subugee subugee   867 May 26 07:10 zookeeper-security-migration.sh
+-rwxr-xr-x 1 subugee subugee  1393 May 26 07:10 zookeeper-server-start.sh
+-rwxr-xr-x 1 subugee subugee  1366 May 26 07:10 zookeeper-server-stop.sh
+-rwxr-xr-x 1 subugee subugee  1019 May 26 07:10 zookeeper-shell.sh
+
+Windows folder contains windows distribution
+subugee@LAPTOP-R2TGGFDL:~/kafkatraining/apacheKafka/kafka-3.4.1-src/bin/windows$ ls -l
+total 124
+-rw-r--r-- 1 subugee subugee 1243 May 26 07:10 connect-distributed.bat
+-rw-r--r-- 1 subugee subugee 1241 May 26 07:10 connect-standalone.bat
+-rw-r--r-- 1 subugee subugee  873 May 26 07:10 kafka-acls.bat
+-rw-r--r-- 1 subugee subugee  885 May 26 07:10 kafka-broker-api-versions.bat
+-rw-r--r-- 1 subugee subugee  876 May 26 07:10 kafka-configs.bat
+-rw-r--r-- 1 subugee subugee  925 May 26 07:10 kafka-console-consumer.bat
+-rw-r--r-- 1 subugee subugee  925 May 26 07:10 kafka-console-producer.bat
+-rw-r--r-- 1 subugee subugee  883 May 26 07:10 kafka-consumer-groups.bat
+-rw-r--r-- 1 subugee subugee  938 May 26 07:10 kafka-consumer-perf-test.bat
+-rw-r--r-- 1 subugee subugee  885 May 26 07:10 kafka-delegation-tokens.bat
+-rw-r--r-- 1 subugee subugee  883 May 26 07:10 kafka-delete-records.bat
+-rw-r--r-- 1 subugee subugee  878 May 26 07:10 kafka-dump-log.bat
+-rw-r--r-- 1 subugee subugee  877 May 26 07:10 kafka-get-offsets.bat
+-rw-r--r-- 1 subugee subugee  884 May 26 07:10 kafka-leader-election.bat
+-rw-r--r-- 1 subugee subugee  877 May 26 07:10 kafka-log-dirs.bat
+-rw-r--r-- 1 subugee subugee  895 May 26 07:10 kafka-metadata-quorum.bat
+-rw-r--r-- 1 subugee subugee  874 May 26 07:10 kafka-mirror-maker.bat
+-rw-r--r-- 1 subugee subugee  940 May 26 07:10 kafka-producer-perf-test.bat
+-rw-r--r-- 1 subugee subugee  888 May 26 07:10 kafka-reassign-partitions.bat
+-rw-r--r-- 1 subugee subugee  886 May 26 07:10 kafka-replica-verification.bat
+-rwxr-xr-x 1 subugee subugee 5275 May 26 07:10 kafka-run-class.bat
+-rw-r--r-- 1 subugee subugee 1377 May 26 07:10 kafka-server-start.bat
+-rw-r--r-- 1 subugee subugee  997 May 26 07:10 kafka-server-stop.bat
+-rw-r--r-- 1 subugee subugee  874 May 26 07:10 kafka-storage.bat
+-rw-r--r-- 1 subugee subugee  972 May 26 07:10 kafka-streams-application-reset.bat
+-rw-r--r-- 1 subugee subugee  875 May 26 07:10 kafka-topics.bat
+-rw-r--r-- 1 subugee subugee  893 May 26 07:10 kafka-transactions.bat
+-rw-r--r-- 1 subugee subugee 1192 May 26 07:10 zookeeper-server-start.bat
+-rw-r--r-- 1 subugee subugee  905 May 26 07:10 zookeeper-server-stop.bat
+.....................................................................................
+			Core concepts of Kafka
+.....................................................................................
+
+Broker:
+.......
+   Since Kafka is a java program which is deployed on JVM,Kafka runs on the JVM Which is process.
+   The JVM is other wise called as "Kafka Broker or Kafka Server"
+.....................................................................................
+			 Types of Kafka Broker
+.....................................................................................
+
+Kafka has been designed based on "Distributed Architecture" - By Default Kafka is distributed.
+
+General Characteritics of Disbutributed Architecture:
+.....................................................
+
+1.Scalablity
+    Running more than one process,hosting the same app. Running the same app on    multiple servers.
+
+Cluster:
+  When we scale apps into multiple servers, we need to group them under a single unit.
+  Group of machines are called as "cluster"
+
+2.High Availablity:
+   if any one server fails in the cluster, clients should not be affected, we need to make our app always available.
+   How to make highly available?
+      Via cluster
+
+Kafka uses distributed features such as cluster
+
+In kafka we can run "Multiple Brokers" as a cluter.
+
+Kafak cluster can be in the same machine or across machines in network.
+.....................................................................................
+			   Cluster Manager
+.....................................................................................
+
+In any distributed arch, if machines are running in a cluster or clusters , the cluster need to mananged.
+Who can manage cluster?
+   Cluster Manager.
+
+Kafka and cluster Manager:
+  Kafka is distributed, runs in a cluster, we need to manage that cluster.
+Kafka provides cluster manager
+  =>ZooKeeper - It is distributed cluster manager software
+  =>KRaft -  it is new cluster manager inside Kafka cluster.
+
+if you run single broker or multiple brokers we need to have cluster manager.
+
+1.Apache Zookeeper:
+	ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. 
+2.Apache KRaft:
+    KRaft is consenus protocal that was introduced to replace ZooKeeper for meta data management
+
+Roles of Cluster Managers:
+1.To manage cluster
+2.Failures detections and recovery
+3.Storing ACL and secrets
+.....................................................................................
+
+Lab 1:
+ Kafka Cluster setup 
+ Single broker, single zookeeper.
+
+configuration files:
+ cd config
+subugee@LAPTOP-R2TGGFDL:~/kafkatraining/apacheKafka/kafka-3.4.1-src/config$ ls
+connect-console-sink.properties    connect-file-source.properties   consumer.properties  server.properties
+connect-console-source.properties  connect-log4j.properties         kraft                tools-log4j.properties
+connect-distributed.properties     connect-mirror-maker.properties  log4j.properties     trogdor.conf
+connect-file-sink.properties       connect-standalone.properties    producer.properties  zookeeper.properties
+
+
+zookeeper:
+ Has a config file called config/zookeeper.properties
+
+dataDir=/tmp/zookeeper
+    The directory where the snapshot of cluster information is stored.
+
+clientPort=2181
+  The Port at which clients connect , 
+  who is client? Kafka Broker is client.
+
+Steps:
+ =>Start zooKeeper
+
+./bin/zookeeper-server-start.sh  config/zookeeper.properties
+Classpath is empty. Please build the project first e.g. by running './gradlew jar -PscalaVersion=2.13.10'
+
+if you see the above error, that means your distribution is source code distribution so you have to build it.
+
+How to build?
+./gradlew jar -PscalaVersion=2.13.10
+
+subugee@LAPTOP-R2TGGFDL:~/kafkatraining/apacheKafka/kafka-3.4.1-src/./bin/zookeeper-server-start.sh  config/zookeeper.properties
+
+Starting Kafka Broker:
+......................
+
+subugee@LAPTOP-R2TGGFDL:~/kafkatraining/apacheKafka/kafka-3.4.1-src/./bin/kafka-server-start.sh config/server.properties
+....................................................................................
+			  Exploring Kafka Logs
+.....................................................................................
+
+There two category of logs
+1.cluster manager - zookeeper or kRaft 
+2.Borker logs
+
+The location of log files are declared in the config files
+
+zookeeper.properties
+
+dataDir=/tmp/zookeeper
+
+server.properties
+log.dirs=/tmp/kafka-logs
+.....................................................................................
+			      Topics
+.....................................................................................
+
+What is Topic?
+  There are lot of events, we need to organize them in the system.
+  Apach Kafka's most fundamental unit of organization is the topic.
+
+  Topic is just like tables in the relational database.
+
+  As we discussed already, Kafka just stores in events in the log files.
+
+  We never writes events into log file directly
+
+  As a developer we capture events, write them into "topic",Kafka writes events into   log file from the topic.
+
+  A topic is log of events,logs are easy to understand
+
+  Topic is just simple datastructure with well known semantics, They are append only.
+
+  When ever you write a  message, it always goes on the end
+
+  When you read message from the logs by "Seeking offset in the log"
+
+  Logs are fundamental durable things,Traditional Messaging systems have topics and   queues which store messages temporarily to buffer them between source and   designation.
+
+  Since topics are logs , which always permenant.
+  
+  You can delete log files not log messages.
+
+  You can store logs as short as to as long as years or even retain message     indefinitely.
+.....................................................................................
+			How to create topics
+.....................................................................................
+
+In order to create topic, we need somebody to create topic.
+
+Actors In kafka Systems:
+........................
+
+1.Producer
+   The Producer is a program whose responsability to capture events,and send events to Kafka broker.
+   Producer will publish events into topic.
+2.Consumer
+ The Consumer is a program whose responsability to read events from the topic
+
+Producer and consumers can be written any programming language which supports kafka integration.
+
+Producers can be java program or node.js program or python or c#
+Consumer can be java program or node.js program or python or c#
+
+Other than programming languages , Kafka supports cli tools.
+.....................................................................................
+			 kafka-topics.sh
+....................................................................................
+
+This is a cli tool used to create,delete,describe, or update the topic.
+
+
+Lab : How to create topic
+
+1.Explore help how to use topics tool
+
+subugee@LAPTOP-R2TGGFDL:~/kafkatraining/apacheKafka/kafka-3.4.1-src$ ./bin/kafka-topics.sh --help
+
+This tool helps to create, delete, describe, or change a topic.
+
+Option                                   Description
+------                                   -----------
+--alter                                  Alter the number of partitions,
+                                           replica assignment, and/or
+                                           configuration for the topic.
+--at-min-isr-partitions                  if set when describing topics, only
+                                           show partitions whose isr count is
+                                           equal to the configured minimum.
+--bootstrap-server <String: server to    REQUIRED: The Kafka server to connect
+  connect to>                              to.
+--command-config <String: command        Property file containing configs to be
+  config property file>                    passed to Admin Client. This is used
+                                           only with --bootstrap-server option
+                                           for describing and altering broker
+                                           configs.
+--config <String: name=value>            A topic configuration override for the
+                                           topic being created or altered. The
+                                           following is a list of valid
+                                           configurations:
+                                                cleanup.policy
+                                                compression.type
+                                                delete.retention.ms
+                                                file.delete.delay.ms
+                                                flush.messages
+                                                flush.ms
+                                                follower.replication.throttled.
+                                           replicas
+                                                index.interval.bytes
+                                                leader.replication.throttled.replicas
+                                                local.retention.bytes
+                                                local.retention.ms
+                                                max.compaction.lag.ms
+                                                max.message.bytes
+                                                message.downconversion.enable
+                                                message.format.version
+                                                message.timestamp.difference.max.ms
+                                                message.timestamp.type
+                                                min.cleanable.dirty.ratio
+                                                min.compaction.lag.ms
+                                                min.insync.replicas
+                                                preallocate
+                                                remote.storage.enable
+                                                retention.bytes
+                                                retention.ms
+                                                segment.bytes
+                                                segment.index.bytes
+                                                segment.jitter.ms
+                                                segment.ms
+                                                unclean.leader.election.enable
+                                         See the Kafka documentation for full
+                                           details on the topic configs. It is
+                                           supported only in combination with --
+                                           create if --bootstrap-server option
+                                           is used (the kafka-configs CLI
+                                           supports altering topic configs with
+                                           a --bootstrap-server option).
+--create                                 Create a new topic.
+--delete                                 Delete a topic
+--delete-config <String: name>           A topic configuration override to be
+                                           removed for an existing topic (see
+                                           the list of configurations under the
+                                           --config option). Not supported with
+                                           the --bootstrap-server option.
+--describe                               List details for the given topics.
+--disable-rack-aware                     Disable rack aware replica assignment
+--exclude-internal                       exclude internal topics when running
+                                           list or describe command. The
+                                           internal topics will be listed by
+                                           default
+--help                                   Print usage information.
+--if-exists                              if set when altering or deleting or
+                                           describing topics, the action will
+                                           only execute if the topic exists.
+--if-not-exists                          if set when creating topics, the
+                                           action will only execute if the
+                                           topic does not already exist.
+--list                                   List all available topics.
+--partitions <Integer: # of partitions>  The number of partitions for the topic
+                                           being created or altered (WARNING:
+                                           If partitions are increased for a
+                                           topic that has a key, the partition
+                                           logic or ordering of the messages
+                                           will be affected). If not supplied
+                                           for create, defaults to the cluster
+                                           default.
+--replica-assignment <String:            A list of manual partition-to-broker
+  broker_id_for_part1_replica1 :           assignments for the topic being
+  broker_id_for_part1_replica2 ,           created or altered.
+  broker_id_for_part2_replica1 :
+  broker_id_for_part2_replica2 , ...>
+--replication-factor <Integer:           The replication factor for each
+  replication factor>                      partition in the topic being
+                                           created. If not supplied, defaults
+                                           to the cluster default.
+--topic <String: topic>                  The topic to create, alter, describe
+                                           or delete. It also accepts a regular
+                                           expression, except for --create
+                                           option. Put topic name in double
+                                           quotes and use the '\' prefix to
+                                           escape regular expression symbols; e.
+                                           g. "test\.topic".
+--topic-id <String: topic-id>            The topic-id to describe.This is used
+                                           only with --bootstrap-server option
+                                           for describing topics.
+--topics-with-overrides                  if set when describing topics, only
+                                           show topics that have overridden
+                                           configs
+--unavailable-partitions                 if set when describing topics, only
+                                           show partitions whose leader is not
+                                           available
+--under-min-isr-partitions               if set when describing topics, only
+                                           show partitions whose isr count is
+                                           less than the configured minimum.
+--under-replicated-partitions            if set when describing topics, only
+                                           show under replicated partitions
+--version                                Display Kafka version.
+
+
+..........
+Create a new Topic
+
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic todos-topic
+
+Created topic todos-topic.
+
+After creating topic, you can explore log file location.
+
+/tmp/kafka-logs
+       |
+     todos-topic-0
+
+when you create a topic, which is represented inside disk as "folder"
+
+todos-topic-0
+            |
+           topic id
+
+Topic id generally is broker id 
+.....................................................................................
+			How to look at the topic structure
+.....................................................................................
+
+--describe --topic todos-topic
+
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic ibm-topic
+
+Topic: ibm-topic  TopicId: aHZckDjAQgq__J_hHpVQrg PartitionCount: 1       ReplicationFactor: 1    Configs:Topic: ibm-topic Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+....................................................................................
+			How to delete the topic
+....................................................................................
+
+--delete --topic todos-topic
+
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic todos-topic
+
+once the delete command is executed, the topic is renamed rather it wont delete from the disk permanently.
+
+Its simply rename the folder's name.
+todos-topic-0.a0658c89a0754522896c4ee40590e73d-delete
+..................................................................................
+			How to restore deleted topics
+...................................................................................
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic todos-topic
+
+You will able to restore deleted topics again.
+.....................................................................................
+		   How to publish message/event/record into kafka Topic
+.....................................................................................
+in order to publish message/event/record we need publisher, publisher could be any program, we are going to use cli to publish message.
+
+./bin/kafka-console-producer.sh --help
+
+This tool helps to read data from standard input and publish it to Kafka.
+Option                                   Description
+------                                   -----------
+--batch-size <Integer: size>             Number of messages to send in a single
+                                           batch if they are not being sent
+                                           synchronously. please note that this
+                                           option will be replaced if max-
+                                           partition-memory-bytes is also set
+                                           (default: 16384)
+--bootstrap-server <String: server to    REQUIRED unless --broker-list
+  connect to>                              (deprecated) is specified. The server
+                                           (s) to connect to. The broker list
+                                           string in the form HOST1:PORT1,HOST2:
+                                           PORT2.
+--broker-list <String: broker-list>      DEPRECATED, use --bootstrap-server
+                                           instead; ignored if --bootstrap-
+                                           server is specified.  The broker
+                                           list string in the form HOST1:PORT1,
+                                           HOST2:PORT2.
+--compression-codec [String:             The compression codec: either 'none',
+  compression-codec]                       'gzip', 'snappy', 'lz4', or 'zstd'.
+                                           If specified without value, then it
+                                           defaults to 'gzip'
+--help                                   Print usage information.
+--line-reader <String: reader_class>     The class name of the class to use for
+                                           reading lines from standard in. By
+                                           default each line is read as a
+                                           separate message. (default: kafka.
+                                           tools.
+                                           ConsoleProducer$LineMessageReader)
+--max-block-ms <Long: max block on       The max time that the producer will
+  send>                                    block for during a send request.
+                                           (default: 60000)
+--max-memory-bytes <Long: total memory   The total memory used by the producer
+  in bytes>                                to buffer records waiting to be sent
+                                           to the server. This is the option to
+                                           control `buffer.memory` in producer
+                                           configs. (default: 33554432)
+--max-partition-memory-bytes <Integer:   The buffer size allocated for a
+  memory in bytes per partition>           partition. When records are received
+                                           which are smaller than this size the
+                                           producer will attempt to
+                                           optimistically group them together
+                                           until this size is reached. This is
+                                           the option to control `batch.size`
+                                           in producer configs. (default: 16384)
+--message-send-max-retries <Integer>     Brokers can fail receiving the message
+                                           for multiple reasons, and being
+                                           unavailable transiently is just one
+                                           of them. This property specifies the
+                                           number of retries before the
+                                           producer give up and drop this
+                                           message. This is the option to
+                                           control `retries` in producer
+                                           configs. (default: 3)
+--metadata-expiry-ms <Long: metadata     The period of time in milliseconds
+  expiration interval>                     after which we force a refresh of
+                                           metadata even if we haven't seen any
+                                           leadership changes. This is the
+                                           option to control `metadata.max.age.
+                                           ms` in producer configs. (default:
+                                           300000)
+--producer-property <String:             A mechanism to pass user-defined
+  producer_prop>                           properties in the form key=value to
+                                           the producer.
+--producer.config <String: config file>  Producer config properties file. Note
+                                           that [producer-property] takes
+                                           precedence over this config.
+--property <String: prop>                A mechanism to pass user-defined
+                                           properties in the form key=value to
+                                           the message reader. This allows
+                                           custom configuration for a user-
+                                           defined message reader.
+                                         Default properties include:
+                                          parse.key=false
+                                          parse.headers=false
+                                          ignore.error=false
+                                          key.separator=\t
+                                          headers.delimiter=\t
+                                          headers.separator=,
+                                          headers.key.separator=:
+                                          null.marker=   When set, any fields
+                                           (key, value and headers) equal to
+                                           this will be replaced by null
+                                         Default parsing pattern when:
+                                          parse.headers=true and parse.key=true:
+                                           "h1:v1,h2:v2...\tkey\tvalue"
+                                          parse.key=true:
+                                           "key\tvalue"
+                                          parse.headers=true:
+                                           "h1:v1,h2:v2...\tvalue"
+--reader-config <String: config file>    Config properties file for the message
+                                           reader. Note that [property] takes
+                                           precedence over this config.
+--request-required-acks <String:         The required `acks` of the producer
+  request required acks>                   requests (default: -1)
+--request-timeout-ms <Integer: request   The ack timeout of the producer
+  timeout ms>                              requests. Value must be non-negative
+                                           and non-zero. (default: 1500)
+--retry-backoff-ms <Long>                Before each retry, the producer
+                                           refreshes the metadata of relevant
+                                           topics. Since leader election takes
+                                           a bit of time, this property
+                                           specifies the amount of time that
+                                           the producer waits before refreshing
+                                           the metadata. This is the option to
+                                           control `retry.backoff.ms` in
+                                           producer configs. (default: 100)
+--socket-buffer-size <Integer: size>     The size of the tcp RECV size. This is
+                                           the option to control `send.buffer.
+                                           bytes` in producer configs.
+                                           (default: 102400)
+--sync                                   If set message send requests to the
+                                           brokers are synchronously, one at a
+                                           time as they arrive.
+--timeout <Long: timeout_ms>             If set and the producer is running in
+                                           asynchronous mode, this gives the
+                                           maximum amount of time a message
+                                           will queue awaiting sufficient batch
+                                           size. The value is given in ms. This
+                                           is the option to control `linger.ms`
+                                           in producer configs. (default: 1000)
+--topic <String: topic>                  REQUIRED: The topic id to produce
+                                           messages to.
+--version                                Display Kafka version.
+
+
+How to publish events?
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic todos-topic
+
+>Learn Kafka
+>Learn Distributed architecture
+>Learn Kafka Streams
+....................................................................................
+			 Consumer
+....................................................................................
+
+Consumers are going to read data from the topics.
+
+Steps:
+=>Find a topic name eg todos-topic
+=>Find host name and port eg localhost:9092
+=>if you  want to read future message(Current Message being published
+=>if you want to read histrical message , from the begining.
+
+./bin/kafka-console-consumer.sh --help
+
+This tool helps to read data from Kafka topics and outputs it to standard output.
+Option                                   Description
+------                                   -----------
+--bootstrap-server <String: server to    REQUIRED: The server(s) to connect to.
+  connect to>
+--consumer-property <String:             A mechanism to pass user-defined
+  consumer_prop>                           properties in the form key=value to
+                                           the consumer.
+--consumer.config <String: config file>  Consumer config properties file. Note
+                                           that [consumer-property] takes
+                                           precedence over this config.
+--enable-systest-events                  Log lifecycle events of the consumer
+                                           in addition to logging consumed
+                                           messages. (This is specific for
+                                           system tests.)
+--formatter <String: class>              The name of a class to use for
+                                           formatting kafka messages for
+                                           display. (default: kafka.tools.
+                                           DefaultMessageFormatter)
+--formatter-config <String: config       Config properties file to initialize
+  file>                                    the message formatter. Note that
+                                           [property] takes precedence over
+                                           this config.
+--from-beginning                         If the consumer does not already have
+                                           an established offset to consume
+                                           from, start with the earliest
+                                           message present in the log rather
+                                           than the latest message.
+--group <String: consumer group id>      The consumer group id of the consumer.
+--help                                   Print usage information.
+--include <String: Java regex (String)>  Regular expression specifying list of
+                                           topics to include for consumption.
+--isolation-level <String>               Set to read_committed in order to
+                                           filter out transactional messages
+                                           which are not committed. Set to
+                                           read_uncommitted to read all
+                                           messages. (default: read_uncommitted)
+--key-deserializer <String:
+  deserializer for key>
+--max-messages <Integer: num_messages>   The maximum number of messages to
+                                           consume before exiting. If not set,
+                                           consumption is continual.
+--offset <String: consume offset>        The offset to consume from (a non-
+                                           negative number), or 'earliest'
+                                           which means from beginning, or
+                                           'latest' which means from end
+                                           (default: latest)
+--partition <Integer: partition>         The partition to consume from.
+                                           Consumption starts from the end of
+                                           the partition unless '--offset' is
+                                           specified.
+--property <String: prop>                The properties to initialize the
+                                           message formatter. Default
+                                           properties include:
+                                          print.timestamp=true|false
+                                          print.key=true|false
+                                          print.offset=true|false
+                                          print.partition=true|false
+                                          print.headers=true|false
+                                          print.value=true|false
+                                          key.separator=<key.separator>
+                                          line.separator=<line.separator>
+                                          headers.separator=<line.separator>
+                                          null.literal=<null.literal>
+                                          key.deserializer=<key.deserializer>
+                                          value.deserializer=<value.
+                                           deserializer>
+                                          header.deserializer=<header.
+                                           deserializer>
+                                         Users can also pass in customized
+                                           properties for their formatter; more
+                                           specifically, users can pass in
+                                           properties keyed with 'key.
+                                           deserializer.', 'value.
+                                           deserializer.' and 'headers.
+                                           deserializer.' prefixes to configure
+                                           their deserializers.
+--skip-message-on-error                  If there is an error when processing a
+                                           message, skip it instead of halt.
+--timeout-ms <Integer: timeout_ms>       If specified, exit if no message is
+                                           available for consumption for the
+                                           specified interval.
+--topic <String: topic>                  The topic to consume on.
+--value-deserializer <String:
+  deserializer for values>
+--version                                Display Kafka version.
+--whitelist <String: Java regex          DEPRECATED, use --include instead;
+  (String)>                                ignored if --include specified.
+                                           Regular expression specifying list
+                                           of topics to include for consumption.
+
+
+How to consume lastest message?
+
+./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic todos-topic
+
+- It is waiting for lastest message being published by producer.
+
+Lab:
+steps:
+1.start producer and publish message
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic todos-topic
+>How are you Kafka?
+2.start consumer and consume the message which is being published
+ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic todos-topic
+How are you Kafka?
+
+How to consume all the messages from the topic?
+ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic todos-topic --from-beginning
+
+Learn Kafka
+Learn Distributed architecture
+Learn Kafka Streams
+How are you Kafka?
+
+You can all the messages is being published from the begining and also the latest message.
+.....................................................................................
+			Basic Property Configuration
+.....................................................................................
+property option will gives meta or detailed information about messages and topics
+
+
+--property <String: prop>                The properties to initialize the
+                                           message formatter. Default
+                                           properties include:
+                                          print.timestamp=true|false
+                                          print.key=true|false
+                                          print.offset=true|false
+                                          print.partition=true|false
+                                          print.headers=true|false
+                                          print.value=true|false
+                                          key.separator=<key.separator>
+                                          line.separator=<line.separator>
+                                          headers.separator=<line.separator>
+                                          null.literal=<null.literal>
+                                          key.deserializer=<key.deserializer>
+                                          value.deserializer=<value.
+                                           deserializer>
+                                          header.deserializer=<header.
+                                           deserializer>
+                                         Users can also pass in customized
+                                           properties for their formatter; more
+                                           specifically, users can pass in
+                                           properties keyed with 'key.
+                                           deserializer.', 'value.
+                                           deserializer.' and 'headers.
+                                           deserializer.' prefixes to configure
+                                           their deserializers.
+
+
+
+
+ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic todos-topic --from-beginning --property print.timestamp=true
+
+CreateTime:1686722651596        Learn Kafka
+CreateTime:1686722722914        Learn Distributed architecture
+CreateTime:1686722732176        Learn Kafka Streams
+CreateTime:1686723527368        How are you Kafka?
+CreateTime:1686723693981        How Kafka sends messages
+.....................................................................................
+			Log Retention
+.....................................................................................
+
+By default , events(messages) are stored into topic, topic finally persits into log file.
+
+Can i delete events from the log file?
+ No, Kafka log messages/events are immutable - readonly.
+
+can i delete log files?
+  Yes you can delete log files.
+
+if you delete log files , you configure policies which is called as "Log Rentention Policy"
+
+Log Retension policy can be set "Broker Level" or "Topic Level"
+
+If you set policy at broker level, which is applied to all topics which are created insid broker.
+
+you can set policy at topic level, which is applied to only that topic only.
+
+Broker Level Configuration:
+...........................
+The policy can  be set to delete log file after "a period of time", or after "a given size has accumulated".
+
+Period of time :
+  I want to delete log files after 7 days, 7 months, 7 weeks, 7 years,7 mins,7 sec,7 ms
+A Given size accumulated:
+   i want to delete log files once the file size reaches 1gb
+   You have to set value in bytes
+   The value must be postive integer
+   if you set -1, meaning that no limit on size 
+
+
+Time based configuration:
+
+log.retention.hours=168 
+   By default 7 days, one week
+log.retention.minutes=10
+   mins based config
+log.rentiontion.ms=100
+    milli secs based configuration
+
+Size based configuraton
+log.retention.bytes=1073741824
+  To delete logs based on the total number of bytes it retained 
+ by default 1 gb.
+
+Topic level configuration:
+
+When we create topic or when alter topic 
+
+--config <String: name=value>            A topic configuration override for the
+                                           topic being created or altered. The
+                                           following is a list of valid
+                                           configurations:
+                                                cleanup.policy
+                                                compression.type
+                                                delete.retention.ms
+                                                file.delete.delay.ms
+                                                flush.messages
+                                                flush.ms
+                                                follower.replication.throttled.
+
+
+.....................................................................................
+
+Lab:
+ 
+############################# Log Retention Policy #############################
+
+# The following configurations control the disposal of log segments. The policy can
+# be set to delete segments after a period of time, or after a given size has accumulated.
+# A segment will be deleted whenever *either* of these criteria are met. Deletion always happens
+# from the end of the log.
+
+# The minimum age of a log file to be eligible for deletion due to age
+# log.retention.hours=168
+log.retention.minutes=1
+# A size-based retention policy for logs. Segments are pruned from the log unless the remaining
+# segments drop below log.retention.bytes. Functions independently of log.retention.hours.
+#log.retention.bytes=1073741824
+
+# The maximum size of a log segment file. When this size is reached a new log segment will be created.
+#log.segment.bytes=1073741824
+
+# The interval at which log segments are checked to see if they can be deleted according
+# to the retention policies
+# log.retention.check.interval.ms=300000
+ log.retention.check.interval.ms=3000
+.....................................................................................
+
+Lab :
+Create topic with rentension policy
+
+$./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic hello-topic --config retention.ms=20000
+
+Produce some events
+ ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic hello-topic
+
+consume events
+ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic hello-topic --from-beginning --property print.timestamp=true
+
+Wait for 2 mins and check the messages again. you can notice , messages have been log files been deleted
+....................................................................................
+			      Dynamic Configuration
+....................................................................................
+
+Broker is running in production, broker has many topics already created , having some logs also.
+
+By default Brokers and topics configurations are dervied from global "server.properties" file and default configurations supplied by kafka
+
+What if i want to override like broker configuration or topic configuration during runtime : dynamic configurations
+
+Overriding Topic Configuration Defaults
+
+Dynamic Kafka Broker configuration change using the kafka-configs CLI
+....................................................................................
+			kafka-configs.sh -To manage runtime Configurations
+....................................................................................
+./bin/kafka-configs.sh --help
+This tool helps to manipulate and describe entity config for a topic, client, user, broker or ip
+Option                                 Description
+------                                 -----------
+--add-config <String>                  Key Value pairs of configs to add.
+                                         Square brackets can be used to group
+                                         values which contain commas: 'k1=v1,
+                                         k2=[v1,v2,v2],k3=v3'. The following
+                                         is a list of valid configurations:
+                                         For entity-type 'topics':
+                                        cleanup.policy
+                                        compression.type
+                                        delete.retention.ms
+                                        file.delete.delay.ms
+                                        flush.messages
+                                        flush.ms
+                                        follower.replication.throttled.
+                                         replicas
+                                        index.interval.bytes
+                                        leader.replication.throttled.replicas
+                                        local.retention.bytes
+                                        local.retention.ms
+                                        max.compaction.lag.ms
+                                        max.message.bytes
+                                        message.downconversion.enable
+                                        message.format.version
+                                        message.timestamp.difference.max.ms
+                                        message.timestamp.type
+                                        min.cleanable.dirty.ratio
+                                        min.compaction.lag.ms
+                                        min.insync.replicas
+                                        preallocate
+                                        remote.storage.enable
+                                        retention.bytes
+                                        retention.ms
+                                        segment.bytes
+                                        segment.index.bytes
+                                        segment.jitter.ms
+                                        segment.ms
+                                        unclean.leader.election.enable
+                                       For entity-type 'brokers':
+                                        advertised.listeners
+                                        background.threads
+                                        compression.type
+                                        follower.replication.throttled.rate
+                                        leader.replication.throttled.rate
+                                        listener.security.protocol.map
+                                        listeners
+                                        log.cleaner.backoff.ms
+                                        log.cleaner.dedupe.buffer.size
+                                        log.cleaner.delete.retention.ms
+                                        log.cleaner.io.buffer.load.factor
+                                        log.cleaner.io.buffer.size
+                                        log.cleaner.io.max.bytes.per.second
+                                        log.cleaner.max.compaction.lag.ms
+                                        log.cleaner.min.cleanable.ratio
+                                        log.cleaner.min.compaction.lag.ms
+                                        log.cleaner.threads
+                                        log.cleanup.policy
+                                        log.flush.interval.messages
+                                        log.flush.interval.ms
+                                        log.index.interval.bytes
+                                        log.index.size.max.bytes
+                                        log.message.downconversion.enable
+                                        log.message.timestamp.difference.max.
+                                         ms
+                                        log.message.timestamp.type
+                                        log.preallocate
+                                        log.retention.bytes
+                                        log.retention.ms
+                                        log.roll.jitter.ms
+                                        log.roll.ms
+                                        log.segment.bytes
+                                        log.segment.delete.delay.ms
+                                        max.connection.creation.rate
+                                        max.connections
+                                        max.connections.per.ip
+                                        max.connections.per.ip.overrides
+                                        message.max.bytes
+                                        metric.reporters
+                                        min.insync.replicas
+                                        num.io.threads
+                                        num.network.threads
+                                        num.recovery.threads.per.data.dir
+                                        num.replica.fetchers
+                                        principal.builder.class
+                                        producer.id.expiration.ms
+                                        replica.alter.log.dirs.io.max.bytes.
+                                         per.second
+                                        sasl.enabled.mechanisms
+                                        sasl.jaas.config
+                                        sasl.kerberos.kinit.cmd
+                                        sasl.kerberos.min.time.before.relogin
+                                        sasl.kerberos.principal.to.local.rules
+                                        sasl.kerberos.service.name
+                                        sasl.kerberos.ticket.renew.jitter
+                                        sasl.kerberos.ticket.renew.window.
+                                         factor
+                                        sasl.login.refresh.buffer.seconds
+                                        sasl.login.refresh.min.period.seconds
+                                        sasl.login.refresh.window.factor
+                                        sasl.login.refresh.window.jitter
+                                        sasl.mechanism.inter.broker.protocol
+                                        ssl.cipher.suites
+                                        ssl.client.auth
+                                        ssl.enabled.protocols
+                                        ssl.endpoint.identification.algorithm
+                                        ssl.engine.factory.class
+                                        ssl.key.password
+                                        ssl.keymanager.algorithm
+                                        ssl.keystore.certificate.chain
+                                        ssl.keystore.key
+                                        ssl.keystore.location
+                                        ssl.keystore.password
+                                        ssl.keystore.type
+                                        ssl.protocol
+                                        ssl.provider
+                                        ssl.secure.random.implementation
+                                        ssl.trustmanager.algorithm
+                                        ssl.truststore.certificates
+                                        ssl.truststore.location
+                                        ssl.truststore.password
+                                        ssl.truststore.type
+                                        unclean.leader.election.enable
+                                       For entity-type 'users':
+                                        SCRAM-SHA-256
+                                        SCRAM-SHA-512
+                                        consumer_byte_rate
+                                        controller_mutation_rate
+                                        producer_byte_rate
+                                        request_percentage
+                                       For entity-type 'clients':
+                                        consumer_byte_rate
+                                        controller_mutation_rate
+                                        producer_byte_rate
+                                        request_percentage
+                                       For entity-type 'ips':
+                                        connection_creation_rate
+                                       Entity types 'users' and 'clients' may
+                                         be specified together to update
+                                         config for clients of a specific
+                                         user.
+--add-config-file <String>             Path to a properties file with configs
+                                         to add. See add-config for a list of
+                                         valid configurations.
+--all                                  List all configs for the given topic,
+                                         broker, or broker-logger entity
+                                         (includes static configuration when
+                                         the entity type is brokers)
+--alter                                Alter the configuration for the entity.
+--bootstrap-server <String: server to  The Kafka server to connect to. This
+  connect to>                            is required for describing and
+                                         altering broker configs.
+--broker <String>                      The broker's ID.
+--broker-defaults                      The config defaults for all brokers.
+--broker-logger <String>               The broker's ID for its logger config.
+--client <String>                      The client's ID.
+--client-defaults                      The config defaults for all clients.
+--command-config <String: command      Property file containing configs to be
+  config property file>                  passed to Admin Client. This is used
+                                         only with --bootstrap-server option
+                                         for describing and altering broker
+                                         configs.
+--delete-config <String>               config keys to remove 'k1,k2'
+--describe                             List configs for the given entity.
+--entity-default                       Default entity name for
+                                         clients/users/brokers/ips (applies
+                                         to corresponding entity type in
+                                         command line)
+--entity-name <String>                 Name of entity (topic name/client
+                                         id/user principal name/broker id/ip)
+--entity-type <String>                 Type of entity
+                                         (topics/clients/users/brokers/broker-
+                                         loggers/ips)
+--force                                Suppress console prompts
+--help                                 Print usage information.
+--ip <String>                          The IP address.
+--ip-defaults                          The config defaults for all IPs.
+--topic <String>                       The topic's name.
+--user <String>                        The user's principal name.
+--user-defaults                        The config defaults for all users.
+--version                              Display Kafka version.
+--zk-tls-config-file <String:          Identifies the file where ZooKeeper
+  ZooKeeper TLS configuration>           client TLS connectivity properties
+                                         are defined.  Any properties other
+                                         than zookeeper.clientCnxnSocket,
+                                         zookeeper.ssl.cipher.suites,
+                                         zookeeper.ssl.client.enable,
+                                         zookeeper.ssl.crl.enable, zookeeper.
+                                         ssl.enabled.protocols, zookeeper.ssl.
+                                         endpoint.identification.algorithm,
+                                         zookeeper.ssl.keystore.location,
+                                         zookeeper.ssl.keystore.password,
+                                         zookeeper.ssl.keystore.type,
+                                         zookeeper.ssl.ocsp.enable, zookeeper.
+                                         ssl.protocol, zookeeper.ssl.
+                                         truststore.location, zookeeper.ssl.
+                                         truststore.password, zookeeper.ssl.
+                                         truststore.type are ignored.
+--zookeeper <String: urls>             DEPRECATED. The connection string for
+                                         the zookeeper connection in the form
+                                         host:port. Multiple URLS can be
+                                         given to allow fail-over. Required
+                                         when configuring SCRAM credentials
+                                         for users or dynamic broker configs
+                                         when the relevant broker(s) are
+                                         down. Not allowed otherwise.
+
+
+Broker level configurations:
+.............................
+//Adding or editing existing broker level settings
+
+$ ./bin/kafka-configs.sh --bootstrap-server localhost:9092 --alter --entity-type brokers --entity-default --add-config min.insync.replicas=2 
+
+
+//We can delete the dynamic configuration as well:
+
+./bin/kafka-configs.sh --bootstrap-server localhost:9092 --alter --entity-type brokers --entity-default  --delete-config min.insync.replicas
+
+
+Topics:
+egs:
+./bin/kafka-configs.sh --bootstrap-server localhost:9092 \
+                --alter --entity-type topics \
+                --entity-name configured-topic \
+                --add-config max.message.bytes=10485880
+
+
+Alter topic with rention policy:
+
+Lab:
+Steps:
+1.create a new topic with default settings
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic payment-topic
+2.Alter topic configuration like log retention policy
+ ./bin/kafka-configs.sh --bootstrap-server localhost:9092 --alter --entity-type topics --entity-name payment-topic --add-config retention.ms=20000
+
+After alertering , check the same process like above
+
+3.produce message 
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic payment-topic
+4.consume message
+./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic payment-topic --from-beginning
+.....................................................................................
+		How to see the configurations applied?
+
+ ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic payment-topic
+
+Topic: payment-topic    TopicId: krK_YW-aQiOm0tG2DEOxQg PartitionCount: 1       ReplicationFactor: 1    Configs: retention.ms=20000
+Topic: payment-topic    Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+.....................................................................................
+				Partition
+.....................................................................................
+
+What is partition?
+    In order to distributethe "Storage and Processing of Events" in a topic, Kafka uses the concept called "Partition"
+	
+    The topic is made of  one or More partitions.
+The topic is broken into multiple partitions
+  
+  Every partion is is just folder only.
+
+  Each partition will have its own log files
+
+			   payment-topic
+				|
+		-------------------------------------------------
+		|               |              |
+	   payment-topic-0  payment-topic-1  payment-topic-2
+                |                |               |
+            log files       log files         log files
+
+
+By default every topic has only one partition.
+
+Lab:
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic sales-topic --paritions 2
+
+This command will create two partitions
+ 
+After supplying partition option you can see inside kafka-logs folder
+
+/tmp/kafka-logs
+       |
+       sales-topic-0
+       sales-topic-1
+
+How to know many partitions are there in the topic
+
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic sales-topic
+
+Topic: sales-topic   TopicId: Qld8IMqPSDqV7YMHB-dT4Q PartitionCount: 2       ReplicationFactor: 1   Configs:
+      Topic: sales-topic      Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+      Topic: sales-topic      Partition: 1    Leader: 0       Replicas: 0     Isr: 0
+
+
+Why Partitions?
+
+=>Partitions helps to distribute messages into multiple log files so that we dont need to dump into one single file, we scale the message across multiple files
+=>This partition is also unit of parallelism.
+.....................................................................................
+				Segements
+....................................................................................
+What is segment?
+  Segement is just actual log files contains "Records"
+
+Topics are broken into partions , and Partitions are broken into segements
+
+How to list segements(Log file)
+/tmp/kafka-logs/sales-topic-0$ ls -l
+total 8
+-rw-r--r-- 1 subugee subugee 10485760 Jun 15 11:34 00000000000000000000.index
+-rw-r--r-- 1 subugee subugee        0 Jun 15 11:34 00000000000000000000.log
+-rw-r--r-- 1 subugee subugee 10485756 Jun 15 11:34 00000000000000000000.timeindex
+-rw-r--r-- 1 subugee subugee        8 Jun 15 11:34 leader-epoch-checkpoint
+-rw-r--r-- 1 subugee subugee       43 Jun 15 11:34 partition.metadata
+
+Here segement is group files
+.log
+.index
+.timeindex
+
+Segement is just log file where actual records is stored.
+Records are stored as "Byte Array"
+
+.log file stores actaual Records.
+.....................................................................................
+			 Segment File or Log File Architecture
+.....................................................................................
+
+How events or data or message is stored into segement?
+
+ The log file is structured with two parts
+
+ 1.Actual data- event
+ 2.Offset
+
+Actual data is  published into segement as "record" which is simple byte array.
+
+Offset:
+  An Offset into a file is simply the charactor location within that file,usually starting with 0; thus offset 240" is actually the 241st byte in the file.
+
+
+ a   b  c   d  e  f  g                   =>actual record
+-------------------------------------------------------
+ 0   1  2   3  4  5  6                    =>Offset 
+--------------------------------------------------
+
+A Partition can have multiple segement meaning that i can have multile log files
+
+How to represent multiple segements?
+
+Segement-0        Segment-1                Segement-2 
+Offset 0-957 =>   Offset 958 to 1675  ==>  offset 1676 --?   <==Writes
+
+Only one Segement can be active at any point in time
+
+The segement size is determined by the property
+
+log.segment.bytes
+  The maximum size of a single log file.
+  When it reaches , kafka will create new one.
+
+log.segement.ms
+  The kafka will wait before commiting(Writing data) the segement
+ default 1 week.
+
+Note:
+   A kafka broker keeps an open file handler to every active segement in every partion, even for inactive segements. This leads to a usually high number of open file handles, and the OS must be tuned accordingly.
+.....................................................................................
+
+Lab:
+ in order to create new log files
+config/server.properties
+log.segment.bytes=1000
+1.start zookeeper and kafka broker
+2.create topic with single partition
+3.Keep on publishing  messages  until it reaches 1000 bytes
+4.see the log locations /tmp/kafka-logs
+
+/tmp/kafka-logs/product-topic-0$ ls -l
+total 24
+-rw-r--r-- 1 subugee subugee        0 Jun 15 12:29 00000000000000000000.index
+-rw-r--r-- 1 subugee subugee      988 Jun 15 12:29 00000000000000000000.log
+-rw-r--r-- 1 subugee subugee       12 Jun 15 12:29 00000000000000000000.timeindex
+-rw-r--r-- 1 subugee subugee 10485760 Jun 15 12:29 00000000000000000012.index
+-rw-r--r-- 1 subugee subugee      580 Jun 15 12:29 00000000000000000012.log
+-rw-r--r-- 1 subugee subugee       56 Jun 15 12:29 00000000000000000012.snapshot
+-rw-r--r-- 1 subugee subugee 10485756 Jun 15 12:29 00000000000000000012.timeindex
+-rw-r--r-- 1 subugee subugee        8 Jun 15 12:28 leader-epoch-checkpoint
+-rw-r--r-- 1 subugee subugee       43 Jun 15 12:28 partition.metadata
+.....................................................................................
+				Dump log
+.....................................................................................
+Sometimes when you’re working with Kafka, you may find yourself needing to manually inspect the underlying logs of a topic.
+
+Whether you’re just curious about Kafka internals or you need to debug an issue and verify the content, the kafka-dump-log command is your friend
+
+~/kafkatraining/apacheKafka/kafka-3.4.1-src$  ./bin/kafka-dump-log.sh --print-data-log --files /../tmp/kafka-logs/todos-topic-0/00000000000000000000.log
+
+Dumping /../tmp/kafka-logs/todos-topic-0/00000000000000000000.log
+Log starting offset: 0
+baseOffset: 0 lastOffset: 0 count: 1 baseSequence: 0 lastSequence: 0 producerId: 0 producerEpoch: 0 partitionLeaderEpoch: 0 isTransactional: false isControl: false deleteHorizonMs: OptionalLong.empty position: 0 CreateTime: 1686889885086 size: 79 magic: 2 compresscodec: none crc: 565057828 isvalid: true
+| offset: 0 CreateTime: 1686889885086 keySize: -1 valueSize: 11 sequence: 0 headerKeys: [] payload: Learn Kafka
+baseOffset: 1 lastOffset: 1 count: 1 baseSequence: 1 lastSequence: 1 producerId: 0 producerEpoch: 0 partitionLeaderEpoch: 0 isTransactional: false isControl: false deleteHorizonMs: OptionalLong.empty position: 79 CreateTime: 1686889897634 size: 99 magic: 2 compresscodec: none crc: 265781907 isvalid: true
+| offset: 1 CreateTime: 1686889897634 keySize: -1 valueSize: 31 sequence: 1 headerKeys: [] payload: Learn Event Driven Architecture
+baseOffset: 2 lastOffset: 2 count: 1 baseSequence: 2 lastSequence: 2 producerId: 0 producerEpoch: 0 partitionLeaderEpoch: 0 isTransactional: false isControl: false deleteHorizonMs: OptionalLong.empty position: 178 CreateTime: 1686889905723 size: 87 magic: 2 compresscodec: none crc: 3204004559 isvalid: true
+| offset: 2 CreateTime: 1686889905723 keySize: -1 valueSize: 19 sequence: 2 headerKeys: [] payload: Learn What is Event
+.....................................................................................
+				Index Files
+.....................................................................................
+.index
+ contains the mappings of "offset" to is position in ".log" file
+.timeIndex
+  file contains the mappings of "Timestamp" to message offset
+
+if you search message based on offset, it uses index files
+if you search message based on timestamp, it uses timeindex files
+			
+			 Topic
+			   |
+		--------------------------------------
+		|              |                  |
+	 partition-0        partition-1       partition-2
+	     |
+	 00000000.log
+	    |
+	offset 0 1 2 3 ...
+	byte   x a y z ....
+ 	    |
+	 000000.index
+        offset 0  1    2   3 
+	byte   23 232 23  323
+          |
+        00000.timeindex
+       timestam 23232323   343434 34343434 
+       offset     0         1        2 
+
+...................................................................................
+			 Events/Message Distributions and Partitions
+.....................................................................................
+
+Topics are broken into partions, partions are broken into segements
+
+As Producer we send data to the Topic only, Topic distributes message among partitions
+
+Partitioner:
+   Partitioner is  a process that will determine to which partition a specific message/event will be assigned.
+
+ In Nutshell Partitioner is simple "Java Class/Program" having routing algorithim.
+ This algorthim decides where to go.
+
+For eg i have topic with 3 partition
+
+ Record===>Publish==>Partitioner===>where to to =>P1 Or P2 Or P3
+
+How  partitions are selected by Partitioner?
+ =>Based on Record only.
+
+Record contains information for how to select Partition
+
+Partitioner Algorthims:
+.......................
+1.Round Robin Alogorthim
+2.Sticky Partitioner Alogorthim
+3.Key Based Alogorthim
+
+Round Robin Algorthim:
+  It is default algorthim used in kafka old versions less than 2.3
+Lets i assum i have two partitions
+
+ M1 ------->P1
+ M2 ------->P2
+ M3-------->P1
+ M4-------->P2
+In round robin messages are distributed equally to all paritions
+
+Drawback of Round Robin Algorthim:
+...................................
+ if more messages and more partitions, there is possiblity of higher latency and low performance...
+
+Sticky Partitioner:
+...................
+  It is built on the top of Round robin only.
+  Stick Partitioner wont send indidual message/record rather it sends as batch.
+  It improves the peformance, reduces network latency.
+  This is default Partitioner in the lastest kafka 
+
+Message/Record Structure:
+
+ In kafka messages are organized based on "Key-Value" Pair.
+ By default every message has key "null" key
+
+Lab: 
+ To Test whether a message has key or not
+
+./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic todos-topic --from-beginning --property print.key=true
+
+null    Learn Kafka
+null    Learn Event Driven Architecture
+null    Learn What is Event
+null    Learn java
+
+Here "null" is key "Learn kafka" is value
+
+You can notice there is another partitioner alogthrim called "Key" based 
+
+        "If you produce message/record/event without key means with null key"
+			  Partitioner
+		 Selects "Sticky Partitioner" 
+			  By Default
+
+Sticky Partition  = "RoundRobin + Batching"
+.....................................................................................
+Lab:
+  Create topic with 2 partitions
+  Distribute message with 'null' key ,without key
+  Watch In consumerside keys and partitions
+
+create topic 
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic order-topic --partitions 2
+
+publish message without key, with null key
+
+open two cmd prompt and try to publish message see in the consumer side
+
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic order-topic
+
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic order-topic
+
+
+
+Consume Message:
+
+./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic order-topic --from-beginning --property print.key=true --property print.partition=true
+
+Partition:1     null    Hello
+Partition:1     null    Hai
+Partition:1     null    How are you
+Partition:1     null    kjdaf;lkadsf
+Partition:1     null    asdfadf
+Partition:1     null    adf
+Partition:1     null    adfadfa
+Partition:1     null    adfadfa
+Partition:1     null    adfasfdasf
+Partition:1     null    adfsafd
+Partition:1     null    adfasfsadf
+Partition:1     null    adfasdfas
+Partition:1     null    adfafadf
+Partition:1     null    asfdafasf
+Partition:1     null    adfafdsaf
+Partition:1     null    adfsadfasdf
+Partition:1     null    adfsadfdsaf
+Partition:1     null    adfadsfdsaf
+Partition:1     null    adfdsafadsf
+Partition:1     null    adfsafadf
+Partition:1     null    adfasfd
+Partition:1     null    adfasfsadf
+Partition:1     null    adfdsafa
+Partition:1     null    adfadf
+Partition:1     null    asdfadsfsadf
+Partition:1     null    asdfasdf
+Partition:1     null    adfasdfadsf
+Partition:1     null    adfsadfadsf
+Partition:1     null    adsfsadfsadf
+Partition:1     null    adfasdfadsfasf
+Partition:1     null    adfasfddsafkasdfnalkjsfas
+Partition:1     null    asdfjdsalkfjhalkjdsfhlkjdsafhdsalkjhfalksjfhalkdsjfhsadf
+Partition:1     null    lakdsjflksafjhdsalkfhdsalkjfhdslkjfhdsalkjfhdsalf
+Partition:1     null    adslkfsajdhflkjsadhflkjdsfhldsakjfhdsaf
+Partition:1     null    lakdjfhlkjdsahflkdajfhldjfhadsf
+Partition:1     null    alkdsjfhlkdsahfdsakjfhdalkjfhasrewr32432432\\
+Partition:1     null    32432432
+Partition:1     null    234234
+Partition:1     null    23423123
+Partition:1     null    123213
+Partition:1     null    4324324
+Partition:1     null    234324324232355355232
+Partition:1     null    24324324
+Partition:1     null    34324324
+Partition:1     null    234324324
+Partition:1     null    234324234324324
+Partition:1     null    23423423
+Partition:1     null    24324
+Partition:1     null    24324
+Partition:1     null    243324324
+Partition:1     null    234324324
+Partition:1     null    234324324
+Partition:1     null    2343242234324324
+Partition:1     null    234324324324
+Partition:1     null    234324324324324
+Partition:1     null    41242143214
+Partition:1     null    13242142134
+Partition:1     null    242423432
+Partition:1     null    243242
+Partition:1     null    2343242
+Partition:1     null    234234
+Partition:0     null    234324
+Partition:0     null    24324324
+Partition:0     null    2234324
+Partition:0     null    234324
+Partition:0     null    234324324
+Partition:0     null    fsdf
+Partition:0     null    sdf
+Partition:1     null    Subramanian
+Partition:1     null    Karthik
+.....................................................................................
+			 Key based Distribution
+....................................................................................
+
+Lab:
+ create topic with 2 partitions
+ publish message with key
+ consume message
+
+create topic
+./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic user-topic --partitions 2
+
+publish message with key
+
+ --property "parse.key=true"  --property "key.separator=:"
+
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic user-topic
+   --property "parse.key=true"  --property "key.separator=:"
+
+Consumer
+./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic user-topic --from-beginning --property print.key=true  --property print.value=true  --property print.partition=true
+
+artition:1     id      1
+Partition:1     project IBM
+Partition:1     project java
+Partition:1     project microservices
+Partition:1     client  google
+Partition:1     null       --property "parse.key=true"  --property "key.sepapayment:cash
+Partition:1     Client  yahoo
+Partition:1     client  microsoft
+Partition:1     client  yahoo
+Partition:1     id      1
+Partition:0     2       33434
+Partition:0     2       88888
+Partition:1     3       8833434
+Partition:1     3       34343434
+Partition:1     4       8833434
+Partition:0     2       343434
+Partition:1     3       33434
+Partition:0     56      88343434
+Partition:0     58      343434
+Partition:0     23      42323
+Partition:1     id      2232323
+.....................................................................................
+  	How key-value pair messages are distributed to partitions
+...................................................................................
+In the old, kafka they used "round robind".
+There is problem when i send the event with same, it is distributed in different partitions which is not that much efficient.
+
+Kafka introduced an alorithim called "Key Hashing Algorithm"
+
+Key hahing is the process of determining the mapping of a key to a partition in the default partitioner.
+The keys are hashed based on an algorthim called "murmur2 "
+
+  Targetpartition = Math.abs(Util.murmur2(KeyInBytes) % (numPartiontions-1) 
+   
+Note;
+  if you have same key ,but different values, the same partition will be used
+....................................................................................
+			  Kafka Internal Architecture
+....................................................................................
+.....................................................................................
+			 Kafka Internal Architecture
+....................................................................................
+
+Kafka broker and cluster contains two major components.
+
+1.Control Plane
+2.Data Plane
+
+Kafaka cluster is broken into two segement
+
+1.Meta data management
+   It is nothing but to take care of Managing the entire cluster   
+2.Actual data storage
+   Where actual data is stored.
+
+.................................................................................
+				Kafka Request
+
+Client requests in kafka fall into two category
+
+=>Produce Request and fetch requests.
+
+Produce Request:
+
+    A produce requestis requesting that a batch of data to be written into  a specified topic (producers)
+
+Consumer Request
+
+=>Fetch Request:
+   A request is requesting data from kafa topics(consumers)
+
+
+Internal work flow for both producer request (produce request) and consumer (consume request) remanins same.
+
+....................................................................................
+				Produce Request
+...................................................................................
+
+When a producer is ready to send an event record.
+
+What is event Record?
+  Event Record is nothing the message what we sent from the producer, the message structure /event structure is called "Record".
+
+Record consits of the following properties:
+
+1.timestamp
+2.key
+3.value
+4.Headers
+
+
+When a producer is ready to send an event record,it will use a configurable partitioner to determine the topic partition to assign to the record.
+
+if record has key, then the default partitioner will use a hash of the key to determine the correct partition.
+if any records with same key will always be assigned to the same partition.
+if the record has no key then a partitioner startegy is used to balance the data in the partitions.
+
+
+Record Batch:
+ Records are accumulated into  record batch. 
+ Sending records one at a time would be inefficeint due to the over head of the  network requests   
+ So the Producer will accumulate the records assigned to a given partition into  batches.
+ Batches provides for much more effective compression when compression is used
+
+The producer has control as to when the record batch should be drained and sent to the broker 
+  =This is controlled by two properties
+   =>One is by time
+   =>The another is size
+
+So once enough time or enough data has been accumulated in those record batches, those record batches will be drained, and will form a produce request.
+Then record batches will be sent to the broker. 
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+			
+ 
+		
+
+
+
