@@ -1,3 +1,30 @@
+
+// Define the input JSON string with a trailing comma
+var jsonString = '[{"abc": "dd"}, {"ddd":"4"},]';
+
+// Remove the trailing comma using a regular expression
+jsonString = jsonString.replace(/,\s*$/, '');
+
+// Parse the cleaned JSON string into an object
+var jsonObject;
+try {
+    jsonObject = JSON.parse(jsonString);
+} catch (e) {
+    // Handle the error if JSON is invalid
+    console.error('Invalid JSON:', e);
+    throw e;
+}
+
+// Now you can use jsonObject as needed
+console.log(JSON.stringify(jsonObject, null, 2));
+
+
+
+
+
+
+
+
 Ericsson 13-Jun-22
 =====================
 
