@@ -1,3 +1,31 @@
+// Import the necessary DataPower module
+var sm = require('service-metadata');
+
+// Get the local IP address of the DataPower appliance
+var localIP = sm.current.localAddr;
+
+// Get the client IP address from the connection information
+var clientIP = sm.current.clientIP;
+
+// Log the IP addresses (for debugging purposes)
+console.info("Local IP (DataPower): " + localIP);
+console.info("Client IP: " + clientIP);
+
+// Check if the IP addresses match
+if (localIP !== clientIP) {
+    // If they do not match, reject the request
+    console.error("IP address mismatch: rejecting request.");
+    session.reject("IP address mismatch: access denied.");
+} else {
+    // If they match, continue processing
+    console.info("IP address match: processing request.");
+    session.output.write("IP address match: processing request.");
+}
+
+
+
+
+----
 Create topic with rentension policy
 
 $./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic hello-topic --config retention.ms=20000
