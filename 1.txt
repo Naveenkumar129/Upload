@@ -1,3 +1,8 @@
+the regular expression .*\/frames\?.* in the Match Expression field.
+
+
+
+
 // Import the necessary DataPower module
 var sm = require('service-metadata');
 
