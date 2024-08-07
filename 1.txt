@@ -1,3 +1,39 @@
+
+// Function to generate UUID v4 string without dashes
+function generateUUIDv4() {
+    return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+// Generate the UUID
+var uuidWithoutDashes = generateUUIDv4();
+
+// Log the generated UUID to the console
+console.info('Generated UUID:', uuidWithoutDashes);
+
+// Set the UUID in a context variable
+session.name('partnerUUID', uuidWithoutDashes);
+
+// Example usage: creating a JSON response with the UUID
+var response = {
+    "message": "Partner onboarded successfully",
+    "partnerUUID": uuidWithoutDashes
+};
+
+// Output the response
+session.output.write(JSON.stringify(response));
+
+
+
+
+
+
+
+
+
 the regular expression .*\/frames\?.* in the Match Expression field.
 
 
