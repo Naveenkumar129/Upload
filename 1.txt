@@ -1,4 +1,24 @@
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
+                xmlns:dp="http://www.datapower.com/extensions" extension-element-prefixes="dp">
+   <xsl:output method="xml" indent="yes"/>
 
+   <xsl:param name="baseString"/>
+   
+   <xsl:template match="/">
+      <!-- Signing the base string with RSA-SHA256 -->
+      <xsl:variable name="signedData">
+         <dp:sign algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" key="name-of-your-rsa-private-key">
+            <xsl:value-of select="$baseString"/>
+         </dp:sign>
+      </xsl:variable>
+      <xsl:value-of select="$signedData"/>
+   </xsl:template>
+</xsl:stylesheet>
+
+
+
+
+------
 // Function to generate UUID v4 string without dashes
 function generateUUIDv4() {
     return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
