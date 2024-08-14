@@ -1,19 +1,29 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
-                xmlns:dp="http://www.datapower.com/extensions" extension-element-prefixes="dp">
-   <xsl:output method="xml" indent="yes"/>
 
-   <xsl:param name="baseString"/>
-   
-   <xsl:template match="/">
-      <!-- Signing the base string with RSA-SHA256 -->
-      <xsl:variable name="signedData">
-         <dp:sign algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" key="name-of-your-rsa-private-key">
-            <xsl:value-of select="$baseString"/>
-         </dp:sign>
-      </xsl:variable>
-      <xsl:value-of select="$signedData"/>
-   </xsl:template>
-</xsl:stylesheet>
+const crypto = require('crypto');
+
+function signSignatureBaseString(ks, signingKeyName) {
+  try {
+    // Create a Sign object with the 'rsa-sha256' algorithm
+    const sign = crypto.createSign('rsa-sha256');
+    
+    // Update the Sign object with the data to be signed
+    sign.update(ks);
+    
+    // Sign the data with the provided private key and output the signature in Base64 encoding
+    const signature = sign.sign(signingKeyName, 'base64');
+    
+    console.log("Signature with rsa-sha256 is:", signature);
+    
+    return signature;
+  } catch (error) {
+    console.error("Sign error:", error);
+    return null;
+  }
+}
+
+// Example usage:
+// const privateKey = fs.readFileSync('path_to_private_key.pem', 'utf8');
+// signSignatureBaseString('your_base_string_here', privateKey);
 
 
 
