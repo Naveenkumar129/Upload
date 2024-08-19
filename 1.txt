@@ -1,3 +1,43 @@
+var options = {
+    url: tokenEndpoint,  // The endpoint to get the OAuth token
+    method: 'POST',      // HTTP method (typically POST for token requests)
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'  // Specify the content type
+    },
+    body: `grant_type=password&client_id=${vClientId}&client_secret=${vClientSecret}&username=${vUsername}&password=${vPassword}&isCashier=true`,  // Body of the request
+    sslClientProfile: 'B2BSabStore-STC-TOPUP-CP'  // SSL client profile, if needed
+};
+
+urlopen.open(options, function(error, response) {
+    if (error) {
+        throw error;  // Handle error
+    } else {
+        var authApiResponseStatusCode = response.statusCode;  // Get the status code
+
+        if (authApiResponseStatusCode == 200) {
+            response.readAsJSON(function(error, response) {
+                if (error) {
+                    throw error;  // Handle error in reading response
+                } else {
+                    // Assuming the token is returned in 'access_token' property
+                    var oauthToken = response.access_token;
+
+                    // Create a context variable with the OAuth token
+                    context.setVar('Token', oauthToken);
+                }
+            });
+        } else {
+            // Handle non-200 status codes
+            console.log(`Error: Received status code ${authApiResponseStatusCode}`);
+        }
+    }
+});--------
+
+
+
+
+
+
 
 const crypto = require('crypto');
 
