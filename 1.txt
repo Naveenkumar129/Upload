@@ -1,3 +1,63 @@
+
+var sm = require('service-metadata');
+var buffer = require('buffer');
+
+// Extract the raw SOAP message
+var soapMessage = sm.getVar('var://context/input');
+console.log("Received SOAP Message:", soapMessage);
+
+// Define a regular expression to find the `xop:Include` href attribute
+var xopRegex = /<xop:Include href="cid:(.*?)"/;
+var match = xopRegex.exec(soapMessage);
+
+if (match) {
+    var cid = match[1];  // Extract the Content-ID (CID) from the xop:Include element
+
+    // Use the Content-ID to retrieve the binary attachment from the context
+    var attachment = sm.getVar('var://service/attachment/' + cid);
+
+    if (attachment) {
+        // Convert the attachment (which is a Buffer) to a string
+        var jsonString = attachment.toString('utf-8');
+
+        // Log the JSON string (for debugging purposes)
+        console.log("JSON Content as String:", jsonString);
+
+        // Parse the JSON string into a JavaScript object
+        try {
+            var jsonObject = JSON.parse(jsonString);
+            console.log("Parsed JSON Object:", jsonObject);
+
+            // You can now work with the JSON object as needed
+            // For example, access a specific property:
+            console.log("Specific Property:", jsonObject.someProperty);
+
+            // Optionally, modify the JSON object and re-encode it
+            jsonObject.newProperty = "New Value";
+            var updatedJsonString = JSON.stringify(jsonObject);
+
+            // Log the updated JSON string
+            console.log("Updated JSON String:", updatedJsonString);
+
+        } catch (e) {
+            console.error("Failed to parse JSON content:", e);
+        }
+
+    } else {
+        console.log("No attachment found with Content-ID:", cid);
+    }
+} else {
+    console.log("No xop:Include element found in the SOAP message.");
+}
+
+// Optionally, write back a response or modify the existing SOAP message
+// session.output.write(modifiedSoapMessage);
+----------
+
+
+
+
+
 var options = {
     url: tokenEndpoint,  // The endpoint to get the OAuth token
     method: 'POST',      // HTTP method (typically POST for token requests)
