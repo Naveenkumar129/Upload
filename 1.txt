@@ -1,5 +1,4 @@
-
----var https = require('https'); // Module for making HTTPS requests
+var https = require('https'); // Module for making HTTPS requests
 var jwt = require('jwt'); // Assuming jwt module is available in your environment
 var session = require('session');
 
