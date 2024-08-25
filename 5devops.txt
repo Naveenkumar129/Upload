@@ -1,0 +1,80 @@
+PROCESS:
+git branch movies
+git checkout movies
+touch movies{1..5}
+git add movies*
+git commit -m "dev-1" movies*
+
+
+NOW PUSH THE CODE TO GITHUB:
+create a repo
+git remote add origin https://github.com/nayakdebasish091/paytm.git
+
+PUSH: to send files form git to github
+local: .git & remote: paytm.git
+git push origin movies
+username:
+password:
+
+TOKEN GENERATION: 
+account -- > settings -- >developer settings -- > PAT -- > Classic -- > Generate new token -- > classic -- > name: abcd -- > select 6 options -- > generate 
+
+Note: it will be visible only once
+
+---
+
+ cat terraform.tfstate
+   17  terraform destroy
+   18  cat terraform.tfstate
+   19  vim main.tf
+   20  terraform plan
+   21  terraform apply
+   22  cat terraform.tfstate
+   23  terraform state list
+   24  terraform destroy -target="aws_instance.one[4]"
+   25  terraform state list
+   27  terraform destroy --auto-approve -target="aws_instance.one[3]" -target="aws_instance.one[2]"                                                                                                                                                                                                                         ance.one[0]"
+   28  terraform state list
+   29  terraform destroy --auto-approve
+   30  vim main.tf
+   31  terraform plan
+   32  terraform apply --auto-approve
+
+----
+
+pipeline {
+    agent any 
+
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('accesskey')
+        AWS_SECRET_ACCESS_KEY = credentials('secretkey')
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/jabinmohammad/Monolithic-Project.git'
+            }
+        }
+        stage('init') {
+            steps {
+                sh 'terraform init'
+            }
+        }
+        stage('validate') {
+            steps {
+                sh 'terraform validate'                
+            }
+        }
+        stage('plan') {
+            steps {
+                sh 'terraform plan'
+            }
+        }
+        stage('action') {
+            steps {
+                sh 'terraform $action --auto-approve'
+            }
+        }
+    }
+}
