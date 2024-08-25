@@ -1,4 +1,118 @@
 
+---var https = require('https'); // Module for making HTTPS requests
+var jwt = require('jwt'); // Assuming jwt module is available in your environment
+var session = require('session');
+
+// Split JWT into its components
+var jwtToken = "your_jwt_token_here"; // Replace with the actual JWT token
+var jwtSplitTokens = jwtToken.split('.');
+var encodedHeader = jwtSplitTokens[0];
+var decodedHeader = JSON.parse(Buffer.from(encodedHeader, 'base64').toString('utf-8'));
+
+var kid = decodedHeader.kid; // Extract the Key ID from the JWT header
+console.log('kid: ' + kid);
+console.log('decodedHeader alg: ' + decodedHeader.alg);
+
+console.log('Starting JWT decoding...');
+
+// URL of the JWK set
+var jwkUrl = "https://example.com/.well-known/jwks.json"; // Replace with the actual JWK URL
+
+// Function to fetch JWK Set
+function fetchJwkSet(callback) {
+    https.get(jwkUrl, function(response) {
+        var body = '';
+
+        response.on('data', function(chunk) {
+            body += chunk;
+        });
+
+        response.on('end', function() {
+            if (response.statusCode === 200) {
+                var jwkSet = JSON.parse(body);
+                callback(null, jwkSet);
+            } else {
+                callback(new Error("Failed to fetch JWK Set. Status Code: " + response.statusCode));
+            }
+        });
+
+    }).on('error', function(e) {
+        callback(e);
+    });
+}
+
+// Fetch the JWK Set and validate JWT
+fetchJwkSet(function(error, jwkSet) {
+    if (error) {
+        throw {
+            name: "Unauthorized",
+            message: "Failed to fetch JWK Set",
+            errorType: "JWTError",
+            errorCode: "401"
+        };
+    }
+
+    // Find the key in the JWK Set that matches the 'kid'
+    var publicKey;
+    for (var i = 0; i < jwkSet.keys.length; i++) {
+        if (jwkSet.keys[i].kid === kid) {
+            publicKey = jwkSet.keys[i];
+            break;
+        }
+    }
+
+    if (!publicKey) {
+        throw {
+            name: "Unauthorized",
+            message: "No matching key found in JWK Set",
+            errorType: "JWTError",
+            errorCode: "401"
+        };
+    }
+
+    console.log("Public Key found:", publicKey);
+
+    // Initialize the JWT decoder with the JWT token
+    var decoder = new jwt.Decoder(jwtToken);
+
+    // Add operations to the decoder for verification
+    decoder.addOperation('verify', publicKey)
+           .addOperation({
+               validateDataType: true,
+               validateAudience: false,
+               validateExpiration: true,
+               validateNotBefore: true,
+               validateAud: 'data-rouser'
+           })
+           .decode(function (error, claims) {
+               if (error) {
+                   var errorPhrase = error.errorMessage;
+                   if (errorPhrase.includes('expired')) {
+                       throw {
+                           name: "Unauthorized",
+                           message: "The access token expired",
+                           errorType: "JWTError",
+                           errorCode: "401"
+                       };
+                   } else {
+                       // Handle other errors
+                       throw {
+                           name: "Unauthorized",
+                           message: "Invalid JWT",
+                           errorType: "JWTError",
+                           errorCode: "401"
+                       };
+                   }
+               }
+
+               console.log("JWT Claims: ", claims);
+
+               // Proceed with further processing using the JWT claims
+           });
+});
+
+console.log('JWT processing complete.');
+--------------
 var sm = require('service-metadata');
 var buffer = require('buffer');
 
