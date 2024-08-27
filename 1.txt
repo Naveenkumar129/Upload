@@ -1,3 +1,129 @@
+var jwt = require('jwt'); // JWT module for decoding and verifying tokens
+var urlopen = require('urlopen'); // Module for making HTTP/HTTPS requests
+
+// Replace with the actual JWT token you want to validate
+var jwtToken = "your_jwt_token_here";
+
+// Split the JWT into its components
+var jwtSplitTokens = jwtToken.split('.');
+var encodedHeader = jwtSplitTokens[0];
+var decodedHeader = JSON.parse(Buffer.from(encodedHeader, 'base64').toString('utf-8'));
+
+var kid = decodedHeader.kid; // Extract the Key ID (kid) from the JWT header
+console.log('kid: ' + kid);
+
+// URL of the JWK set - replace with the actual URL
+var jwkUrl = "https://example.com/.well-known/jwks.json";
+
+// Function to fetch the JWK Set
+function fetchJwkSet(callback) {
+    urlopen.open({
+        url: jwkUrl,
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+    }, function(error, response) {
+        if (error) {
+            callback(error);
+            return;
+        }
+
+        var responseStatusCode = response.statusCode;
+        if (responseStatusCode !== 200) {
+            callback(new Error("Failed to fetch JWK Set. Status Code: " + responseStatusCode));
+            return;
+        }
+
+        response.readAsJSON(function(error, jwkSet) {
+            if (error) {
+                callback(error);
+            } else {
+                callback(null, jwkSet);
+            }
+        });
+    });
+}
+
+// Fetch the JWK Set and validate the JWT
+fetchJwkSet(function(error, jwkSet) {
+    if (error) {
+        console.error("Failed to fetch JWK Set:", error);
+        session.reject('JWTError', 401, 'Failed to fetch JWK Set');
+        return;
+    }
+
+    // Find the key in the JWK Set that matches the 'kid'
+    var publicKey;
+    for (var i = 0; i < jwkSet.keys.length; i++) {
+        if (jwkSet.keys[i].kid === kid) {
+            publicKey = jwkSet.keys[i];
+            break;
+        }
+    }
+
+    if (!publicKey) {
+        console.error("No matching key found in JWK Set for kid:", kid);
+        session.reject('JWTError', 401, 'No matching key found in JWK Set');
+        return;
+    }
+
+    console.log("Public Key found:", publicKey);
+
+    // Initialize the JWT decoder with the JWT token
+    var decoder = new jwt.Decoder(jwtToken);
+
+    // Add operations to the decoder for verification
+    decoder.addOperation('verify', publicKey)
+           .addOperation({
+               validateDataType: true,
+               validateAudience: true,
+               validateExpiration: true,
+               validateNotBefore: true,
+               validateAud: 'data-rouser' // Replace with your actual audience
+           })
+           .decode(function (error, claims) {
+               if (error) {
+                   console.error("JWT verification failed:", error.errorMessage);
+                   session.reject('JWTError', 401, error.errorMessage);
+                   return;
+               }
+
+               console.log("JWT Claims:", claims);
+
+               // Verify specific claims (customize as needed)
+               if (claims.iss !== 'expected_issuer') { // Replace with your expected issuer
+                   console.error("Invalid issuer:", claims.iss);
+                   session.reject('JWTError', 401, 'Invalid issuer');
+                   return;
+               }
+
+               if (!claims.aud || claims.aud !== 'data-rouser') { // Replace with your expected audience
+                   console.error("Invalid audience:", claims.aud);
+                   session.reject('JWTError', 401, 'Invalid audience');
+                   return;
+               }
+
+               // Verify scopes
+               var expectedScopes = ['read:ora', 'write:ora']; // Example expected scopes
+               var tokenScopes = claims.scope.split(' '); // Assuming scopes are space-separated in the JWT
+
+               var hasRequiredScopes = expectedScopes.every(scope => tokenScopes.includes(scope));
+               if (!hasRequiredScopes) {
+                   console.error("Insufficient scope:", claims.scope);
+                   session.reject('JWTError', 403, 'Insufficient scope');
+                   return;
+               }
+
+               console.log("JWT validated successfully.");
+
+               // Proceed with further processing using the JWT claims
+               // Your business logic here
+           });
+});
+
+console.log('JWT processing complete.');
+
+
+-----
 var https = require('https'); // Module for making HTTPS requests
 var jwt = require('jwt'); // Assuming jwt module is available in your environment
 var session = require('session');
