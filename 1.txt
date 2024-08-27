@@ -1,3 +1,6 @@
+var contentType = hm.current.get('content-type');
+
+
 var jwt = require('jwt'); // JWT module for decoding and verifying tokens
 var urlopen = require('urlopen'); // Module for making HTTP/HTTPS requests
 
