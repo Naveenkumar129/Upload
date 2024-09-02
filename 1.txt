@@ -1,3 +1,57 @@
+// Import required modules
+var hm = require('header-metadata');
+var sm = require('service-metadata');
+var service = require('service-metadata');
+
+// Get the Authorization header
+var authHeader = hm.current.get('Authorization');
+
+// Check if Authorization header exists and starts with "Basic"
+if (authHeader && authHeader.startsWith('Basic ')) {
+    // Get the Base64 encoded part (after "Basic ")
+    var encodedCredentials = authHeader.substring(6).trim();
+
+    // Decode the Base64 string
+    var decodedCredentials = Buffer.from(encodedCredentials, 'base64').toString('utf8');
+
+    // Split the decoded string into client_id and client_secret
+    var credentials = decodedCredentials.split(':');
+    var clientId = credentials[0];
+    var clientSecret = credentials[1];
+
+    // Replace these with your actual client_id and client_secret validation logic
+    var expectedClientId = 'expected_client_id';
+    var expectedClientSecret = 'expected_client_secret';
+
+    // Perform the authentication
+    if (clientId === expectedClientId && clientSecret === expectedClientSecret) {
+        // Authentication successful
+        hm.current.set('x-client-authenticated', 'true');
+        session.output.write('Authentication successful');
+    } else {
+        // Authentication failed
+        hm.current.statusCode = 401;
+        hm.current.set('WWW-Authenticate', 'Basic realm="example"');
+        session.output.write('Invalid client_id or client_secret');
+    }
+} else {
+    // No Authorization header or wrong scheme
+    hm.current.statusCode = 400;
+    session.output.write('Bad Request: Authorization header missing or not Basic');
+}
+
+// End the session to prevent further processing if authentication fails
+session.output.end();
+
+
+
+
+
+
+
+
+
++++++++++++
 var contentType = hm.current.get('content-type');
 
 
