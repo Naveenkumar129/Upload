@@ -1,3 +1,13 @@
+curl -X POST https://your-datapower-endpoint \
+-H "Content-Type: application/x-www-form-urlencoded" \
+-H "Accept-Language: en" \
+-d "grant_type=password&client_id=TO BE PROVIDED DURING TEST&client_secret=TO BE PROVIDED DURING TEST&username=TO BE PROVIDED DURING TEST&password=TO BE PROVIDED DURING TEST"
+
+
+
+
+
+
 // Import required modules
 var hm = require('header-metadata');
 var sm = require('service-metadata');
