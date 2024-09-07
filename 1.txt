@@ -1,3 +1,84 @@
+
+var hm = require('header-metadata');
+var urlopen = require('urlopen');
+var querystring = require('querystring');
+
+// Prepare the request body
+var requestBody = querystring.stringify({
+    grant_type: 'password',
+    client_id: 'your_client_id',  // Replace with actual client_id
+    client_secret: 'your_client_secret',  // Replace with actual client_secret
+    username: 'your_username',  // Replace with actual username
+    password: 'your_password'  // Replace with actual password
+});
+
+// Set the headers
+var headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Accept-Language': 'en'
+};
+
+// Options for the urlopen call
+var options = {
+    target: 'https://your-server-endpoint.com/token',  // Replace with your target server URL
+    method: 'POST',
+    headers: headers,
+    contentType: 'application/x-www-form-urlencoded',
+    data: requestBody
+};
+
+// Send the request to the server
+urlopen.open(options, function(error, response) {
+    if (error) {
+        // Handle error in sending request
+        hm.current.statusCode = 500;
+        session.output.write('Error in sending request: ' + JSON.stringify(error));
+        session.output.end();
+        return;
+    }
+
+    // Process the server response
+    response.readAsJSON(function(error, jsonResponse) {
+        if (error) {
+            // Handle error in reading response
+            hm.current.statusCode = 500;
+            session.output.write('Error reading response: ' + JSON.stringify(error));
+            session.output.end();
+            return;
+        }
+
+        // Write the server's response to the client
+        hm.current.statusCode = response.statusCode;
+        session.output.write(JSON.stringify(jsonResponse));
+        session.output.end();
+    });
+});
+
+
+
+-----
+
+
+var hm = require('header-metadata');
+var urlopen = require('urlopen');
+var querystring = require('querystring');
+
+// Prepare the request body
+var requestBody = querystring.stringify({
+    grant_type: 'password',
+    client_id: 'your_client_id',  // Replace with actual client_id
+    client_secret: 'your_client_secret',  // Replace with actual client_secret
+    username: 'your_username',  // Replace with actual username
+    password: 'your_password'  // Replace with actual password
+});
+
+// Set the headers
+var headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Accept-Language': 'en'
+};
+
+// Options for 
 curl -X POST https://your-datapower-endpoint \
 -H "Content-Type: application/x-www-form-urlencoded" \
 -H "Accept-Language: en" \
