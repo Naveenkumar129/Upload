@@ -1,4 +1,50 @@
 
+// Import the required modules
+var urlopen = require('urlopen');
+
+// Set the URL to which the request will be sent
+var url = 'https://authuat.emirates.dev/oauth2/ausfs9xvduhmplOrT0h7/v1/token';
+
+// Define the payload for the POST request
+var body = 'grant_type=client_credentials&scope=$$$';
+
+// Define the headers
+var headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Authorization': 'Basic ***'  // Replace with your base64 encoded client credentials
+};
+
+// Prepare options for the urlopen function
+var options = {
+    target: url,
+    method: 'POST',
+    headers: headers,
+    data: body
+};
+
+// Make the HTTP request
+urlopen.open(options, function(error, response) {
+    if (error) {
+        console.error('Error during request:', error);
+        session.output.write('Request failed');
+    } else {
+        // Read the response
+        var responseStatusCode = response.statusCode;
+        var responseHeaders = response.headers;
+        var responseBody = response.readAsBuffer(function(error, buffer) {
+            if (error) {
+                console.error('Error reading response body:', error);
+            } else {
+                session.output.write(buffer.toString());
+            }
+        });
+    }
+});
+
+
+≈==========
+
 var hm = require('header-metadata');
 var urlopen = require('urlopen');
 var querystring = require('querystring');
