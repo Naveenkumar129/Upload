@@ -21,6 +21,11 @@ DNS.1   = yourdomain.com                      # Primary domain (same as CN)
 DNS.2   = www.yourdomain.com                  # Alternate domain (e.g. www)
 DNS.3   = api.yourdomain.com                  # Another subdomain
 
+
+
+openssl genpkey -algorithm RSA -out private-key.key -pkeyopt rsa_keygen_bits:2048
+openssl req -new -key private-key.key -out yourdomain.csr -config openssl-san.cnf
+
 ---
 
 
