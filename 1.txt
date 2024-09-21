@@ -1,3 +1,28 @@
+[ req ]
+default_bits       = 2048
+prompt             = no
+default_md         = sha256
+distinguished_name = dn
+req_extensions     = req_ext
+
+[ dn ]
+C                 = US                       # Country
+ST                = California                # State
+L                 = San Francisco             # Locality/City
+O                 = Your Organization Name    # Organization Name
+OU                = Your Unit Name            # Organizational Unit Name
+CN                = yourdomain.com            # Common Name (CN) (Primary domain)
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1   = yourdomain.com                      # Primary domain (same as CN)
+DNS.2   = www.yourdomain.com                  # Alternate domain (e.g. www)
+DNS.3   = api.yourdomain.com                  # Another subdomain
+
+---
+
 
 // Import the required modules
 var urlopen = require('urlopen');
