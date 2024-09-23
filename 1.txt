@@ -3,6 +3,26 @@ DR -SCirpt automation
 https://github.com/hassanhashmy/kafka-docker-masterr/blob/70d978271db0efd14fc68fd9cb040074dbb4b887/playbooks/reassign-topics-request.json.j2
 ---
 
+To force push:
+--------------
+git push origin branchname -f
+Eg:
+git push origin master -f
+
+
+To view the remote url
+----------
+git remote -v 
+This will view the git url used
+
+
+To set new remote url:
+-----------
+git remote set-url origin urlofthegit
+Eg:
+git remote set-url origin https://github.com/robin/myapp.git
+-----------------
+
 [ req ]
 default_bits       = 2048
 prompt             = no
