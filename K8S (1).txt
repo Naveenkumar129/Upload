@@ -1,34 +1,4 @@
-// GatewayScript action for forwarding the response to two destinations
-var apim = require('apim');
-var urlopen = require('urlopen');
 
-// Capture the response from the original backend
-apim.readInputAsBuffer(function(error, responseBody) {
-    if (error) {
-        session.output.write("Error reading response.");
-        return;
-    }
-
-    // Forward the response to the secondary destination asynchronously
-    var options = {
-        target: 'https://secondary.example.com/endpoint',
-        method: 'POST',
-        contentType: 'application/json',
-        timeout: 60, // Timeout in seconds
-        data: responseBody
-    };
-
-    urlopen.open(options, function(error, response) {
-        if (error) {
-            console.error("Error sending response to secondary service: " + error);
-        } else {
-            console.log("Successfully sent response to secondary service.");
-        }
-
-        // Continue sending the original response to the client
-        session.output.write(responseBody);
-    });
-});
 
 
 ----
