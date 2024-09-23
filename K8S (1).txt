@@ -1,3 +1,61 @@
+kubernetes commands
+#1. how to see the kube config file of the cluster?
+kubectl config view
+
+#2. How to see the pod objects that are in specific namespace?
+kubectl get pods -o wide -n namespace
+
+#3. how to create a namespace?
+kubectl create namespace namespacename
+
+#4How to change the namespace of the an kubernetes cluster we want to access
+kubectl config set-context --current --namespace=x
+
+#5How to see the current context we are using?
+kubectl config current-context
+
+#6How to see all the contexts
+kubectl config get-contexts
+
+#7 How to switch the context
+kubectl config use-context contextname
+
+#8. how to create a pod on the cluster?
+kubectl create -f pod.yml -n namespace
+
+#9. how to see the pods on the cluster?
+kubectl get pods -o wide -n namespace
+
+#10. how to see the details of a pod on the cluster?
+kubectl describe pod podName
+
+#11. how to see the logs of the running application inside the pod?
+kubectl logs podName
+kubectl logs -f podName = tail -f
+
+#12. how to delete a pod
+kubectl delete pod podName
+kubectl delete -f pod.yml
+
+---
+kubernetes has provided built-in secret types, which can be used as a type while defining secret
+1. opaque = arbitary data
+2. kubernetes.io/service-account-token  = The service account token, is a kubernetes secret or system secret
+3. kubernetes.io/dockercfg  = The serialized format of doker config file
+4. kubernetes.io/dockerconfigjson = serialized format of docker config json file
+5. kubernetes.io/basic-auth       = username/password
+6. kubernetes.io/ssh-auth         = ssh keys
+7. kubernetes.io/tls              = ssl keys
+
+
+
+
+
+
+
+
+
+------
 KUBERNETES:
 --------------
 what is k8s ?
