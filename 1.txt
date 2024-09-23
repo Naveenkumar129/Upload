@@ -1,3 +1,39 @@
+// Require the 'session' and 'hm' (headers and metadata) modules
+var session = require('session');
+var hm = require('header-metadata');
+
+// Declare a variable to hold the parsed JSON payload
+var contextVariable;
+
+// Function to read and parse JSON from the request body
+session.input.readAsJSON(function(error, jsonData) {
+    if (error) {
+        // Handle error in reading or parsing JSON
+        session.output.write({
+            message: "Error reading JSON payload",
+            error: error.message
+        });
+    } else {
+        // Save the parsed JSON to a context variable
+        contextVariable = jsonData;
+
+        // Log the parsed JSON to check
+        console.log("Parsed JSON Data: ", JSON.stringify(contextVariable));
+
+        // Set response headers
+        hm.response.statusCode = 200;
+        hm.response.set('Content-Type', 'application/json');
+
+        // Send a response back to the client with the parsed data
+        session.output.write({
+            message: "JSON payload received and saved",
+            data: contextVariable
+        });
+    }
+});
+
+
+----
 DR -SCirpt automation
 
 https://github.com/hassanhashmy/kafka-docker-masterr/blob/70d978271db0efd14fc68fd9cb040074dbb4b887/playbooks/reassign-topics-request.json.j2
