@@ -1,3 +1,15 @@
+
+kafka-get-offsets --bootstrap-server cit-c.:9092 --topic Throttling-Circuit-Breaker --time -2 command-config /mnt/confiq/client.properties Latest offsets kafka-get-offaeta.sh --bootstrap-server 0.0.0.0:9093 --topic Throttling-Circuit-Breaker --time -l --command-config /kafka_2.12-3.3.1/config/producer.prope. Earliest Offset kafka-get-offaets.sh --bootstrap-server 0.0.0.0:9093 --topic Throttling-Circuit-Breaker time -2 --command-config /kafka_2.12-3.3.1/config/producer.proper. kafka-dump-log.sh --print-data-log --files /tmp/kafka-logs/AMH-EU-Urgent-Throttler-0/00000000000000000010.log
+ S 1 6 47 49
+ Vormal text file
+length:2,313 lines:48
+Ln:48 Col:1Sel:0|0
+Type here to search
+Windows (CR LF) UTF-
+
+
+
+
 // Require the 'session' and 'hm' (headers and metadata) modules
 var session = require('session');
 var hm = require('header-metadata');
