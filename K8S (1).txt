@@ -1,3 +1,70 @@
+## Create Kubernetes Service Account
+
+The easiest way to create this account is to login to the OpenShift master to run oadm and oc (these instructions from OpenUnison's product manual):
+
+```bash
+$ kubectl create namespace openunison
+$ kubectl create serviceaccount openunison -n openunison
+$ kubectl describe serviceaccount openunison -n openunison
+$ kubectl describe secret openunison-token-xxxx -n openunison
+```
+
+In the above example, XXXX is the id of one of the tokens generated in the `Tokens` section of the output from the `kubectl describe serviceaccount openunison -n openunison`.  The final command will output a large, base64 encoded token.  This token is what OpenUnison will use to communicate with Kubernetes.  Hold on to this value for the next step.
+
+## Create Roles and RoleBindings
+
+Once the service account is created, a RoleBinding giving it access to Kubernetes needs to be created.  Additionally, Roles and RoleBindings need to be created that will grant users with cluster administration access able to manage Kubernetes.
+
+```bash
+$ cat <<EOF | kubectl create -f -
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openunison-cluster-administrators
+subjects:
+- kind: Group
+  name: k8s-cluster-administrators
+  apiGroup: rbac.authorization.k8s.io
+- kind: ServiceAccount
+  name: openunison
+  namespace: openunison
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+EOF
+
+$ cat <<EOF | kubectl create -f -
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: list-namespaces
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - list
+EOF
+
+
+$ cat <<EOF | kubectl create -f -
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openunison-cluster-list-namespaces
+subjects:
+- kind: Group
+  name: users
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: list-namespaces
+  apiGroup: rbac.authorization.k8s.io
+EOF
+```
+The first RoleBinding allows for our service account and for users with the `k8s-cluster-administrators` group to be members of the `cluster-admin` role.  The next two objects create a simple role and binding that will let any user from OpenUnison list the namespaces.  This is needed for the dashboard to function properly.
 
 
 
