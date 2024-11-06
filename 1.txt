@@ -1,3 +1,14 @@
+import groovy.transform.Field
+eField List<String> topiclistCached = []
+ static def _kubectl(String kubect1, String config, String namespace, String cmd) ( return "Sfkubectl) --kubeconfig=$(config) -n $(namespace) exec kafka-broker4-0 -c kafka-broker "bash -C 'KAFKA_LOG4)_OPTS=-Dlog4j.configuration=file://kafka_2.12-3.3.1/config/tools-log4j.properties " "kafka-configs.sh --bootstrap-server 128.168.112.26:9093,128.168.112.27:9093,128.168.112.28:9093,128.179.18.26:9093,128.179.18 "Sfcmd) " I
+ static def kafkaTopic(String kubectl, String config, String namespace, String cmd) ( return "S(kubectl) --kubeconfig-sfconfig) -n $(namespace) exec kafka-broker4-0 -c kafka-broker "bash -c 'KAFKA_LOG4)_OPTS--Dlog4j.configuration=file:///kafka_2.12-3.3.1/config/tools-log4j.properties "+ "kafka-topics.sh --bootstrap-server kafka-headless:9092 --command-config /kafka_2.12-3.3.1/config/producer.properties " "S(cmd)" 2>/dev/null"
+ 2
+24 25
+ def topicExist (String config, String namespace, String kubectl, String topic) ( if (!topicListCached) ( topiclistCached = sh(script: kafkaTopic(kubectl, config, namespace, '--list'), returnStdout: true) .trim().split("in')
+ S
+OLG________
+
+
 
 kafka-get-offsets --bootstrap-server cit-c.:9092 --topic Throttling-Circuit-Breaker --time -2 command-config /mnt/confiq/client.properties Latest offsets kafka-get-offaeta.sh --bootstrap-server 0.0.0.0:9093 --topic Throttling-Circuit-Breaker --time -l --command-config /kafka_2.12-3.3.1/config/producer.prope. Earliest Offset kafka-get-offaets.sh --bootstrap-server 0.0.0.0:9093 --topic Throttling-Circuit-Breaker time -2 --command-config /kafka_2.12-3.3.1/config/producer.proper. kafka-dump-log.sh --print-data-log --files /tmp/kafka-logs/AMH-EU-Urgent-Throttler-0/00000000000000000010.log
  S 1 6 47 49
