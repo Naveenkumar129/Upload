@@ -1,5 +1,20 @@
-
-
+We can trigger compaction only on the topics with cleanup.policy=compact, The compaction is a regular operation on kafka and it runs many times every day for different topics.
+Action
+1.Get the value of the min.cleanable.dirty.ratio.
+kafka-configs.sh
+-bootstrap-server localhost:9093
+command-config /kafka_2.12-3.3.1/config/producer.properties --entity-type topics--entity-name <TOPIC_NAME>
+describe --all| get min.ceanable.dirty.ratio
+bash-4.23 kafka-configs.sh --bootstrap-server localhost:9893 --cornand-config /kafka_2.12-3.3.1/config/producer.propertics-cntity-ty topics .-entity-nane Correlation-Store --describe --all I grep nin.cleanable.dirty.ratio nin.clcanablc.dirty.ratio-0.5 scnsitivc-falsc synonyns=(DYMAHIC_TOPICfONFIG:nin.cleanablc.cirty.ratio-0.5, DEFAULT_COFIG:log.clear nin.cleanable.ratio=0.5)
+ 2. Reduce the value of min.cleanable.dirty.ratio ie 0.1
+kafka-configs.sh --bootstrap-server localhost:9093 --command-config/kafka_2.12-3.3.1/config/producer.properties entity-type topics --entity-name <TOPIC_NAME> --alter --add-config min.cleanable.dirty.ratio=<VAL
+[2074-01-10 12:23:31,333) INFO Kofko cormitId: e23c59d08c687ff5 (org.apache.kafka.cornon.utils.AppInfoParser) 2021-01-10 12:23:31,333) INFO Kafka startTireN5: 1704889411329 (org.apache.kafka.cornon.utils.AppinfoParser) onolctcd updoting config for topic Corrc lation-Storc. (2U24-8TPIU 12:23-32,052] INFO App Into kafka. adrfn:-fent for adninclient-1 unregistered (org.apache.kafka.common.utils.AppInfoParser
+ 3. Verify that the value changed
+kafka-configs.sh --bootstrap-server localhost:9093 -command-config /kafka_2.12-3.3.1/config/producer.properties --entity-type topics --entity-name <TOPIC_NAME> --describe --all I get min.deanable.dirty.ratio
+Dash-4.25 katka-contigs.sn --bootstrap-server localhost:9093 --comrana-contig /katka_2.12-3.3.1/config/producer.properties..c gfy. pe topics --entity-nane Correlation-Store --describe --all N grep min.cleanoble.dirty.ratio .clcanable.cirty.ratio-0.1 sensitive-false synonyng-(OYILAMIC_TOPIC_CONFIG:nin.clcanablc.dirty.rat1o=0.1,DEFAULT_COIFIG:log.clean nin. nin.cleanable.ratio=0.5)
+ S After the compaction completes, we can set the value back
+O
+----
 
 import groovy.transform.Field
 eField List<String> topiclistCached = []
