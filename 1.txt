@@ -1,4 +1,10 @@
-We can trigger compaction only on the topics with cleanup.policy=compact, The compaction is a regular operation on kafka and it runs many times every day for different topics.
+Get topic partition offset by timestamp format Collapse source
+/opt/connect/kafka/software/confluent/bin/kafka-get-offsets --bootstrap-server $(hostl:postl),$(host2:post2) \ -command-config /opt/connect/kafka/software/confluent/etc/kafka/client.properties --topic-partitions $(topicName):$(partitionNum) --time $(timestamr)
+ Get messages by offset and topic partition format Collapse source T /opt/connect/kafka/software/confluent/bin/kafka-console-consumer I -bootstrap-server $(hostl:postl),$(host2:post2) \ -consumer.config /opt/connect/kafka/software/confluent/etg/kafka/client.properties I -partition $(partitionNum) --offset $(offsetNumber) \ -topic $(topicName) \ -property print.key-true ( --property print.timestamp=true --property print.headers=true I -timeout-ms 2000 \ --Wax-messages 30
+ Search message by value format Collapse source
+/opt/connect/kafka/software/confluent/bin/kafka-console-consumer I --bootstrap-server $(hostl:postl),$(host2:post2] \ -consumer.config /opt/connect/katkg/software/confluent/stc/kafka/client.properties I -partition $(partitionNum) -offset $(offsetNumber) \ --topic $(topicNamne] \ -property print.key-true --property print.timnestamp=true -property print.headers=true -timsout-ms 2000 \ max-messages 30 \ larep $(Value) >/tmp/kafka/tmo-mesConsole-loa/$(loa file name) al text file length:2,
+
+-----We can trigger compaction only on the topics with cleanup.policy=compact, The compaction is a regular operation on kafka and it runs many times every day for different topics.
 Action
 1.Get the value of the min.cleanable.dirty.ratio.
 kafka-configs.sh
