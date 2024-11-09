@@ -1,19 +1,17 @@
-rre reme",
-Search message by value format Collapse source
-/opt/connect/kafka/software/confluent/bin/kafka-console-consumer I --bootstrap-server $(hostl:postl),$(host2:post2) \ --consumer.config /opt/connect/kafka/software/confluent/ctc/kafka/client.properties I -partition $(partitionNum) --offset $(offsetNumber) \ -topic $(topicName) \ -property print.key-true I --property print.timestamp-true I --property print.headers=true I -timeout-ms 2000 \ -max-messages 30 \ laxk -F 'CreateTime:l\t' '$2>-$(startTimestamp) &s $2<=$(endTimestamp) (print $0)' >
- /tmp/kafka/tmp-mesConsole-1c
-Search message by value format Collapse source
-/opt/connect/kafka/software/confluent/bin/kafka-console-consumer --bootstrap-server $(hostl:postl),$(host2:post2) \ --consumer.config /opt/connect/kafka/software/confluent/etc/kafka/client.properties -partition $(partitionNum) -offset $(offsetNumber) \ -topic $(topicName) \ -property print.key-true I -property print.timestamR-true --property print.headers=true -timsout-ms 2000 \ -nax-messages 30 lawk -F 'CreateTime: It' "$2>=1701919762020 (print $o' /tmR/ kafka EIR -mesConsole-log/1.txt V E
- text file
-○ Type here to search
-length:2,575 lines : 71
-Ln:40
+kafka-get-offsets --bootstrap-server cit-c.:9092 --topic Throttling-Circuit-Breaker --time -2 command-config /mnt/confiq/client.properties Latest offsets kafka-get-offaeta.sh --bootstrap-server 0.0.0.0:9093 --topic Throttling-Circuit-Breaker --time -l --command-config /kafka_2.12-3.3.1/config/producer.prope. Earliest Offset kafka-get-offaets.sh --bootstrap-server 0.0.0.0:9093 --topic Throttling-Circuit-Breaker time -2 --command-config /kafka_2.12-3.3.1/config/producer.proper. kafka-dump-log.sh --print-data-log --files /tmp/kafka-logs/AMH-EU-Urgent-Throttler-0/00000000000000000010.log
 
 
-----
+Search message by value format Collapse source
+/opt/connect/kafka/software/confluent/bin/kafka-console-consumer I --bootstrap-server $(hostl:postl),$(host2:post2) \ --consumer.config /opt/connect/kafka/software/confluent/ctc/kafka/client.properties I -partition $(partitionNum) --offset $(offsetNumber) \ -topic $(topicName) \ -property print.key-true I --property print.timestamp-true I --property print.headers=true I -timeout-ms 2000 \ -max-messages 30 \ laxk -F 'CreateTime:l\t' '$2>-$(startTimestamp) &s $2<=$(endTimestamp) (print $0)' > /tmp/kafka/tmp-mesConsole-1c
+
+Search message by value format Collapse source
+/opt/connect/kafka/software/confluent/bin/kafka-console-consumer --bootstrap-server $(hostl:postl),$(host2:post2) \ --consumer.config /opt/connect/kafka/software/confluent/etc/kafka/client.properties -partition $(partitionNum) -offset $(offsetNumber) \ -topic $(topicName) \ -property print.key-true I -property print.timestamR-true --property print.headers=true -timsout-ms 2000 \ -nax-messages 30 lawk -F 'CreateTime: It' "$2>=1701919762020 (print $o' /tmR/ kafka EIR -mesConsole-log/1.txt 
+
 Get topic partition offset by timestamp format Collapse source
 /opt/connect/kafka/software/confluent/bin/kafka-get-offsets --bootstrap-server $(hostl:postl),$(host2:post2) \ -command-config /opt/connect/kafka/software/confluent/etc/kafka/client.properties --topic-partitions $(topicName):$(partitionNum) --time $(timestamr)
+
  Get messages by offset and topic partition format Collapse source T /opt/connect/kafka/software/confluent/bin/kafka-console-consumer I -bootstrap-server $(hostl:postl),$(host2:post2) \ -consumer.config /opt/connect/kafka/software/confluent/etg/kafka/client.properties I -partition $(partitionNum) --offset $(offsetNumber) \ -topic $(topicName) \ -property print.key-true ( --property print.timestamp=true --property print.headers=true I -timeout-ms 2000 \ --Wax-messages 30
+
  Search message by value format Collapse source
 /opt/connect/kafka/software/confluent/bin/kafka-console-consumer I --bootstrap-server $(hostl:postl),$(host2:post2] \ -consumer.config /opt/connect/katkg/software/confluent/stc/kafka/client.properties I -partition $(partitionNum) -offset $(offsetNumber) \ --topic $(topicNamne] \ -property print.key-true --property print.timnestamp=true -property print.headers=true -timsout-ms 2000 \ max-messages 30 \ larep $(Value) >/tmp/kafka/tmo-mesConsole-loa/$(loa file name) al text file length:2,
 
@@ -25,6 +23,7 @@ kafka-configs.sh
 command-config /kafka_2.12-3.3.1/config/producer.properties --entity-type topics--entity-name <TOPIC_NAME>
 describe --all| get min.ceanable.dirty.ratio
 bash-4.23 kafka-configs.sh --bootstrap-server localhost:9893 --cornand-config /kafka_2.12-3.3.1/config/producer.propertics-cntity-ty topics .-entity-nane Correlation-Store --describe --all I grep nin.cleanable.dirty.ratio nin.clcanablc.dirty.ratio-0.5 scnsitivc-falsc synonyns=(DYMAHIC_TOPICfONFIG:nin.cleanablc.cirty.ratio-0.5, DEFAULT_COFIG:log.clear nin.cleanable.ratio=0.5)
+
  2. Reduce the value of min.cleanable.dirty.ratio ie 0.1
 kafka-configs.sh --bootstrap-server localhost:9093 --command-config/kafka_2.12-3.3.1/config/producer.properties entity-type topics --entity-name <TOPIC_NAME> --alter --add-config min.cleanable.dirty.ratio=<VAL
 [2074-01-10 12:23:31,333) INFO Kofko cormitId: e23c59d08c687ff5 (org.apache.kafka.cornon.utils.AppInfoParser) 2021-01-10 12:23:31,333) INFO Kafka startTireN5: 1704889411329 (org.apache.kafka.cornon.utils.AppinfoParser) onolctcd updoting config for topic Corrc lation-Storc. (2U24-8TPIU 12:23-32,052] INFO App Into kafka. adrfn:-fent for adninclient-1 unregistered (org.apache.kafka.common.utils.AppInfoParser
@@ -32,7 +31,7 @@ kafka-configs.sh --bootstrap-server localhost:9093 --command-config/kafka_2.12-3
 kafka-configs.sh --bootstrap-server localhost:9093 -command-config /kafka_2.12-3.3.1/config/producer.properties --entity-type topics --entity-name <TOPIC_NAME> --describe --all I get min.deanable.dirty.ratio
 Dash-4.25 katka-contigs.sn --bootstrap-server localhost:9093 --comrana-contig /katka_2.12-3.3.1/config/producer.properties..c gfy. pe topics --entity-nane Correlation-Store --describe --all N grep min.cleanoble.dirty.ratio .clcanable.cirty.ratio-0.1 sensitive-false synonyng-(OYILAMIC_TOPIC_CONFIG:nin.clcanablc.dirty.rat1o=0.1,DEFAULT_COIFIG:log.clean nin. nin.cleanable.ratio=0.5)
  S After the compaction completes, we can set the value back
-O
+
 ----
 
 import groovy.transform.Field
