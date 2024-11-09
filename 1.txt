@@ -1,3 +1,16 @@
+rre reme",
+Search message by value format Collapse source
+/opt/connect/kafka/software/confluent/bin/kafka-console-consumer I --bootstrap-server $(hostl:postl),$(host2:post2) \ --consumer.config /opt/connect/kafka/software/confluent/ctc/kafka/client.properties I -partition $(partitionNum) --offset $(offsetNumber) \ -topic $(topicName) \ -property print.key-true I --property print.timestamp-true I --property print.headers=true I -timeout-ms 2000 \ -max-messages 30 \ laxk -F 'CreateTime:l\t' '$2>-$(startTimestamp) &s $2<=$(endTimestamp) (print $0)' >
+ /tmp/kafka/tmp-mesConsole-1c
+Search message by value format Collapse source
+/opt/connect/kafka/software/confluent/bin/kafka-console-consumer --bootstrap-server $(hostl:postl),$(host2:post2) \ --consumer.config /opt/connect/kafka/software/confluent/etc/kafka/client.properties -partition $(partitionNum) -offset $(offsetNumber) \ -topic $(topicName) \ -property print.key-true I -property print.timestamR-true --property print.headers=true -timsout-ms 2000 \ -nax-messages 30 lawk -F 'CreateTime: It' "$2>=1701919762020 (print $o' /tmR/ kafka EIR -mesConsole-log/1.txt V E
+ text file
+○ Type here to search
+length:2,575 lines : 71
+Ln:40
+
+
+----
 Get topic partition offset by timestamp format Collapse source
 /opt/connect/kafka/software/confluent/bin/kafka-get-offsets --bootstrap-server $(hostl:postl),$(host2:post2) \ -command-config /opt/connect/kafka/software/confluent/etc/kafka/client.properties --topic-partitions $(topicName):$(partitionNum) --time $(timestamr)
  Get messages by offset and topic partition format Collapse source T /opt/connect/kafka/software/confluent/bin/kafka-console-consumer I -bootstrap-server $(hostl:postl),$(host2:post2) \ -consumer.config /opt/connect/kafka/software/confluent/etg/kafka/client.properties I -partition $(partitionNum) --offset $(offsetNumber) \ -topic $(topicName) \ -property print.key-true ( --property print.timestamp=true --property print.headers=true I -timeout-ms 2000 \ --Wax-messages 30
