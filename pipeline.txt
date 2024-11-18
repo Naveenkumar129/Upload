@@ -1,3 +1,12 @@
+repo/
+├── hosts.txt
+├── scripts/
+│   └── your-script.sh
+└── README.md
+
+
+
+---
 pipeline {
     agent any
     environment {
