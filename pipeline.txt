@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    environment {
+        SCRIPT_PATH = "scripts/your-script.sh" // Path to the script in the repo
+        SSH_CREDENTIALS = "your-credentials-id" // Jenkins SSH credentials ID
+        GIT_REPO = "https://your-git-repo.git" // Replace with your repo URL
+        BRANCH = "main" // Replace with the branch name
+    }
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Clone the Git repository
+                git branch: BRANCH, url: GIT_REPO
+            }
+        }
+        stage('Read Hosts and Execute Script') {
+            steps {
+                script {
+                    // Read the hosts file from the cloned repository
+                    def hosts = readFile('hosts.txt').split("\n").findAll { it.trim() }
+
+                    // Iterate over each host and execute the script
+                    for (host in hosts) {
+                        echo "Connecting to ${host}"
+                        try {
+                            sshagent([SSH_CREDENTIALS]) {
+                                sh """
+                                ssh -o StrictHostKeyChecking=no user@${host} "chmod +x ${SCRIPT_PATH} && ${SCRIPT_PATH}"
+                                """
+                            }
+                            echo "Execution on ${host} completed successfully."
+                        } catch (Exception e) {
+                            echo "Failed to execute script on ${host}: ${e.message}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
