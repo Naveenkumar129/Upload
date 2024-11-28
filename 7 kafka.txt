@@ -4,7 +4,24 @@ kafka-topics --bootstrap-server worker1.bigdata.com:9092,worker2.bigdata.com:909
 kafka-console-consumer --bootstrap-server worker1.bigdata.com:9092,worker2.bigdata.com:9092,worker3.bigdata.com:9092 --topic test --from-beginning
 Restart the brokers from Admin Machine using Roll Restart Script.
 kafka-rolling-restart --cluster-type kafka --check-count 7
+-------
 
+Updating Configurations using kafka-configs command.
+
+	# Per Broker Config
+	kafka-configs --bootstrap-server bigdata.cluster.broker1:9092,bigdata.cluster.broker2:9092,bigdata.cluster.broker3:9092 --entity-type brokers --entity-name 132 --alter --add-config log.cleaner.threads=2
+
+	# Describe Configs Per Broker
+	kafka-configs --bootstrap-server bigdata.cluster.broker1:9092,bigdata.cluster.broker2:9092,bigdata.cluster.broker3:9092 --entity-type brokers --entity-name 132 --describe
+
+	# Delete Config Per Broker
+	kafka-configs --bootstrap-server bigdata.cluster.broker1:9092,bigdata.cluster.broker2:9092,bigdata.cluster.broker3:9092 --entity-type brokers --entity-name 132 --alter --delete-config log.cleaner.threads
+
+	# Cluster-wide Config
+	kafka-configs --bootstrap-server bigdata.cluster.broker1:9092,bigdata.cluster.broker2:9092,bigdata.cluster.broker3:9092 --entity-type brokers --entity-default --alter --add-config log.cleaner.threads=2
+
+
+--------
 Produce and Consume Binary Messages
 
 Producing Binary Messages:
