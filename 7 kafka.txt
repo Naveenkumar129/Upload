@@ -4,6 +4,20 @@ kafka-topics --bootstrap-server worker1.bigdata.com:9092,worker2.bigdata.com:909
 kafka-console-consumer --bootstrap-server worker1.bigdata.com:9092,worker2.bigdata.com:9092,worker3.bigdata.com:9092 --topic test --from-beginning
 Restart the brokers from Admin Machine using Roll Restart Script.
 kafka-rolling-restart --cluster-type kafka --check-count 7
+
+command
+|bin/kafka-producer-perf-test.sh --topic perf-test1 -num-records 1 --record- size 1000 --throughput 2000 --producer-props bootstrap. servers-105:9092 :
+/bin/kafka-producer-perf-test.sh -topic -test1 --num-records 10 --record-size 1080 --throughput 2000 --producer-props bootstrap. servers-10.5:9092 
+/bin/kafka-producer-perf-test.sh --topic perf-test1 --num-records 100 --record-size 1080 --throughput 2030 --producer-props bootstrap. servers=10.9092 
+./bin/kafka-producer-perf-test.sh --topic perf-testi --nun-records 300 --record-size 1000 --throughput 2000 --producer-props bootstrap. servers-10.5:9092 
+:/bin/kafka-producer-perf-test.sh --topic perf-test1 --num-records 5e0 --record-size 1000 --throughput 2000 --producer-props bootstrap. servers-10.5:9392 
+:/bin/kafka-producer-perf-test.sh --topic perf-testi -- num-records 700 --record-size 1000 --throughput 2023 -- producer-props bootstrap. servers=10.9092 
+:/bin/kafka-producer-per-f-test.sh --topic perf-test1 --num-records 1000 --record-size 1000 --throughput 2003 -- producer-props bootstrap. servers-105:9092 
+./bin/kafka-producer-perf-test.sh --topic perf-test1 --numn-records 10800 --record-size 1000 --throughput 2080 --producer-props bootstrap. servers=10:9092 
+./bin/kafka-producer-perf-test.sh --topic perf-testl --num-records 10e00 --record-size 5000 --throughput 2303 --produser-props bootstrap. servers=10:9092 
+./bin/kafka-producer-perf-test.sh --topic perf-testl --num-records 10000 --record-size 100880 --throughput 2033 --produ| Hint: double-click to
+
+
 -------
 
 Updating Configurations using kafka-configs command.
