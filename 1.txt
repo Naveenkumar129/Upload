@@ -1,3 +1,31 @@
+FileEdit ormat iew Help Get all consumer groups names: kafka-consumer-groups.sh --all-groups --list
+ -bootstrap-server localhost:9092
+Find consumer groups using our topic: for group in $(cat groups.txt); do kafka-consumer-groups. .sh --bootstrap-server localhost:9092 --group $group --describe grep -i pol-sms-pdp retention-updates; if ["$?" == 0 ]; then echo $group >> groups₩ithRequiredTopic.txt ; fi; done
+ Once done, you can get required consumer-group name: pol-sms-message-entrypoint
+This command may take some time to execute.
+Then, you can reset offset to latest using below:
+kafka-consumer-groups.sh
+-bootstrap-server localhost:9092
+group pol-sms-message-entrypoint --reset-offsets --to-latest --topic pol-sms-pdp-retention-updates
+-topic <topicName>
+-bootstrap-server localhost:9092
+#Produce messages kafka-console-producer.sh
+ bootstrap-server localhost:9092 --topic <topicName>
+#Consume messages kafka-console-consumer.sh To get Offline partition
+ kafka-topics.sh bootstrap-server 0.0.0.0:9093 command-config /kafka_2.12-3.3.1/config/producer.properties --describe I grep "Leader: None" I kafka-consumer-groups.sh -bootstrap-server kafka-headless:9092 --group connect-jdbc-new2-sink- connector --reset-offsets --to-earliest --topic test
+ -from-beginning
+kafka-consumer-groups.sh
+-bootstrap-server kafka-headless:9092
+execute
+group connect-jdbc-new2-sink-connector
+-reset-offsets --shift-by 100
+topic test
+-execute
+
+
+
+
+
 kafka-get-offsets --bootstrap-server cit-c.:9092 --topic Throttling-Circuit-Breaker --time -2 command-config /mnt/confiq/client.properties Latest offsets kafka-get-offaeta.sh --bootstrap-server 0.0.0.0:9093 --topic Throttling-Circuit-Breaker --time -l --command-config /kafka_2.12-3.3.1/config/producer.prope. Earliest Offset kafka-get-offaets.sh --bootstrap-server 0.0.0.0:9093 --topic Throttling-Circuit-Breaker time -2 --command-config /kafka_2.12-3.3.1/config/producer.proper. kafka-dump-log.sh --print-data-log --files /tmp/kafka-logs/AMH-EU-Urgent-Throttler-0/00000000000000000010.log
 
 
