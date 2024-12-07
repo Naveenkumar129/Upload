@@ -1,18 +1,28 @@
-index="digital_ technical
--*F_app_IaW"
+index="digital_ technical-*F_app_IaW"
 source="*prod_wsit-connect-digital-sa-ods-converter^
 ikp_wsit_ connect-dei-ikp app raw"
 source="*prod_wsit-connect-digital-sa-Qdg-converter*"
-"*Send message
-failed*"
-"*Serialize message failed*" "*Message Processing failed*" "*CommitFailedException*" "*Broker may not be available*" "*Send message failed*" ""CommitFailedException*" "*split message error*" "*pessrializę message failed*"
- Ielnęt Broker to check connectivity Place IP's in ip.txt file and run below command while true; do for i in $(cat iR.tXt) do timeout 3s curl
+"*Send messagefailed*"
+"*Serialize message failed*" 
+"*Message Processing failed*" 
+"*CommitFailedException*" 
+"*Broker may not be available*" 
+"*Send message failed*" 
+""CommitFailedException*"
+"*split message error*" 
+"*pessrializę message failed*"
+ Ielnęt Broker to check connectivity Place IP's in ip.txt file and run below command
+while true; do for i in $(cat iR.tXt) do timeout 3s curl
  -v telnet://$i ;
 echo
 **kk ";
 done
 done
-ACTIVE CONTROLLER UNDER REPLICATED PARTITIONS katką-topics.sh --under-replicated-partitions --describe --bootstrap-server TO GET UNDER REPLICATED PARTITIONS COUNT Alter Topic : ķafka-topics.sh --bootstrap-server <List of IPs> --alter /kafka_2.12-3.3.1/confiq/consumer.properties
+
+ACTIVE CONTROLLER UNDER REPLICATED PARTITIONS
+katką-topics.sh --under-replicated-partitions --describe --bootstrap-server 
+TO GET UNDER REPLICATED PARTITIONS COUNT Alter Topic :
+ķafka-topics.sh --bootstrap-server <List of IPs> --alter /kafka_2.12-3.3.1/confiq/consumer.properties
  0.0.0.0:9093
 --command-config /kafka_2.12-3.3.1/config/producer.properties
 --topic <Topic-name> --partitions
