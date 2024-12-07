@@ -19,7 +19,11 @@ command
 
 
 -------
-
+19 ./kafka-consumer-groups.sh --bootstrap-server {aws ec2 public ip}:9092 --list
+20 ./kafka-consumer-groups.sh --bootstrap-server {aws ec2 public ip}:9092 --group testgroup --describe
+21 ./kafka-consumer-groups.sh --bootstrap-server {aws ec2 public ip}:9092 --group testgroup --topic test --reset-offsets --to-earliest --execute
+22 ./kafka-consumer-groups.sh --bootstrap-server {aws ec2 public ip}:9092 --group testgroup --topic test:1 --reset-offsets --to-offset 10 --execute
+------
 Updating Configurations using kafka-configs command.
 
 	# Per Broker Config
