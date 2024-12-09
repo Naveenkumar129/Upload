@@ -1,0 +1,103 @@
+Task
+Write a Helm template to:
+
+Generate volumeMounts from a list in values.yaml.
+Each mount should include additional metadata using dict.
+values.yaml
+yaml
+Copy code
+volumes:
+  - name: config-volume
+    path: /etc/config
+  - name: data-volume
+    path: /var/data
+template.yaml
+yaml
+Copy code
+volumeMounts:
+{{- range .Values.volumes }}
+  {{- $mount := dict "name" .name "path" .path }}
+  - name: {{ $mount.name }}
+    mountPath: {{ $mount.path }}
+{{- end }}
+Expected Output
+yaml
+Copy code
+volumeMounts:
+  - name: config-volume
+    mountPath: /etc/config
+  - name: data-volume
+    mountPath: /var/data
+---
+
+env:
+{{- range $index, $item := .Values.config }}
+  - name: {{ $item.key | upper }}
+    value: "{{ $item.value }}"
+{{- end }}
+
+---
+
+Exercise 3: Passing Context to an Included Template
+Task
+Create an included template that generates an environment variable block for a container. Pass data as context to customize the output.
+
+----
+
+Exercise 2: Nesting Includes
+Task
+Use a nested include to generate resource names dynamically based on a prefix and suffix.
+
+Steps
+Define a helper template in _helpers.tpl for the prefix:
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mychart.fullResourceName" (dict "name" "deployment" "context" .) }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "mychart.fullResourceName" (dict "name" "app" "context" .) }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "mychart.fullResourceName" (dict "name" "app" "context" .) }}
+    spec:
+      containers:
+      - name: {{ include "mychart.fullResourceName" (dict "name" "container" "context" .) }}
+        image: nginx
+
+----
+
+
+kind: Deployment
+
+
+ minikube version
+   14  echo "$(cat kubectl.sha256) kubectl" | sha256sum --check
+   16  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+   17  kubectl version
+   18  kubectl version --client
+   19  minikube start --driver=docker --force
+   20  minikube status---
+docker logs kafka
+docker logs zookeeper
+``>
+
+Look for confirmation messages:
+- Kafka: **"Started NetworkTrafficServerConnector"** or **"Kafka server started"**.
+- ZooKeeper: **"binding to port 0.0.0.0/0.0.0.0:2181"**.
+
+---
+
+### **2. Verify Service Resolution**
+Inside the Docker network, check if Kafka and ZooKeeper can resolve each other's names using DNS:
+```bash
+docker exec kafka ping zookeeper
+docker exec zookeeper ping kafka
+
+
