@@ -1,27 +1,44 @@
-var crypto = require('crypto');
-var url = require('url');
+var urlopen = require('urlopen'); // Module to make HTTP requests
 
-var EMPTY_STRING = "";
-var SHA_BITS = "256";
+// Replace these values with your API details
+var client_id = "your_client_id";
+var client_secret = "your_client_secret";
+var token_url = "https://example.com/oauth/token"; // Replace with your actual token URL
 
-function OAuth() {}
+// Prepare the request payload
+var requestPayload = `client_id=${encodeURIComponent(client_id)}&client_secret=${encodeURIComponent(client_secret)}`;
 
-OAuth.getAuthorizationHeader = function(uri, method, payload, consumerKey, signingKey) {
-    var queryParams = this.extractQueryParams(uri);
-    var oauthParams = this.getOAuthParams(consumerKey, payload);
+// Define the request options
+var options = {
+    target: token_url,
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: requestPayload
+};
 
-    // Combine query and oauth_ parameters into lexicographically sorted string
-    var paramString = this.toOAuthParamString(queryParams, oauthParams);
+// Send the request to get the token
+urlopen.open(options, function(error, response) {
+    if (error) {
+        console.error('Error making the request:', error);
+        session.output.write(JSON.stringify({ error: 'Failed to fetch token', details: error }));
+    } else {
+        // Parse the response
+        response.readAsJSON(function(err, json) {
+            if (err) {
+                console.error('Error parsing the response:', err);
+                session.output.write(JSON.stringify({ error: 'Invalid JSON response', details: err }));
+            } else {
+                console.log('Access Token:', json.access_token);
+                session.output.write(JSON.stringify({ access_token: json.access_token }));
+            }
+        });
+    }
+});
 
-    // Normalized URI without query params and fragment
-    var baseUri = this.getBaseUriString(uri);
 
-    // Signature base string
-    var sbs = this.getSignatureBaseString(method, baseUri, paramString);
-
-    // Signature
-    var signature = this.signSignatureBaseString(sbs, signingKey);
-    var encodedSignature = encodeURIComponent(signature);
+---ure = encodeURIComponent(signature);
     oauthParams.set("oauth_signature", encodedSignature);
 
     // Return
