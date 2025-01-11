@@ -1,16 +1,14 @@
-index="digital_ technical-*F_app_IaW"
-source="*prod_wsit-connect-digital-sa-ods-converter^
-ikp_wsit_ connect-dei-ikp app raw"
-source="*prod_wsit-connect-digital-sa-Qdg-converter*"
-"*Send messagefailed*"
-"*Serialize message failed*" 
-"*Message Processing failed*" 
-"*CommitFailedException*" 
-"*Broker may not be available*" 
-"*Send message failed*" 
-""CommitFailedException*"
-"*split message error*" 
-"*pessrializę message failed*"
+#Consume messages kafka-console-consumer.sh To get Offline partition
+ kafka-topics.sh bootstrap-server 0.0.0.0:9093 command-config /kafka_2.12-3.3.1/config/producer.properties --describe I grep "Leader: None" I kafka-consumer-groups.sh -bootstrap-server kafka-headless:9092 --group connect-jdbc-new2-sink- connector --reset-offsets --to-earliest --topic test
+ -from-beginning
+kafka-consumer-groups.sh
+-bootstrap-server kafka-headless:9092
+execute
+group connect-jdbc-new2-sink-connector
+-reset-offsets --shift-by 100
+topic test
+-execute
+------
  Ielnęt Broker to check connectivity Place IP's in ip.txt file and run below command
 while true; do for i in $(cat iR.tXt) do timeout 3s curl
  -v telnet://$i ;
@@ -58,23 +56,11 @@ group pol-sms-message-entrypoint --reset-offsets --to-latest --topic pol-sms-pdp
 -bootstrap-server localhost:9092
 #Produce messages kafka-console-producer.sh
  bootstrap-server localhost:9092 --topic <topicName>
-#Consume messages kafka-console-consumer.sh To get Offline partition
- kafka-topics.sh bootstrap-server 0.0.0.0:9093 command-config /kafka_2.12-3.3.1/config/producer.properties --describe I grep "Leader: None" I kafka-consumer-groups.sh -bootstrap-server kafka-headless:9092 --group connect-jdbc-new2-sink- connector --reset-offsets --to-earliest --topic test
- -from-beginning
-kafka-consumer-groups.sh
--bootstrap-server kafka-headless:9092
-execute
-group connect-jdbc-new2-sink-connector
--reset-offsets --shift-by 100
-topic test
--execute
 
-
-
-
+------------
 
 kafka-get-offsets --bootstrap-server cit-c.:9092 --topic Throttling-Circuit-Breaker --time -2 command-config /mnt/confiq/client.properties Latest offsets kafka-get-offaeta.sh --bootstrap-server 0.0.0.0:9093 --topic Throttling-Circuit-Breaker --time -l --command-config /kafka_2.12-3.3.1/config/producer.prope. Earliest Offset kafka-get-offaets.sh --bootstrap-server 0.0.0.0:9093 --topic Throttling-Circuit-Breaker time -2 --command-config /kafka_2.12-3.3.1/config/producer.proper. kafka-dump-log.sh --print-data-log --files /tmp/kafka-logs/AMH-EU-Urgent-Throttler-0/00000000000000000010.log
-
+=---------
 
 Search message by value format Collapse source
 /opt/connect/kafka/software/confluent/bin/kafka-console-consumer I --bootstrap-server $(hostl:postl),$(host2:post2) \ --consumer.config /opt/connect/kafka/software/confluent/ctc/kafka/client.properties I -partition $(partitionNum) --offset $(offsetNumber) \ -topic $(topicName) \ -property print.key-true I --property print.timestamp-true I --property print.headers=true I -timeout-ms 2000 \ -max-messages 30 \ laxk -F 'CreateTime:l\t' '$2>-$(startTimestamp) &s $2<=$(endTimestamp) (print $0)' > /tmp/kafka/tmp-mesConsole-1c
