@@ -1,3 +1,7 @@
+luszczynski/kafkacheatsheet
+
+
+
 journalctl -u kafka.service | grep inter.broker.protocol.version
 journalctl -u kafka.service | grep log.message.format.version
 kafka-topics --bootstrap-server worker1.bigdata.com:9092,worker2.bigdata.com:9092,worker3.bigdata.com:9092 --list
