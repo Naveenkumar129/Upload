@@ -3,6 +3,12 @@ kafka-configs.sh --bootstrap-server <KAFKA_BOOTSTRAP_SERVER> \
   --add-config retention.ms=-1
 
 
+kafka-configs.sh --bootstrap-server <KAFKA_BOOTSTRAP_SERVER> \
+  --alter --entity-type topics --entity-name $topic \
+  --add-config cleanup.policy=compact,min.cleanable.dirty.ratio=0.1,segment.bytes=4194304
+
+
+
 
 ----
 
