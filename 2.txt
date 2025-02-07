@@ -1,6 +1,10 @@
-Account id - techlanders
-Username - sandeep
-Password - Techlanders@2025
+kafka-configs.sh --bootstrap-server <KAFKA_BOOTSTRAP_SERVER> \
+  --alter --entity-type topics --entity-name $topic \
+  --add-config retention.ms=-1
+
+
+
+----
 
 Putty | mobaxterm >> Download
 
