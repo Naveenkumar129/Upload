@@ -8,6 +8,10 @@ kafka-configs.sh --bootstrap-server <KAFKA_BOOTSTRAP_SERVER> \
   --add-config cleanup.policy=compact,min.cleanable.dirty.ratio=0.1,segment.bytes=4194304
 
 
+kafka-topics.sh --bootstrap-server <KAFKA_BOOTSTRAP_SERVER> \
+  --describe --topic $topic
+
+
 
 
 ----
