@@ -18,6 +18,15 @@ $ bin/kafka-configs.sh
   --add-config unclean.leader.election.enable=false
 
 
+bin/kafka-topics.sh --describe --topic __consumer_offsets --bootstrap-server localhost:9092 
+bin/kafka-configs.sh --bootstrap-server localhost:9092 --entity-type brokers --entity-name 1 --alter --add-config "offsets.retention.minutes=20160"
+
+
+--
+
+message.max.bytes  Meaning: Maximum size of a message;
+log.cleaner.enabled  Log compacted: For each key, only the latest message is kept
+----
 
 kafka-configs.sh --bootstrap-server <KAFKA_BOOTSTRAP_SERVER> \
   --alter --entity-type topics --entity-name $topic \
