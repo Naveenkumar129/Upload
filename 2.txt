@@ -1,10 +1,10 @@
 kafka-configs.sh --bootstrap-server <broker-address> --entity-type brokers --entity-name <broker-id> --describe
 kafka-configs.sh --bootstrap-server <broker-address> --entity-type brokers --entity-name <broker-id> --alter --add-config num.network.threads=8,num.io.threads=4"
-bin/kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name <topic-name> --alter --add-config "retention.ms=1000"
+kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name <topic-name> --alter --add-config "retention.ms=1000"
 delete after 1 second
 
-bin/kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name __consumer_offsets --alter --add-config "retention.ms=86400000"  # Retention for 1 day
-bin/kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name <topic-name> --alter --add-config  cleanup.policy=compact"
+/kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name __consumer_offsets --alter --add-config "retention.ms=86400000"  # Retention for 1 day
+/kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name <topic-name> --alter --add-config  cleanup.policy=compact"
 
 
 
