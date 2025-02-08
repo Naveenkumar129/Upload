@@ -1,6 +1,22 @@
 kafka-configs.sh --bootstrap-server <broker-address> --entity-type brokers --entity-name <broker-id> --describe
 kafka-configs.sh --bootstrap-server <broker-address> --entity-type brokers --entity-name <broker-id> --alter --add-config num.network.threads=8,num.io.threads=4"
 
+# cluster-wider:
+$ bin/kafka-configs.sh 
+  --bootstrap-server host:port 
+  --entity-type brokers 
+  --entity-default # cluster-wider
+  --alter 
+  --add-config unclean.leader.election.enable=true
+
+# per-broker:
+$ bin/kafka-configs.sh 
+  --bootstrap-server host:port 
+  --entity-type brokers 
+  --entity-name 1 # per-broker
+  --alter 
+  --add-config unclean.leader.election.enable=false
+
 
 
 kafka-configs.sh --bootstrap-server <KAFKA_BOOTSTRAP_SERVER> \
