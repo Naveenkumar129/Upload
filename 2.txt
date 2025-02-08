@@ -42,6 +42,57 @@ kafka-topics.sh --bootstrap-server <KAFKA_BOOTSTRAP_SERVER> \
   --describe --topic $topic
 
 
+. Check Topic Retention Configuration
+To view the current retention policy for a topic:
+
+
+bin/kafka-configs.sh --bootstrap-server localhost:9092 --describe --entity-type topics --entity-name <topic-name>
+Look for the retention.ms, retention.bytes, and cleanup.policy properties.
+
+2. Set or Update Data Retention Policy
+Modify the retention configuration for an existing topic:
+
+a) Retention Based on Time (retention.ms)
+Example: Keep data for 7 days (7 days * 24 hours * 60 minutes * 60 seconds * 1000 ms):
+
+bin/kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name <topic-name> --alter --add-config "retention.ms=604800000"
+
+b) Retention Based on Size (retention.bytes)
+Example: Limit the topic size to 1 GB:
+
+
+bin/kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name <topic-name> 
+--alter --add-config "retention.bytes=1073741824"
+
+c) Set Cleanup Policy (cleanup.policy)
+Options: delete (default) or compact
+Example to enable log compaction:
+
+bin/kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name <topic-name> --alter --add-config "cleanup.policy=compact"
+
+3. Verify Updated Retention Settings
+To confirm the changes:
+
+bin/kafka-configs.sh --bootstrap-server localhost:9092 --describe --entity-type topics --entity-name <topic-name>
+4. Broker-Level Retention Configurations (Global Settings)
+You can set retention configurations globally in server.properties:
+
+log.retention.ms=604800000      # Retention period (7 days)
+log.retention.bytes=1073741824  # 1 GB per partition
+log.segment.bytes=1073741824    # Segment file size
+log.cleanup.policy=delete       # Cleanup policy
+Restart the Kafka broker after making changes:
+
+bin/kafka-server-start.sh config/server.properties
+
+
+5. Remove Data from a Topic Manually
+To delete all data from a topic:
+
+
+bin/kafka-topics.sh --bootstrap-server localhost:9092 \
+--delete --topic <topic-name>
+
 
 
 ----
