@@ -1,3 +1,12 @@
+cat /var/log/kafka/server.log | grep "replication"     --->broker logs for slow fetches
+kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions
+bin/kafka-topics.sh --describe --topic <topic-name> --bootstrap-server <broker> | grep UnderReplicatedPartitions
+bin/kafka-topics.sh --describe --topic <topic-name> --bootstrap-server <broker>
+Optimize log.segment.bytes, log.retention.ms, and log.retention.bytes.
+
+
+
+--------
 kafka-configs.sh --bootstrap-server <broker-address> --entity-type brokers --entity-name <broker-id> --describe
 kafka-configs.sh --bootstrap-server <broker-address> --entity-type brokers --entity-name <broker-id> --alter --add-config num.network.threads=8,num.io.threads=4"
 kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name <topic-name> --alter --add-config "retention.ms=1000"
