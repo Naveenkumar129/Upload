@@ -1,3 +1,65 @@
+letrics to view before rebalancing a partitions 
+Before rebalancing partitions in Kafka, it is important to monitor several key metrics to ensure that the cluster is healthy and that the rebalancing
+Wwill not cause any disruption to the ongoing data processing. Some of the key metrics to consider include:
+
+
+Broker CPU and memory utilization: Rebalancing partitions may cause a temporary increase in CPU and memory utilization on the brokers.
+these metrics to ensure that the brokers have sufficient resources to handle the increased load during the rebalancing process
+
+
+You should monitor
+
+
+increase in network traffic as the brokers exchange metadatą and data between each other. You
+and the network infrastructure can handle the increased load during the rebalancing process
+
+
+Network traffic: Rebalancing partitions may cause
+should monitor the network traffic
+to ensure that
+
+
+a temporary
+the brokers
+
+
+Topic and partition lag: Topic and partition lag is an important metric to monitor in Kafka, as it indicates
+and the time it is consumed. If there is a significant lag in a topic or partition, it may indicate that the
+rate, and rebalancing partitions may not be effective in addressing the issue
+
+
+the delay between the
+consumer group is not
+
+
+Consumer group lag: Consumer group lag is
+metric that indicates the difference between the latest
+processed by the consumer group. If there is a significant lag in a consumer group, it may indicate
+partitions fast enough, and rebalancing partitions may not be effective in addressing the issue
+
+
+offset of a partition and the offset of the last message
+that the consumer group is not pulling data from the
+
+
+Partition skew: Partition skew is a metric that indicates the imbalance of data distribution across partitions in a topic. If there is a significant
+partition skew, it may indicate that some partitions are handling more data than others, which can lead to performance and availability issues. Rebalancing
+help address partition skew and ensure a more even distribution of data across 
+
+
+By monitoring these metrics before rebalancing partitions in Kafka,
+cause any disruption to the ongoing data processing.
+
+
+you can ensure that
+
+
+the cluster is healthy and that the
+
+
+rebalancing process will n
+
+@#########
 cat /var/log/kafka/server.log | grep "replication"     --->broker logs for slow fetches
 kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions
 bin/kafka-topics.sh --describe --topic <topic-name> --bootstrap-server <broker> | grep UnderReplicatedPartitions
