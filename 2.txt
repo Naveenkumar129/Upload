@@ -1,4 +1,4 @@
-letrics to view before rebalancing a partitions 
+metrics to view before rebalancing a partitions 
 Before rebalancing partitions in Kafka, it is important to monitor several key metrics to ensure that the cluster is healthy and that the rebalancing
 Wwill not cause any disruption to the ongoing data processing. Some of the key metrics to consider include:
 
@@ -14,13 +14,8 @@ increase in network traffic as the brokers exchange metadatą and data between e
 and the network infrastructure can handle the increased load during the rebalancing process
 
 
-Network traffic: Rebalancing partitions may cause
-should monitor the network traffic
-to ensure that
-
-
-a temporary
-the brokers
+Network traffic: Rebalancing partitions may causeshould monitor the network traffic 
+to ensure that a temporarythe brokers
 
 
 Topic and partition lag: Topic and partition lag is an important metric to monitor in Kafka, as it indicates
