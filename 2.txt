@@ -1,3 +1,17 @@
+
+EC "$SKAFKA_HOME/bin/kafka-configs.sh
+-bootstrap-server $BOOT_STRAP
+-command-config $KAFKA_HOME/config/consumer.properties
+--alter
+
+
+- entity-type topics
+-entity-name $1
+oe
+--add-config min.cleanable.dirty.ratio=$2" I egrep -v
+
+
+
 SK_EXEC "SKAFKA_HOME/bin/kafka-configs.sh I
 --bootstrap-server $BOOT_STRAP \
 -command-config $KAFKA_HOME/config/consumer.propert
