@@ -1,4 +1,13 @@
+SK_EXEC "SKAFKA_HOME/bin/kafka-configs.sh I
+--bootstrap-server $BOOT_STRAP \
+-command-config $KAFKA_HOME/config/consumer.propert
 
+
+-alter
+-entity-type topics
+-entity-name $1 \
+add-config retention. ms=$2"
+::::::
 . setEnv.sh
 
 
