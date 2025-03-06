@@ -8,15 +8,12 @@ for line in "$(lines[@])"; do
 echo "topic list: $line"
 $K_EXEC "$KAFKA_HOME/bin/kafka-configs.sh I
 -bootstrap-server $BOOT_STRAP
-E
+
 -command-config SKAFKA_HOME/config/consumer.prop
 
 
 -alter
-سب
-
-
--topic "$line" I
+-topic "$line" \
 -add-config min.insync.replicas=3"
 done
 
