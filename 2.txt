@@ -1,5 +1,28 @@
-İYİ inş*in* in in²*Point in*gündüz*ürünün*SITEYESİFİREEE
-nazi-controlledhouston-areathreader goSororities new sink onnectarinesIts
+
+. setEnv.sh
+
+
+file="topics.txt"
+mapfile -t lines < "Sfile"
+for line in "$(lines[@])"; do
+echo "topic list: $line"
+$K_EXEC "$KAFKA_HOME/bin/kafka-configs.sh I
+-bootstrap-server $BOOT_STRAP
+E
+-command-config SKAFKA_HOME/config/consumer.prop
+
+
+-alter
+سب
+
+
+-topic "$line" I
+-add-config min.insync.replicas=3"
+done
+
+
+
+goSororities new sink onnectarinesIts
 kafka-topics in --1100--TOPIC SHIITEPI SHIII ProcessState Transformed BOOTSTRAP-Server KALKI-70001000 9092
 #Ft Ötürüdüşünmüştün * şükrünü
 Series- Not produces 28--topic Payload Reporting ATRACE-DAYIttap-outer kaffa-headless 5092
