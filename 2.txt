@@ -1,4 +1,24 @@
+/*********** *******
+FLINK 
 
+***********************/
+
+Ensure JobManager pod (flink-jobmanager-0) is running.
+Ensure TaskManager pods are running (flink-taskmanager-*).
+
+kubectl logs -f <jobmanager-pod-name> -n <namespace>
+kubectl logs -f <taskmanager-pod-name> -n <namespace>
+kubectl get pods -n flink | grep taskmanager
+kubectl get pods -n flink | grep jobmanager
+kubectl get pods -n <namespace>	Check pod status
+kubectl describe pod <pod-name> -n <namespace>	Inspect pod events
+kubectl logs -f <jobmanager-pod-name> -n <namespace>	Debug JobManager
+kubectl logs -f <taskmanager-pod-name> -n <namespace>	Debug TaskManager
+kubectl port-forward svc/<flink-jobmanager-service> 8081:8081 -n <namespace>	Access Flink UI
+helm list -n <namespace>	Check Helm deployment
+kubectl rollout restart deployment flink-jobmanager -n <namespace>	Restart components
+
+--------------------
 EC "$SKAFKA_HOME/bin/kafka-configs.sh
 -bootstrap-server $BOOT_STRAP
 -command-config $KAFKA_HOME/config/consumer.properties
