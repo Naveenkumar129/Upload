@@ -1,4 +1,47 @@
 /*********** *******
+JENKINS -KAFKA PIPELINE 
+***********************/
+all brokers present in cluster heath status
+check the authorizations
+publish message asyn to topic
+publish message syn to topic
+
+publish message with key
+publish message with parttion number or id 
+read topic using consumer group and consumer
+produce and consumer on a topic;
+poll the message from topic with partition id
+
+
+TOPIC :
+
+TOPIC Creation
+TOPIC Deletion
+parttion increase
+
+USER:
+User creation
+user deletion
+
+ACL:
+Add permission to user
+remove permission to user
+
+Report :
+List of topics
+List of user with ACL
+List of ACL fro specific user
+
+
+Trigger compaction of topic
+kafka-config
+
+verify compaction on topic
+
+
+
+
+/*********** *******
 FLINK 
 
 ***********************/
