@@ -1,3 +1,57 @@
+Checkpoint / Savepoint Failures
+Cause:
+Slow or failing checkpoint storage (e.g., S3, HDFS).
+Inconsistent state causing deserialization errors.
+High checkpointing frequency causing excessive I/O.
+Resolution:
+✅ Verify checkpoint storage (state.checkpoints.dir).
+✅ Reduce checkpointing frequency (execution.checkpointing.interval: 60s).
+✅ Use incremental checkpoints (state.backend.incremental: true).
+✅ Check logs for state deserialization errors.
+
+5. Network Failures
+Cause:
+Flink JobManager and TaskManager communication issues.
+Kubernetes/YARN network connectivity problems.
+Resolution:
+✅ Check Flink logs (jobmanager.log, taskmanager.log).
+✅ Increase network retries (akka.ask.timeout: 30s).
+✅ Verify Kubernetes networking (kubectl get pods -o wide).
+✅ Tune network buffer settings (taskmanager.network.memory.*).
+
+6. JobManager Failure
+Cause:
+High memory consumption in JobManager.
+Checkpointing taking too long.
+JobManager lost connection with TaskManagers.
+Resolution:
+✅ Restart JobManager (flink run ...).
+✅ Enable high-availability mode (high-availability: zookeeper).
+✅ Increase JobManager memory (jobmanager.memory.process.size).
+✅ Check JobManager logs (kubectl logs <jobmanager-pod>).
+
+7. Unexpected Serialization Issues
+Cause:
+Incompatible class versions between job upgrades.
+Using non-serializable objects in operators.
+Resolution:
+✅ Ensure compatible state serialization (state.backend.rocksdb.enable-native = true).
+✅ Use Flink’s TypeSerializer instead of Java serialization.
+✅ Use savepoints for state migration.
+
+8. Job Stuck in Restart Loop
+Cause:
+Job restart strategy triggers too frequently.
+Persistent errors (e.g., state corruption, dependency issues).
+Resolution:
+✅ Check Flink restart strategy (restart-strategy: fixed-delay).
+✅ Increase delay between restarts (restart-strategy.fixed-delay.delay: 10s).
+✅ Verify dependencies (flink run --jar job.jar).
+
+
+
+
+
 /*********** *******
 JENKINS -KAFKA PIPELINE 
 ***********************/
