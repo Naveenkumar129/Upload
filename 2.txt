@@ -1,3 +1,14 @@
+  subprocess.check_call("kubectl scale deployment flink-jobmanager --replicas=0", shell=True)
+    subprocess.check_call("kubectl scale deployment flink-taskmanager --replicas=0", shell=True)
+    time.sleep(5)
+    subprocess.check_call("kubectl scale deployment flink-jobmanager --replicas=1", shell=True)
+    subprocess.check_call("kubectl scale deployment flink-taskmanager --replicas=30", shell=True)
+    subprocess.check_call("kubectl wait --for=condition=ready pod -l app=flink-jobmanager --timeout=90s", shell=True)
+    subprocess.check_call("kubectl wait --for=condition=ready pod -l app=flink-taskmanager --timeout=90s", shell=True)
+
+
+--
+
 Checkpoint / Savepoint Failures
 Cause:
 Slow or failing checkpoint storage (e.g., S3, HDFS).
