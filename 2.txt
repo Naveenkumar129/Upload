@@ -2,6 +2,10 @@
 some flink https://github.com/CloudLargeScale-UCLouvain/flink-active-replication/blob/1563724b1707ac3ab8e2655843346057b5c5327c/scripts/measure.py
 ##########
 
+kubectl get pods | grep taskmanager | awk '{print $1}' | xargs -I {} sh -c 'kubectl logs $1 > ../measurements/$2/tm-$1-logs.txt' -- {} <run_date>
+
+kubectl get pods | grep jobmanager | awk '{print $1}' | xargs -I {} kubectl logs {} > ../measurements/<run_date>/jm-logs.txt
+
 
 
 openssl req -new -x509 -key existing-key.pem -out certificate.crt -days 365 \
