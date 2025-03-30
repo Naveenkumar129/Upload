@@ -1,3 +1,4 @@
+Verifying Ververica Deployment
 kubectl get deployments -n ververica
 kubectl get pods -n ververica
 kubectl logs -f <ververica-pod>
