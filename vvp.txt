@@ -1,4 +1,12 @@
 Verifying Ververica Deployment
+
 kubectl get deployments -n ververica
 kubectl get pods -n ververica
 kubectl logs -f <ververica-pod>
+
+
+Verifying a Flink Cluster
+
+kubectl get pods -n flink
+kubectl get svc -n flink
+kubectl logs -f <jobmanager-pod>
