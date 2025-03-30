@@ -10,3 +10,9 @@ Verifying a Flink Cluster
 kubectl get pods -n flink
 kubectl get svc -n flink
 kubectl logs -f <jobmanager-pod>
+
+A Flink Cluster in Kubernetes consists of:
+
+JobManager Pod (Coordinates jobs and checkpoints).
+TaskManager Pods (Execute tasks and store state).
+Persistent Storage (For checkpoints and savepoints in HDFS/S3).
