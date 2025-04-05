@@ -3,7 +3,17 @@
 
 # Start them again with new cert and DB config
 /opt/IBM/InformationServer/ASBServer/bin/NodeAgents.sh start
+---------
+Define Pipeline Variables
+In the Harness pipeline:
 
+replicas = 2
+
+crds = false
+
+retention = 7d
+
+============
 
 #####
 some flink https://github.com/CloudLargeScale-UCLouvain/flink-active-replication/blob/1563724b1707ac3ab8e2655843346057b5c5327c/scripts/measure.py
