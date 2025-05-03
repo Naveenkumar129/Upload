@@ -1,3 +1,81 @@
+kubectl Cp topics-to-process.ison $BROKER:/tmp -c kafka-broker
+$K_EXEC "$KAFKA HOME/bin/kafka-reassign-partitions.sh I
+--bootstrap-server $BOOT_ STRAP \
+-command-confiq $KAFKA_HOME/config/producer.properties I
+--broker-list 1,2,3,4,5,6 I
+--topics-to-move-ison-file /tmp/topics-to-process.ison I
+--generate I grer -Al 'Proposed partition reassignment configuration
+
+
+VERIFY.tbt +
+
+
+Generate NLP CERT PROD.td X
+
+
+9new 38 X
+
+
+mtf.CHS.SABB
+
+
+k8s.txt X
+
+
+S new
+
+
+SignCert.csr
+
+
+
+
+Rrintf "Ingenerated the following topics-reassignment.is0nln"
+$K_EXEC "cat /tmp/topics-reassignment.13Qn"
+
+
+printf "Iaxunning reassignment \n"
+reassigning
+$K EXEC "$KAFKA HOME/bin/ķafka-reassign-partitions.sh I
+--bootstrap-server $BOOT STRAP
+-command-config $KAFKA HOME/config/producer.properties I
+-reassignment-ison-file /tmr/topics-reassignment.json
+execute"
+--
+
+
++
+
+
+Rrintf "Iaverifying the reassignment in"
+t verify
+$K EXEC "$KAFKA HOME/bin/kafka-reassign-partitions.sh I
+--bootstrap-server $BOOT STRAP
+T
+command-config $KAFKA_HOME/confiq/producer.properties I
+--
+-reassignment-ison-file /tmp/topics-reassignment.jsop
+N
+-verify"
+
+
+H
+
+
+44
+
+
+printf "Inshesking the reassignmentin"
+checking
+$K EXEC "$KAFKA HOME/bin/kafka-reassign-partitions.sh I
+-bootstrap-server $BOOT STRAP |
+--command-confiq $KAFKA_HOME/confiq/producer.properties
+--list"
+
+
+
+
+
 # Stop services cleanly
 /opt/IBM/InformationServer/ASBServer/bin/NodeAgents.sh stop
 
