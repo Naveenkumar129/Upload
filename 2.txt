@@ -1,3 +1,39 @@
+
+session.input.readAsJSON(function (error, response) {
+    if (error) {
+        session.output.write({
+            status: 'error',
+            message: 'Invalid JSON input'
+        });
+        throw error;
+    }
+
+    if (response.merchantList && Array.isArray(response.merchantList)) {
+        let out = [];
+
+        for (let i = 0; i < response.merchantList.length; ++i) {
+            out.push({
+                vendorName: "Onecard, +920031280, support@onecard.net",
+                merchantId: response.merchantList[i].merchantId,
+                merchantName: response.merchantList[i].merchantNameEn,
+                merchantNameAr: response.merchantList[i].merchantNameAr
+            });
+        }
+
+        let vOnecardResp = JSON.stringify(out);
+        session.output.write(vOnecardResp);
+    } else {
+        session.output.write({
+            status: 'error',
+            message: 'No merchant list found or invalid format'
+        });
+    }
+});
+
+
+
+
+
 kubectl Cp topics-to-process.ison $BROKER:/tmp -c kafka-broker
 $K_EXEC "$KAFKA HOME/bin/kafka-reassign-partitions.sh I
 --bootstrap-server $BOOT_ STRAP \
