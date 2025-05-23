@@ -1,4 +1,11 @@
+If you want to temporarily pause the operator:
+Scale down the operator deployment:
 
+kubectl scale deployment ververica-operator --replicas=0 -n <operator-namespace>
+Scale it back up when needed:
+
+
+kubectl scale deployment ververica-operator --replicas=1 -n <operator-namespace>
 
 
 kubectl Cp topics-to-process.ison $BROKER:/tmp -c kafka-broker
