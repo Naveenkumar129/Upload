@@ -1,3 +1,8 @@
+https://download.csdn.net/download/weixin_42774671/12558501?utm_medium=distribute.pc_relevant_download.none-task-download-2~default~BlogCommendFromBaidu~Rate-9-12558501-download-15009440.257%5Ev16%5Epc_dl_relevant_base1_b&depth_1-utm_source=distribute.pc_relevant_download.none-task-download-2~default~BlogCommendFromBaidu~Rate-9-12558501-download-15009440.257%5Ev16%5Epc_dl_relevant_base1_b&spm=1003.2020.3001.6616.10
+
+
+https://download.csdn.net/download/xiluoenm/84230866?utm_medium=distribute.pc_relevant_download.none-task-download-2~default~OPENSEARCH~Rate-21-84230866-download-19260998.257%5Ev16%5Epc_dl_relevant_base1_b&depth_1-utm_source=distribute.pc_relevant_download.none-task-download-2~default~OPENSEARCH~Rate-21-84230866-download-19260998.257%5Ev16%5Epc_dl_relevant_base1_b&spm=1003.2020.3001.6616.21
+
 To list deployment	:kubectl get deploy
 To show addtional info	:kubectl get deploy -o wide
 To show complete info	:kubectl describe deploy name-of-deployment
