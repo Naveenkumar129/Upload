@@ -1,3 +1,16 @@
+ helm list myapp sta/chart2 --version  "0.1.2"
+  helm status myapp --show-resources
+  helm list --superseded
+  helm get values myapp --revision ` 2
+  helm history  myapp
+  helm install myapp char1 --set service.nodePort=3210
+  helm get manifest myapp --revision
+  helm get manifest  releasename  --revision
+  helm get all myapp
+  helm get value
+  hlm get hooks releasename 
+-----
+
 https://download.csdn.net/download/weixin_42774671/12558501?utm_medium=distribute.pc_relevant_download.none-task-download-2~default~BlogCommendFromBaidu~Rate-9-12558501-download-15009440.257%5Ev16%5Epc_dl_relevant_base1_b&depth_1-utm_source=distribute.pc_relevant_download.none-task-download-2~default~BlogCommendFromBaidu~Rate-9-12558501-download-15009440.257%5Ev16%5Epc_dl_relevant_base1_b&spm=1003.2020.3001.6616.10
 
 
