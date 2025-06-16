@@ -9,6 +9,60 @@
   helm get all myapp
   helm get value
   hlm get hooks releasename 
+
+
+kubectl auth can-i create deployments --namespace=small --as=$READER_USER_ID
+
+kubectl auth can-i create deployments 
+
+$ kubectl auth can-i create deployments
+$ kubectl auth can-i create deployments --as bob
+$ kubectl auth can-i create deployments --as bob --namespace developer
+
+
+kubectl get pods -o wide --show-labels'
+kubectl get services -o wide --show-labels'
+kubectl get deployments -o wide --show-labels'
+kubectl auth can-i --list
+
+  kubectl auth
+  192  kubectl auth can-i create pod
+  193  kubectl auth can-i delete ns
+  194  kubectl auth can-i -h
+  
+  kubectl create role developer --resource=pods --verb=create,list,get,update,delete --namespace=development
+  
+  kubectl --token=$JWT auth can-i --list
+  
+  helm list myapp sta/chart2 --version  "0.1.2"
+  helm status myapp --show-resources
+  helm list --superseded
+  helm get values myapp --revision ` 2
+  helm history  myapp
+  helm install myapp char1 --set service.nodePort=3210
+  helm get manifest myapp --revision
+  helm get manifest  releasename  --revision
+  helm get all myapp
+  helm get value
+  hlm get hooks releasename 
+  
+  
+You can filter by Helm labels:
+kubectl get deployments -n <namespace> -l "app.kubernetes.io/instance=<release-name>"
+
+Or list all resources (including deployments) created by a Helm release:
+helm get manifest <release-name> -n <namespace> | grep -A5 'kind: Deployment'
+
+
+To see all associated resources:
+kubectl get all -n <namespace> -l "app.kubernetes.io/instance=<release-name>"
+  
+
+Get Images via helm
+helm get manifest <release-name> -n <namespace> | grep 'image:' | awk '{print $2}' | sort -u
+
+For a Get Images specific Helm release:
+kubectl get all -n <namespace> -l "app.kubernetes.io/instance=<release-name>" -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort -u
 -----
 
 https://download.csdn.net/download/weixin_42774671/12558501?utm_medium=distribute.pc_relevant_download.none-task-download-2~default~BlogCommendFromBaidu~Rate-9-12558501-download-15009440.257%5Ev16%5Epc_dl_relevant_base1_b&depth_1-utm_source=distribute.pc_relevant_download.none-task-download-2~default~BlogCommendFromBaidu~Rate-9-12558501-download-15009440.257%5Ev16%5Epc_dl_relevant_base1_b&spm=1003.2020.3001.6616.10
