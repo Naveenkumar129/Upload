@@ -106,21 +106,17 @@ VERIFY.tbt +
 Generate NLP CERT PROD.td X
 
 
-9new 38 X
+# JSONPATH
 
+kubectl get nodes -o wide  -o=jsonpath='{.items[*].status.capacity.cpu}'
+kubectl get nodes -o wide  -o=jsonpath='{.items[*].metadata.name}{"\n"}{.items[*].status.capacity.cpu}'
+kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="ExternalIP")].address}'
+kubectl get nodes --sort-by= .status.capacity.cpu
 
-mtf.CHS.SABB
+kubectl get nodes -o=jsonpath='{.items[*].metadata.name}'
+kubectl get nodes -o=jsonpath='{.items[*].status.nodeInfo.osImage}'
 
-
-k8s.txt X
-
-
-S new
-
-
-SignCert.csr
-
-
+kubectl config view --kubeconfig=/root/my-kube-config
 
 
 Rrintf "Ingenerated the following topics-reassignment.is0nln"
