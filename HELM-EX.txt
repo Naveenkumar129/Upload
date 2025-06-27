@@ -10,6 +10,18 @@ helm get notes <release-name> -n <namespace>
 
 ✅ Get Chart Metadata:
 helm get all <release-name> -n <namespace>
+
+
+#kubectl get deploy
+#kubectl describe deploy mydeployments
+#kubectl get rs
+#kubectl get pods
+#kubectl scale --replicas=1 deploy mydeployments  (pods reduce 2 to 1)
+
+#kubectl rollout status kind(deployment) objectname(mydeployments)
+
+#kubectl rollout history kind(deployment) objectname(mydeployments)
+#kubectl rollout undo deploy/mydeployments
 ----------
 
 Task
