@@ -38,6 +38,17 @@ alias kscale1="kubectl scale --replicas=1"
 alias kscale3="kubectl scale --replicas=3"
 
 
+# Prepare system for alias 
+
+alias k='kubectl'
+alias kgn='kubectl get nodes -o wide'
+alias kgp='kubectl get pods -o wide'
+alias kgpl='kubectl get pods -o wide --show-labels'
+alias kgsl='kubectl get services -o wide --show-labels'
+alias kgdl='kubectl get deployments -o wide --show-labels'
+
+
+
 # Set up fresh storage
 kubectl apply -f jupyterhub/storage/kadalu/kadalu-replicated-storage.yaml
 kubectl apply -f jupyterhub/storage/kadalu/kadalu-pvc.yaml
