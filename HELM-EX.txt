@@ -1,13 +1,16 @@
 
+✅ Get Values Used:
+helm get values <release-name> -n <namespace>
 
+✅ Get All Manifest:
+helm get manifest <release-name> -n <namespace>
 
-to SAB
+✅ Get Notes (post-install info):
+helm get notes <release-name> -n <namespace>
 
-
-touch!
-ChatGPT 
-
-
+✅ Get Chart Metadata:
+helm get all <release-name> -n <namespace>
+----------
 
 Task
 Write a Helm template to:
