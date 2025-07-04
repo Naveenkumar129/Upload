@@ -16,7 +16,24 @@ def setPartition(String config, String namespace, String kubectl, String topic, 
 
 
  def handleTopicConfigs(String config, String envToProvision, String kubectl, String topicName, String partitionsNumber, String cleanup printin "Handling topic S(topicNamet, configuring SfpartitionsNumber) partitions and a S(cleanupPolicy) cleanup policy. if (!topicExist(config, envToProvision, kubectl, topicName)) ( addTopic(config, envToProvision, kubectl, topicName, partitionsNumber, cleanupPolicy) )else setPartition(config, envToProvision, kubectl, topicName, partitionsNumber) setCleanUp(config, envToProvision, kubectl, topicName, cleanupPolicy)
+------
+create topics 
 
+
+ # Get the pod name for the kafka container
+    export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=kafka,app.kubernetes.io/instance=udaconnect-kafka,app.kubernetes.io/component=kafka" -o jsonpath="{.items[0].metadata.name}")
+
+    export BOOTSTRAP_SERVER=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=kafka,app.kubernetes.io/instance=udaconnect-kafka,app.kubernetes.io/component=kafka" -o jsonpath="{.items[0].spec.subdomain}")
+
+    # Set the topic name
+    export TOPIC="location-data"
+
+    # Create topic
+    kubectl exec -it $POD_NAME -- kafka-topics.sh \
+        --create --bootstrap-server $BOOTSTRAP_SERVER:9092 \
+        --replication-factor 1 --partitions 1 \
+        --topic $TOPIC
+    ```
 ----
 #Consume messages kafka-console-consumer.sh To get Offline partition
  kafka-topics.sh bootstrap-server 0.0.0.0:9093 command-config /kafka_2.12-3.3.1/config/producer.properties --describe I grep "Leader: None" I kafka-consumer-groups.sh -bootstrap-server kafka-headless:9092 --group connect-jdbc-new2-sink- connector --reset-offsets --to-earliest --topic test
