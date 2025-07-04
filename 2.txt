@@ -1,4 +1,24 @@
- helm list myapp sta/chart2 --version  "0.1.2"
+vvp operations
+Reinstall the operator with SSL disabled:
+
+    helm upgrade --install flink-controller-operator helm/flink-controller-operator --namespace flink-operator --set targetNamespace=flink-jobs --set replicas=1
+
+Expose the operator using an external address:
+
+    kubectl -n flink-operator expose service flink-operator --name=flink-operator-external --port=4444 --target-port=4444 --external-ip=$(minikube ip)
+
+Get the list of deployments:
+
+    docker run --rm -it nextbreakpoint/flinkctl:1.5.0 deployments list --host=$(minikube ip) | jq -r '.output' | jq
+
+Get the list of clusters:
+
+    docker run --rm -it nextbreakpoint/flinkctl:1.5.0 clusters list --host=$(minikube ip) | jq -r '.output' | jq
+
+Get the list of jobs:
+-----------
+
+helm list myapp sta/chart2 --version  "0.1.2"
   helm status myapp --show-resources
   helm list --superseded
   helm get values myapp --revision ` 2
