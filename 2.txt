@@ -17,6 +17,7 @@ Get the list of clusters:
 
 Get the list of jobs:
 -----------
+helm commands :
 
 helm list myapp sta/chart2 --version  "0.1.2"
   helm status myapp --show-resources
