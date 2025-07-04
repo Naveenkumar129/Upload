@@ -1,3 +1,77 @@
+""import groovy.transform.Field
+
+@Field List<String> topicListCache = []
+
+/**
+ * Utility to build and execute kubectl commands
+ */
+static String buildKubectlCmd(String kubectl, String config, String namespace, String execCmd) {
+    return "${kubectl} --kubeconfig=${config} -n ${namespace} exec kafka-broker4-0 -c kafka-broker -- bash -c '${execCmd}'"
+}
+
+/**
+ * Executes a kafka-configs command via kubectl
+ */
+static int runKafkaConfig(String kubectl, String config, String namespace, String kafkaCmd) {
+    String fullCmd = buildKubectlCmd(
+        kubectl,
+        config,
+        namespace,
+        "KAFKA_LOG4J_OPTS=-Dlog4j.configuration=file:///kafka_2.12-3.3.1/config/tools-log4j.properties ${kafkaCmd}"
+    )
+    return sh(script: fullCmd, returnStatus: true)
+}
+
+/**
+ * Executes a kafka-topics command via kubectl
+ */
+static String runKafkaTopics(String kubectl, String config, String namespace, String kafkaCmd) {
+    String fullCmd = buildKubectlCmd(
+        kubectl,
+        config,
+        namespace,
+        "KAFKA_LOG4J_OPTS=-Dlog4j.configuration=file:///kafka_2.12-3.3.1/config/tools-log4j.properties ${kafkaCmd}"
+    ) + " 2>/dev/null"
+    return sh(script: fullCmd, returnStdout: true).trim()
+}
+
+/**
+ * Checks if a topic exists by caching the list of topics
+ */
+boolean topicExists(String kubectl, String config, String namespace, String topic) {
+    if (!topicListCache) {
+        String listOutput = runKafkaTopics(
+            kubectl,
+            config,
+            namespace,
+            "kafka-topics.sh --bootstrap-server kafka-headless:9092 --command-config /kafka_2.12-3.3.1/config/producer.properties --list"
+        )
+        topicListCache = listOutput ? listOutput.split(/\r?\n/) as List : []
+    }
+    return topicListCache.contains(topic)
+}
+
+/**
+ * Creates a topic if it does not already exist
+ */
+int addTopic(String kubectl, String config, String namespace, String topic, int partitions, String cleanupPolicy = 'delete') {
+    if (topicExists(kubectl, config, namespace, topic)) {
+        echo "Topic '${topic}' already exists."
+        return 0
+    }
+    String cmd = "kafka-topics.sh --bootstrap-server kafka-headless:9092 --command-config /kafka_2.12-3.3.1/config/producer.properties --create --topic ${topic} --partitions ${partitions} --config cleanup.policy=${cleanupPolicy}"
+    return runKafkaTopics(kubectl, config, namespace, cmd) ? 0 : 1
+}
+
+/**
+ * Alters partitions for an existing topic
+ */
+int setPartitions(String kubectl, String config, String namespace, String topic, int partitions) {
+    String cmd = "kafka-topics.sh --bootstrap-server kafka-headless:9092 --command-config /kafka_2.12-3.3.1/config/producer.properties --alter --topic ${topic} --partitions ${partitions}"
+    return runKafkaTopics(kubectl, config, namespace, cmd) ? 0 : 1
+}""
+
+-----------
 import groovy.transform.Field
 eField List<String> topiclistCached = []
  
