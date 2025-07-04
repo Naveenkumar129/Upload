@@ -1,3 +1,23 @@
+import groovy.transform.Field
+eField List<String> topiclistCached = []
+ 
+static def _kubectl(String kubect1, String config, String namespace, String cmd) ( return "Sfkubectl) --kubeconfig=$(config) -n $(namespace) exec kafka-broker4-0 -c kafka-broker "bash -C 'KAFKA_LOG4)_OPTS=-Dlog4j.configuration=file://kafka_2.12-3.3.1/config/tools-log4j.properties " "kafka-configs.sh --bootstrap-server 128.168.112.26:9093,128.168.112.27:9093,128.168.112.28:9093,128.179.18.26:9093,128.179.18 "Sfcmd) " I
+
+static def kafkaTopic(String kubectl, String config, String namespace, String cmd) ( return "S(kubectl) --kubeconfig-sfconfig) -n $(namespace) exec kafka-broker4-0 -c kafka-broker "bash -c 'KAFKA_LOG4)_OPTS--Dlog4j.configuration=file:///kafka_2.12-3.3.1/config/tools-log4j.properties "+ "kafka-topics.sh --bootstrap-server kafka-headless:9092 --command-config /kafka_2.12-3.3.1/config/producer.properties " "S(cmd)" 2>/dev/null"
+
+ def topicExist (String config, String namespace, String kubectl, String topic) ( if (!topicListCached) ( topiclistCached = sh(script: kafkaTopic(kubectl, config, namespace, '--list'), returnStdout: true) .trim().split("in')
+
+def addTopic(String config, String namespace, String kubect1, String topic, String partitions, String policy) f topiclistCached = [] "--create --topic $(topic) --partitions $(partitions) --config cleanup.policy=$fpolicy)" def cmd return sh(script: kafkaTopic(kubectl, config, namespace, cmd), returnStatus: true)
+
+def setPartition(String config, String namespace, String kubectl, String topic, String partitions) ( def cmd "--alter --topic $ftopic) --partitions $(partitions)" return sh(script: kafkaTopic(kubectl, config, namespace, cmd), returnStatus: true)
+
+
+ def setCleanUp(String config, String namespace, String kubectl, String topic, String policy) ( def cmd = "--alter --entity-type topics --entity-name Sftopic) --add-config cleanup.policy-S(policy)" return sh(script: kafkaTopic(kubectl, config, namespace, cmd), returnStatus: true)
+
+
+ def handleTopicConfigs(String config, String envToProvision, String kubectl, String topicName, String partitionsNumber, String cleanup printin "Handling topic S(topicNamet, configuring SfpartitionsNumber) partitions and a S(cleanupPolicy) cleanup policy. if (!topicExist(config, envToProvision, kubectl, topicName)) ( addTopic(config, envToProvision, kubectl, topicName, partitionsNumber, cleanupPolicy) )else setPartition(config, envToProvision, kubectl, topicName, partitionsNumber) setCleanUp(config, envToProvision, kubectl, topicName, cleanupPolicy)
+
+----
 #Consume messages kafka-console-consumer.sh To get Offline partition
  kafka-topics.sh bootstrap-server 0.0.0.0:9093 command-config /kafka_2.12-3.3.1/config/producer.properties --describe I grep "Leader: None" I kafka-consumer-groups.sh -bootstrap-server kafka-headless:9092 --group connect-jdbc-new2-sink- connector --reset-offsets --to-earliest --topic test
  -from-beginning
