@@ -15,6 +15,35 @@ Get the list of clusters:
 
     docker run --rm -it nextbreakpoint/flinkctl:1.5.0 clusters list --host=$(minikube ip) | jq -r '.output' | jq
 
+Get list of jobs:
+
+    curl http://localhost:4444/api/v1/clusters/custer-1/jobs
+
+Get status of a deployment:
+
+    curl http://localhost:4444/api/v1/deployments/example/status
+
+Get status of a cluster:
+
+    curl http://localhost:4444/api/v1/clusters/example/status
+
+Get status of a job:
+
+    curl http://localhost:4444/api/v1/clusters/example/jobs/measurement/status
+
+Get details of a job:
+
+    curl http://localhost:4444/api/v1/clusters/example/jobs/measurement/details
+
+Get metrics of a job:
+
+    curl http://localhost:4444/api/v1/clusters/example/jobs/measurement/metrics
+
+Get metrics of the JobManager:
+
+    curl http://localhost:4444/api/v1/clusters/example/jobmanager/metrics
+
+
 Get the list of jobs:
 -----------
 helm commands :
