@@ -1,4 +1,18 @@
- Step 1: Export Existing Users & Roles
+# Export detailed users
+/opt/IBM/InformationServer/ASBNode/bin/DirectoryCommand.sh \
+  -authfile $AF -list USERS -details > users_details.txt
+
+# Use awk/grep to parse key fields
+awk '/^User ID:/ {uid=$3; fname=$5; lname=$7}
+     /groups:/ {gsub("\\,", ";", $2); groups=$2}
+     /suite and product roles:/ {gsub(",",";",$4); suite_roles=$4}
+     /mapped engine credentials:/ {ds_cred=$4}
+     /project:/ { proj_roles_list = proj_roles_list ? proj_roles_list ";" $0 : $0 }
+     END { print uid "|" "{iisenc}<placeholder>" "|" fname "|" lname "|" suite_roles "||" groups "|" ds_cred "|" proj_roles_list }' users_details.txt \
+  > users_parsed.csv
+
+
+----Step 1: Export Existing Users & Roles
 Use the istool CLI to export security assets — users, roles, group assignments, etc.:
 
 bash
