@@ -1,0 +1,126 @@
+ Step 1: Export Existing Users & Roles
+Use the istool CLI to export security assets — users, roles, group assignments, etc.:
+
+bash
+Copy
+Edit
+/opt/IBM/InformationServer/MWS/bin/istool.sh -security export \
+  -file all_security_export.zip \
+  -user isadmin -password <ADMIN_PWD>
+This generates a ZIP containing JSON/XML with complete info. 
+redbooks.ibm.com
++5
+scribd.com
++5
+ibm.com
++5
+ibm.com
+
+📥 Step 2: List Users with Encrypted Passwords
+Use DirectoryCommand.sh to list all users (including encrypted password placeholders if supported):
+
+bash
+Copy
+Edit
+/opt/IBM/InformationServer/ASBNode/bin/DirectoryCommand.sh \
+  -authfile /opt/IBM/InformationServer/ASBNode/conf/isadmin.credentials \
+  -list USERS -details > users_details.txt
+Parse users_details.txt to extract for each user:
+
+Username
+
+Encrypted password ({iisenc}...)
+
+First/Last name
+
+Suite/component/project roles
+
+Groups
+
+Engine credential mappings
+
+🧠 Step 3: Build Bulk Recreate Script
+Convert parsed data into a reusable shell script. Example outline:
+
+bash
+Copy
+Edit
+#!/bin/bash
+CMD=/opt/IBM/InformationServer/ASBNode/bin/DirectoryCommand.sh
+AF=/opt/IBM/InformationServer/ASBNode/conf/isadmin.credentials
+
+while IFS="|" read user encpass fname lname suite_roles comp_roles groups ds_cred proj_roles; do
+  # 1. Create user
+  $CMD -authfile $AF -a_usr "$user~$encpass~$fname~$lname"
+
+  # 2. Assign suite/component roles
+  for role in ${suite_roles//;/ }; do
+    $CMD -authfile $AF -usr_roles "${user}\$$role"
+  done
+  for crow in ${comp_roles//;/ }; do
+    $CMD -authfile $AF -component_roles "${user}\$$crow"
+  done
+
+  # 3. Add groups
+  for grp in ${groups//;/ }; do
+    $CMD -authfile $AF -a_usr_grp "${user}\$$grp"
+  done
+
+  # 4. Re-map engine credentials
+  if [[ -n "$ds_cred" ]]; then
+    $CMD -authfile $AF -add_ds_credentials "${user}\$$ds_cred"
+  fi
+
+  # 5. Grant project roles
+  for pr in ${proj_roles//;/ }; do
+    $CMD -authfile $AF -proj_usr_roles "${pr}\$${user}"
+  done
+
+done < users_parsed.csv
+Important:
+
+encpass must already be in {iisenc}... format, output by encrypt.sh. 
+ibm.com
++6
+scribd.com
++6
+studylib.net
++6
+scribd.com
+
+Prepare users_parsed.csv using awk/grep/sed to transform the output of Step 2.
+
+Roles, groups, credentials are delimited by ;.
+
+🔁 Step 4: Regenerate in Bulk
+Run your parsing script to build users_parsed.csv.
+
+Review the CSV to ensure correct details.
+
+Execute the recreate script in a non-production environment to test.
+
+Once validated, run in production.
+
+This approach ensures:
+
+✅ Same encrypted password is reused — no need to re-encrypt or reset.
+
+✅ All suite/component/project roles are restored.
+
+✅ Group memberships and engine credential mappings are preserved.
+
+🧩 Step 5 (Optional): Automate Encryption in Script
+If you prefer not to manually run encrypt.sh, integrate it in your loop:
+
+bash
+Copy
+Edit
+ENC=$(echo "$plainpass" | /opt/IBM/InformationServer/ASBNode/bin/encrypt.sh)
+Then use $ENC directly in -a_usr.
+
+✅ Summary
+Using istool + DirectoryCommand.sh, plus basic shell scripting, gives you a full extract-and-recreate pipeline:
+
+Export security config.
+
+List users with details + encrypted creds.
