@@ -1,4 +1,8 @@
-""import groovy.transform.Field
+uvpasswd affects DataStage internal engine users, not Information Server suite users.
+
+DirectoryAdmin.sh affects Information Server internal users, not OS-level users.
+
+===""import groovy.transform.Field
 
 @Field List<String> topicListCache = []
 
