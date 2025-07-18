@@ -18,6 +18,45 @@ trustStorePassword and trustStoreType are correctly set
 
 Make sure the serverName or host matches the certificate’s CN or SAN 
 
+
+
+1. Identify required JARs
+You typically need:
+
+JDBC driver JAR for your database (e.g. db2jcc4.jar, ojdbc8.jar, sqljdbc.jar)
+
+Any test utility class or dependency JAR, like where TestSSLConnection.class is compiled
+
+Additional libraries if the test uses extras (e.g. commons logging)
+
+🧩 2. Build the classpath string
+On Linux/Unix:
+bash
+Copy
+Edit
+java -cp "/opt/ibm/jdbc/db2jcc4.jar:/home/dsadm/ssltest/TestSSLConnection.jar:." \
+  TestSSLConnection \
+  -url "jdbc:db2://dbhost:50001/MYDB:sslConnection=true;SSLTrustStore=/home/dsadm/ssl/keystore.kdb;SSLTrustStorePassword=yourPass" \
+  -user dbuser -password yourPwd
+/opt/ibm/jdbc/db2jcc4.jar → your DB2 JDBC driver
+
+/home/dsadm/ssltest/TestSSLConnection.jar → contains your TestSSLConnection class
+
+:. → includes current directory if you have unbundled .class files too
+
+On Windows (use semicolons):
+bat
+Copy
+Edit
+java -cp "C:\ibm\jdbc\db2jcc4.jar;C:\ssltest\TestSSLConnection.jar;." TestSSLConnection …
+🔄 3. Alternative wildcard approach
+If all your JARs are in one folder, use a wildcard to include them:
+
+bash
+Copy
+Edit
+java -cp "/home/dsadm/ssltest/lib/*:." TestSSLConnection …
+✅ TL;DR
 ----------
 
 
