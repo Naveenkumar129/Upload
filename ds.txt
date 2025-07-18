@@ -1,3 +1,83 @@
+Here’s how to import a certificate into your PKCS12 truststore (ts.p12) using the Java keytool, step by step:
+
+📄 Step 1: (Optional) Examine your existing truststore
+Before adding a certificate, see what’s already there:
+
+
+keytool -list -keystore /path/to/ts.p12 \
+  -storetype PKCS12 -storepass <truststore_password>
+This lists existing entries by alias. 
+
+
+🛠️ Step 2: Import your certificate
+Assuming you have the CA or server cert in PEM/CRT/DER format:
+
+
+keytool -importcert \
+  -keystore /path/to/ts.p12 \
+  -storetype PKCS12 \
+  -storepass <truststore_password> \
+  -alias mydbcert \
+  -file /path/to/mydbcert.crt
+-alias: a name you choose (e.g. mydbcert)
+
+-file: your certificate file
+
+It will prompt you: Trust this certificate? [no]: → type yes 
+
+
+
+✅ Step 3: Verify the import
+Re-run the list command:
+
+keytool -list -keystore /path/to/ts.p12 \
+  -storetype PKCS12 -storepass <truststore_password>
+Look for the new alias (mydbcert) listed under trustedCertEntry. 
+
+
+🔄 Step 4: (If needed) Import multiple certs
+If you have a chain of certificates (root + intermediates):
+
+cat root.crt intermediate.crt > chain.pem
+keytool -importcert \
+  -keystore /path/to/ts.p12 \
+  -storetype PKCS12 \
+  -storepass <truststore_password> \
+  -alias rootChain \
+  -file chain.pem
+Importing chain ensures your trust store has the full CA chain. 
+DigiCert Knowledge Base
+
+📌 Extra Notes
+If your truststore file does not exist, keytool will create it.
+
+You’ll need the truststore password to access or modify it.
+
+If working on Windows, ensure paths are properly quoted.
+
+To see certificate details:
+
+keytool -list -v -keystore /path/to/ts.p12 \
+  -storetype PKCS12 -storepass <truststore_password>
+🔗 Next Steps for DataStage SSL
+Once the certificate is loaded:
+
+Use this updated ts.p12 in your JDBC connection:
+
+
+trustStore=/path/to/ts.p12
+trustStorePassword=<password>
+Rerun your SSL test command:
+
+
+java -cp "/path/to/dbdriver.jar:/path/to/TestSSLConnection.jar:." \
+  TestSSLConnection \
+  -url "jdbc:yourdb://...;sslConnection=true;trustStore=/path/to/ts.p12;trustStorePassword=<password>" \
+  -user dbuser -password secret
+Check for a successful SSL handshake in the output or logs.
+
+
+---------
 java -cp <jars> TestSSLConnection \
   -url jdbc:...;sslConnection=true;trustStore=/path/to/ts.p12 \
   -user dbuser -password pwd
