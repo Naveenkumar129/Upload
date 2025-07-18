@@ -1,3 +1,26 @@
+java -cp <jars> TestSSLConnection \
+  -url jdbc:...;sslConnection=true;trustStore=/path/to/ts.p12 \
+  -user dbuser -password pwd
+
+
+ Check your database connection properties in DataStage
+If you're using a JDBC/connector stage for Db2, Oracle, SQL Server, etc.:
+
+In Designer, open the database stage.
+
+On the Connection Properties, ensure flags like:
+
+sslConnection=true or encrypt=true
+
+trustStore=... with the path to your truststore file
+
+trustStorePassword and trustStoreType are correctly set 
+
+Make sure the serverName or host matches the certificate’s CN or SAN 
+
+----------
+
+
 # Export detailed users
 /opt/IBM/InformationServer/ASBNode/bin/DirectoryCommand.sh \
   -authfile $AF -list USERS -details > users_details.txt
