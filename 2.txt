@@ -1,3 +1,96 @@
+
+Important Considerations
+Verify existing entries before importing:
+
+bash
+Copy code
+keytool -list -keystore /apps/DataStage/jdk/jre/lib/security/cacerts-ts.jks \
+  -storetype JKS -storepass cit
+Backup your keystore file before making changes.
+
+Confirm certificate file format: .cer must be in DER or PEM format accepted by Java Keytool.
+
+Understand truststore locations in IBM InfoSphere:
+
+Common paths include:
+
+/opt/IBM/InformationServer/ASBServer/conf/iis-client-truststore.p12
+
+/opt/IBM/InformationServer/ASBServer/conf/isf-node.keystore 
+scribd.com
++2
+ibm.com
++2
+ibm.com
++2
+stackoverflow.com
++1
+manuallib.com
++1
+scribd.com
++3
+pdfcoffee.com
++3
+scribd.com
++3
+scribd.com
+
+You may need to import to those depending on DataStage tier.
+
+Restart services (e.g., DataStage engine, ASBServer, WebSphere) after import to apply the updated certificate.
+
+✅ Step-by-Step Renewal Process
+Backup your existing truststore:
+
+bash
+Copy code
+cp /apps/DataStage/jdk/jre/lib/security/cacerts-ts.jks \
+   /apps/DataStage/jdk/jre/lib/security/cacerts-ts.jks.bak
+Optionally list existing certificates:
+
+bash
+Copy code
+keytool -list -keystore /apps/DataStage/jdk/jre/lib/security/cacerts-ts.jks \
+  -storetype JKS -storepass cit
+Import the new certificate (using the corrected command above).
+
+Re-verify the alias appeared:
+
+bash
+Copy code
+keytool -list -keystore /apps/DataStage/jdk/jre/lib/security/cacerts-ts.jks \
+  -storetype JKS -storepass cit | grep db-ssl-dutla55l
+Restart relevant DataStage components to ensure they load the updated keystore.
+
+📌 Final Notes
+Ensure the truststore you're updating is the one used by your JDBC or ASBServer SSL configurations.
+
+If your environment uses PKCS12 files (e.g., .p12), substitute -storetype PKCS12 and password accordingly.
+
+Always use consistent, absolute paths and verify current configurations before making changes.
+
+Let me know if you want help verifying which truststore DataStage is actually using in your setup!
+
+
+
+
+
+
+
+
+
+
+
+Sources
+
+
+
+
+
+
+
+
+*******
 vvp operations
 Reinstall the operator with SSL disabled:
 
