@@ -1,4 +1,23 @@
+List all current aliases (verbose):
+keytool -v -list -keystore truststore.p12 -storetype PKCS12 -storepass password
 
+Check if desired alias is already used:
+keytool -list -keystore truststore.p12 -alias <alias> -storepass password
+
+If alias exists and you want a clean import, delete it first:
+keytool -delete -alias <alias> -keystore truststore.p12 -storepass password
+
+Import the new certificate:
+keytool -importcert \
+  -alias <alias> -file newcert.crt \
+  -keystore truststore.p12 -storetype PKCS12 -storepass password
+Or to overwrite without prompt:
+
+
+keytool -importcert … -noprompt
+🧾
+
+----
 Important Considerations
 Verify existing entries before importing:
 
