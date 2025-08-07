@@ -1,3 +1,49 @@
+My Technical Contributions
+Over the past months, I have been deeply involved in the following areas:
+
+Kafka, Cluster Linking, VVP, and DataStage product suites.
+
+Recent hands-on work with the Kannika product and IBM MQ-based tasks as per JIRA assignments.
+
+Proactively engaging with Confluent for Kubernetes and related tools that I highlighted as bold focus areas in last year’s survey.
+
+I also value the emphasis you've placed on data center backup and restore, and I fully understand its criticality in the OCC (Operational Control Center) context. I make it a point to align my practices with this direction.
+
+These are areas where I feel confident and contribute with an expert-level understanding.
+
+🧭 Concerns with Project Management (ABC)
+While I remain committed to delivering high-quality results, I’d like to share some concerns regarding the current project manager, ABC, which have been consistently affecting team morale and productivity:
+
+Redundant Questioning: Key use cases (e.g., VVP workspace creation) are asked repeatedly even after being clearly explained. This has happened multiple times with different teammates.
+
+Incorrect Technical Directions: ABC occasionally provides incorrect implementation suggestions for production workflows, which could lead to operational risks.
+
+Inefficient Meetings: Our daily meetings often stretch 45 minutes to an hour without clear outcomes, mainly due to repetitive discussions led by ABC.
+
+Lack of Recognition: Technical input shared by me is often passed to management without acknowledgment, which feels demotivating.
+
+Follow-through Gaps: Important technical discussions often do not result in action or proper documentation.
+
+Confidentiality Breach: I’ve experienced performance-related discussions being shared internally, which impacted me personally and did not reflect a professional standard.
+
+Low Ownership During Pressure: Unlike many managers who take up small JIRA tasks or assist technically, ABC often remains distant even when the team is under significant workload.
+
+🙏 Intent and Outlook
+I am sharing this feedback not with the intent of blame, but to support a more accountable, collaborative, and technically sound environment—one that aligns with the high standards we all strive for.
+
+I’d appreciate your guidance on how best to handle this moving forward or if a more formal channel is preferred for such feedback.
+
+Thank you for your attention and leadership.
+
+Warm regards,
+[Your Full Name]
+[Your Job Title or Department]
+[Your Contact Information]
+
+Let me know if you'd like this tailored to a more informal tone, or if you're sending it via an internal platform (like Outlook, Slack, etc.).
+
+
+============
 Subject: Constructive Feedback Regarding Project Management Challenges
 
 Dear [Executive Director's Name],
