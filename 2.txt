@@ -1,3 +1,42 @@
+Subject: Constructive Feedback Regarding Project Management Challenges
+
+Dear [Executive Director's Name],
+
+I hope this message finds you well.
+
+I would like to bring to your attention some ongoing concerns regarding the project management style and approach of [Project Manager ABC], which I believe are impacting team productivity and morale.
+
+Over the past months, I have been actively contributing to multiple high-impact areas, including Kafka, Cluster Linking, VVP, Datastage, and more recently Kannika and MQ products, handling multiple Jira tasks. I feel confident and technically sound in these domains.
+
+However, I’ve observed the following challenges while working under ABC’s coordination:
+
+Repetitive Questions & Inefficient Communication:
+Important use cases and product scenarios (e.g., VVP workspace creation) are often re-discussed unnecessarily in multiple meetings. The same questions are asked again with other team members, leading to confusion and redundancy.
+
+Incorrect Technical Inputs:
+At times, ABC provides technical suggestions that are incorrect or misaligned, which have been directed toward production implementation. This creates risks in sensitive environments.
+
+Unproductive Meetings:
+Daily meetings often extend up to 45 minutes to an hour with repetitive discussions, reducing valuable development and analysis time for the team.
+
+Technical Input Not Acknowledged:
+While I frequently provide technical feedback, it is often repackaged and forwarded to higher management without clarity or appropriate action being taken.
+
+Lack of Follow-Through:
+Several technical discussions end without action or follow-up from ABC, which impacts our delivery timelines and accountability.
+
+Concerns with Confidentiality and Professionalism:
+On one occasion, I experienced discomfort when personal performance-related concerns were shared within the team, breaching professional confidentiality norms.
+
+Limited Team Support in High-Pressure Times:
+Unlike other managers, ABC does not engage in Jira resolution or contribute technically, even during critical project phases when the team is under significant pressure.
+
+I am sharing this as constructive feedback with the hope that it will help foster a more effective and professional working environment. My intention is to ensure that the team functions smoothly and delivers high-quality outcomes, and I remain committed to contributing with my full capabilities.
+
+Thank you for your time and understanding. I would appreciate the opportunity to discuss this further if needed.
+
+
+----
 List all current aliases (verbose):
 keytool -v -list -keystore truststore.p12 -storetype PKCS12 -storepass password
 
