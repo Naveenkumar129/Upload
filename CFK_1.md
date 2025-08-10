@@ -1,11 +1,53 @@
+ Get the Token
+From inside the pod that Vault Agent is running in:
+
+bash
+Copy
+Edit
+TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+If this file doesn’t exist, automountServiceAccountToken: false is set → RBAC check won’t work until that’s enabled.
+
+2️⃣ Get the CA and API Server
+bash
+Copy
+Edit
+CA_CERT="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+APISERVER="https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}"
+3️⃣ Curl Test
 Example: check if the ServiceAccount can list secrets in its namespace (default here):
+
+bash
+Copy
+Edit
 curl -s --cacert $CA_CERT \
   -H "Authorization: Bearer $TOKEN" \
   "${APISERVER}/api/v1/namespaces/default/secrets" | jq .
 200 OK + JSON list → SA has permission.
+
 403 Forbidden → RBAC issue inside Kubernetes.
+
 401 Unauthorized → Token invalid (maybe expired, wrong mount, or mismatched API server CA).
- 
+
+4️⃣ Alternate Verb Check
+If you want to test other verbs/resources:
+
+bash
+Copy
+Edit
+# Test ability to get pods
+curl -s --cacert $CA_CERT \
+  -H "Authorization: Bearer $TOKEN" \
+  "${APISERVER}/api/v1/namespaces/default/pods" | jq .
+5️⃣ Quick HTTP Code Only
+If you just want to see PASS/FAIL:
+
+bash
+Copy
+Edit
+curl -s -o /dev/null -w "%{http_code}" \
+  --cacert $CA_CERT \
+  -H "Authorization: Bearer $TOKEN" \
+  "${APISERVER}/api/v1/namespaces/default/secrets"
 
 ---------
 
