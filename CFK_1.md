@@ -5,8 +5,8 @@ curl -s --cacert $CA_CERT \
 200 OK + JSON list → SA has permission.
 
 403 Forbidden → RBAC issue inside Kubernetes.
-
 401 Unauthorized → Token invalid (maybe expired, wrong mount, or mismatched API server CA).
+
 ---------
 
 ---
