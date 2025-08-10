@@ -3,9 +3,9 @@ curl -s --cacert $CA_CERT \
   -H "Authorization: Bearer $TOKEN" \
   "${APISERVER}/api/v1/namespaces/default/secrets" | jq .
 200 OK + JSON list → SA has permission.
-
 403 Forbidden → RBAC issue inside Kubernetes.
 401 Unauthorized → Token invalid (maybe expired, wrong mount, or mismatched API server CA).
+ 
 
 ---------
 
