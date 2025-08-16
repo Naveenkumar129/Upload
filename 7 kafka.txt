@@ -1,3 +1,21 @@
+How can you check the consumer group lag for a specific consumer group using the Kafka CLI?
+
+A. kafka-consumer-groups.sh --describe --group --bootstrap-server localhost:9092
+
+ReplicationLag indicates the time it takes for a record to be acknowledged by all in-sync replicas. Monitoring this metric helps ensure data consistency and reliability within the Kafka cluster.
+
+LogFlushRateAndTimeMs is the Kafka metric that indicates the rate and time of log flush operations. This metric helps monitor how often logs are being flushed to disk, which is critical for data durability and performance.
+
+PartitionLoad is the metric that should be monitored to detect partition imbalance in a Kafka cluster. It indicates how partitions are distributed and can help identify if some brokers are handling significantly more partitions than others.
+
+LeaderElectionRateAndTimeMs is the Kafka metric that indicates the rate and time taken for leader elections. Monitoring this metric can help identify potential issues with leader election processes within the Kafka cluster.
+
+PartitionLoad is the metric that should be monitored to detect partition imbalance in a Kafka cluster. It indicates how partitions are distributed and can help identify if some brokers are handling significantly more partitions than others.
+
+JvmMemoryUsage is the critical metric for monitoring Kafka broker heap memory usage. 
+
+ ACLs are stored in the __cluster_metadata topic and managed using Kafka command-line tools
+----
 
 https://github.com/luszczynski/kafka-cheat-sheet/blob/master/README.adoc
 
@@ -210,6 +228,7 @@ Lists metadata about brokers and topics.
 8. Check Logs
 Check application and Kafka logs for errors related to connectivity, timeouts, or misconfigurations.
 By systematically following these steps, you can confirm that the external application can successfully connect and interact with the Kafka cluster.
+
 
 
 
