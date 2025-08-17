@@ -1,89 +1,29 @@
 
 GET CONSUMER LAG
 
+kafka-consumer-groups.sh   bootstrap-server localhost: 9093  --list command-config
 
-Get list of Connect consumer group by going inside katka -broker pods
-/kafka_2.12-3.3.1/config/consumer.properties
-grep connect
--
+kafka-consumer-groups.sh bootstrap-server localhost:9093 describe  --group <consumer-group name>
 
-
-kafka-consumer-groups.sh
-
-
-bootstrap-server localhost: 9093
-
-
---list
-
-
-command-config
-
-
-Describe the connect consumer group by going inside kafka-broker pods to get the lag
-
-
-command-config /kafka 2.12-3.3.1/config/consumer.properties
-
-
-CO
-
-
-kafka-consumer-groups.sh
-
-
-bootstrap-server localhost:9093
-
-
-describe
-
-
---group <consumer-group name>
-
-
---
-
-
-10
-13
-
-
+-------------
 date; printf "loop $i \n"; kafka-consumer-groups.sh --bootstrap- server localhost :9093
 fOT i in (1..1000); do
 command-config /kafka 2.12-3.3.1/config/consumer.properties
-sleep 2; done
-
-
-group <consumer-group name>
-
-
--describe
+sleep 2; done 
+group <consumer-group name> -describe
 
 
 kafka-console-consumer.sh --bootstrap-server kafka-headless:9092
 "087370cb-f822-4764-940c-dba2819d465e'
 kafxa-consumer-groups.sh --bootstrap-server kafka-headless:9092
---all-groups
+--all-groups 
 
 
 --topic jp-sapi-moretime-inward --from-beginning grep
--B2
-
-
-15
-
-
 --list |grer -i payload
-
-
-16
-17
-
-
 kafka-headless:9092
 
-
---group connect- idbc-payload-reporting-failed-rtpcat4-sink-connector
+-group connect- idbc-payload-reporting-failed-rtpcat4-sink-connector
 
 
 describe
@@ -107,18 +47,11 @@ ka, fka-consurer-groups.sh
 reset-offsets
 to-earliest
 topic test
-eset-offsets
+reset-offsets
 shift-by 100 -- topic test
-N
-
-
--execute
+N  -execute
 execute
-
-
 22
-
-
 reset-offsets -group
 
 
