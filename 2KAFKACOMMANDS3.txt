@@ -26,6 +26,41 @@ how to list all consumersgroups in cluster
 how to add configs for entity ( users, topics, clietns, brokers)
 kafka-config.sh  --alter --entity-type  x --entity-name y --aadd-config key=8
 -------------
+
+1. List consumer groups
+
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list
+2. Describe a consumer group
+
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --group my-consumer-group \
+  --describe
+🔧 Resetting Offsets
+⚠️ Always use --dry-run before --execute, so you don’t accidentally move offsets wrong.
+
+a) Reset to earliest
+
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --group my-consumer-group \
+  --topic test \
+  --reset-offsets --to-earliest --dry-run
+Then execute:
+
+... --execute
+b) Reset to latest
+
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --group my-consumer-group \
+  --topic test \
+  --reset-offsets --to-latest --execute
+c) Shift offsets by +100
+
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --group my-consumer-group \
+  --topic test \
+  --reset-offsets --shift-by 100 --execute
+
+===========
 date; printf "loop $i \n"; kafka-consumer-groups.sh --bootstrap- server localhost :9093
 fOT i in (1..1000); do
 command-config /kafka 2.12-3.3.1/config/consumer.properties
