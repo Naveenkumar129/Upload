@@ -61,6 +61,23 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
   --reset-offsets --shift-by 100 --execute
 
 ===========
+Proper Bash Script to Monitor Consumer Group Lag
+
+#!/bin/bash
+
+for i in {1..1000}; do
+  date
+  echo "Loop $i"
+  
+  kafka-consumer-groups.sh \
+    --bootstrap-server localhost:9093 \
+    --command-config /kafka_2.12-3.3.1/config/consumer.properties \
+    --group <consumer-group-name> \
+    --describe
+  
+  sleep 2
+done
+=========
 date; printf "loop $i \n"; kafka-consumer-groups.sh --bootstrap- server localhost :9093
 fOT i in (1..1000); do
 command-config /kafka 2.12-3.3.1/config/consumer.properties
