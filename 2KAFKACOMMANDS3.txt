@@ -8,7 +8,23 @@ kafka-consumer-groups.sh bootstrap-server localhost:9093 describe  --group <cons
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic gopan-upload --group gopan-upload-consume
 
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --group <group-name>
+How to delete offsets of consumer group:
 
+
+how to import offsets for consumer group;
+
+
+its important to stop all consumers in consumer group.
+
+
+how to check config details 
+
+how to add user to access kafka 
+
+how to list all consumersgroups in cluster
+
+how to add configs for entity ( users, topics, clietns, brokers)
+kafka-config.sh  --alter --entity-type  x --entity-name y --aadd-config key=8
 -------------
 date; printf "loop $i \n"; kafka-consumer-groups.sh --bootstrap- server localhost :9093
 fOT i in (1..1000); do
