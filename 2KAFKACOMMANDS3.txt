@@ -4,7 +4,8 @@ GET CONSUMER LAG
 kafka-consumer-groups.sh   bootstrap-server localhost: 9093  --list command-config
 
 kafka-consumer-groups.sh bootstrap-server localhost:9093 describe  --group <consumer-group name>
-./kafka-console-consumer.sh --bootstrap-server kafka:9092  --topic gopan-log --from-beginning
+kafka-console-consumer.sh --bootstrap-server kafka:9092  --topic gopan-log --from-beginning
+this give number of consumers and lag
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic gopan-upload --group gopan-upload-consume
 
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --group <group-name>
