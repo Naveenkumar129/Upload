@@ -1,3 +1,32 @@
+curl -X POST http://<kannika-api-host>/api/v1/backup \
+  -H "Content-Type: application/json" \
+  -d '{
+        "cluster": "kafka-cluster-1",
+        "backupName": "backup-20250820",
+        "topics": ["orders", "payments", "transactions"],
+        "storageLocation": "s3://my-bucket/kafka-backups"
+      }'
+
+
+---
+
+if regex 
+
+"topicsRegex": ".*orders.*|payments-.*"
+---
+curl -X POST http://<kannika-api-host>/api/v1/restore \
+  -H "Content-Type: application/json" \
+  -d '{
+        "cluster": "kafka-cluster-1",
+        "backupName": "backup-20250820",
+        "topicsRegex": "transactions-.*",
+        "targetCluster": "kafka-cluster-2"
+      }'
+
+----
+
+
+---
 Step 1: Define a Backup CRD (example)
 apiVersion: mybackup.io/v1alpha1
 kind: Backup
