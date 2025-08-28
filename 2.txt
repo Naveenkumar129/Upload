@@ -7,7 +7,7 @@ curl -X POST http://<kannika-api-host>/api/v1/backup \
         "storageLocation": "s3://my-bucket/kafka-backups"
       }'
 
-
+--topics-regex  TOPICS_REGEX
 ---
 
 if regex 
