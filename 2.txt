@@ -1,3 +1,18 @@
+
+TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+curl -k -H "Authorization: Bearer $TOKEN" https://kubernetes.default/api/v1/
+# gets a list of API resources
+curl -k -H "Authorization: Bearer $TOKEN" https://kubernetes.default/api/v1/namespaces/default/pods
+
+
+curl -k "https://${my_api_server}:6443/version";
+curl -k "https://${my_api_server}:6443/api";
+curl -k "https://${my_api_server}:6443/api/v1";
+curl -k "https://${my_api_server}:6443/api/v1/namespaces";
+curl -k "https://${my_api_server}:6443/api/v1/namespaces/<namespace>/pods";
+curl -k "https://${my_api_server}:6443/apis";
+-----------
+
 curl -X POST http://<kannika-api-host>/api/v1/backup \
   -H "Content-Type: application/json" \
   -d '{
