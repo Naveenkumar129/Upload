@@ -7,7 +7,7 @@ curl -X POST https://api.kannika.example.com/gql \
   -H "Content-Type: application/json" \
   -d '{"query":"mutation { createBackup(input:{name:\"daily\"}) { id status } }"}'
 
-
+his is exactly what Kannika API does internally when it receives a Bearer token.
 
 The API checks the token signature against the OIDC provider’s public keys.
 ----
