@@ -1,4 +1,16 @@
+kannika
 
+Kannika API only needs the public key (from JWKS) to verify tokens.
+
+curl -X POST https://api.kannika.example.com/gql \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query":"mutation { createBackup(input:{name:\"daily\"}) { id status } }"}'
+
+
+
+The API checks the token signature against the OIDC provider’s public keys.
+----
 TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 curl -k -H "Authorization: Bearer $TOKEN" https://kubernetes.default/api/v1/
 # gets a list of API resources
