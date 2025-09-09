@@ -1,5 +1,13 @@
 kannika
 
+kubectl get rolebinding,clusterrolebinding --all-namespaces -o json \
+  | jq -r '.items[] | select(.subjects[]?.name=="my-app-sa") | .metadata.name + " → " + .roleRef.kind + "/" + .roleRef.name'
+
+
+
+
+
+
 Kannika API only needs the public key (from JWKS) to verify tokens.
 
 curl -X POST https://api.kannika.example.com/gql \
