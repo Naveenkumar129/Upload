@@ -1,3 +1,61 @@
+Describe Topics with Replica Info
+kafka-topics.sh --bootstrap-server <broker> --describe --topic <topic>
+
+
+Example output:
+
+Topic: my-topic   PartitionCount: 3  ReplicationFactor: 2  Configs:
+    Partition: 0  Leader: 101  Replicas: 101,102  Isr: 101,102
+    Partition: 1  Leader: 102  Replicas: 102,103  Isr: 102,103
+    Partition: 2  Leader: 103  Replicas: 103,101  Isr: 103,101
+
+
+Here:
+
+Replicas = which brokers host replicas (placement)
+
+Leader = active leader broker
+
+ISR = in-sync replicas
+
+🔹 2. Export All Topics’ Replica Placement
+
+To dump replica placement for all topics:
+
+kafka-topics.sh --bootstrap-server <broker> --describe > topics_rpp.txt
+
+🔹 3. Extract Only Replica Placement (Cleaner Output)
+kafka-topics.sh --bootstrap-server <broker> --describe | \
+awk '/Topic:/ {topic=$2} /Partition:/ {print topic, "Partition=" $2, "Leader=" $4, "Replicas=" $6, "ISR=" $8}'
+
+
+Sample output:
+
+my-topic Partition=0 Leader=101 Replicas=101,102 ISR=101,102
+my-topic Partition=1 Leader=102 Replicas=102,103 ISR=102,103
+my-topic Partition=2 Leader=103 Replicas=103,101 ISR=103,101
+
+🔹 4. Export to CSV
+echo "Topic,Partition,Leader,Replicas,ISR" > topics_rpp.csv
+kafka-topics.sh --bootstrap-server <broker> --describe | \
+awk '/Topic:/ {topic=$2} /Partition:/ {print topic","$2","$4","$6","$8}' >> topics_rpp.csv
+
+
+This gives a structured CSV with topic name, partition, leader, replicas, and ISR → effectively the replica placement policy.
+
+✅ This will give you a full export of replica placement for every topic/partition.
+
+Do you want me to extend this into a ready-to-run shell script that you can just run once and it will generate the CSV for your whole cluster?
+
+
+
+
+
+
+
+
+
+
 kannika
 
 kubectl get rolebinding,clusterrolebinding --all-namespaces -o json \
