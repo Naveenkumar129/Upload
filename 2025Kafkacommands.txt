@@ -1,4 +1,24 @@
 
+kafka-run-class.sh kafka.tools.DumpLogSegments --files 00000000000000000331.index 00000000000000000331.log --index-sanity-check 
+Dumping 00000000000000000331.index 
+00000000000000000331.index passed sanity check. 
+```
+## 副本验证 
+
+
+* 分区复制的原理与消费者客户端类型： follower broker定期将上一个offset到当前offset之间的数据复制到磁盘上。如果复制停止并重启，它会从上一个checkpoint继续复制。如果之前复制的日志片段被删除，follower不会做任何补偿 。 
+* 可以使用 kafka-replica-verification.sh来验证集群分区副本的一致性 。它会从指定分区的副本上获取消息，并检查所有副本是否具有相同的消息。 
+### 副本验证对集群的影响 
+
+
+* 副本验证会对集群造成影响，因为它需要读取所有的消息，读取的过程是并行的，所以使用需要注意。 
+```plain
+# 对lea开头的topic进行校验 
+kafka-replica-verification.sh --broker-list localhost:9092,localhost:9093,localhost:9094 --topic-white-list 'lea.*' 
+```
+# 消费和生产 
+
+
 GET CONSUMER LAG
 
 kafka-consumer-groups.sh   bootstrap-server localhost: 9093  --list command-config
