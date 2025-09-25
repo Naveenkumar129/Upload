@@ -1,3 +1,68 @@
+
+helm 
+alias  hgv ='helm get values'
+
+hgv ververica-platform-rfw-risk-dev-00-a8634
+
+k8s operator sync with CR's.
+kg get roles ververica-platform-rfw-risk-dev-00-a8634-operator
+
+k describe role ververica-platform-rfw-risk-dev-00-a8634-operator
+
+k auth can-i delete crd-n <job-namespace> --as=system:serviceaccount:<<vvpnamespace>>:<<sa-name>>
+
+k describe rolebinding ververica-platform-rfw-risk-dev-00-a8634-operator
+
+k describe role ververica-platform-rfw-risk-dev-00-a8634
+
+k describe rolebinding ververica-platform-rfw-risk-dev-00-a8634
+
+k auth can-i delete crd -n <job-namespace> --as=system:serviceaccount:<<vvpnamespace>>:<<sa-name>>
+
+
+k auth can-i delete crd -n rfw-risk-dev-07 --as=system:serviceaccount:rfw-risk-dev-00:ververica-platform-rfw-risk-dev-00-a8634
+
+helm ls | grep ververica
+
+k auth can-i delete vvpdeploy -n rfw-risk-dev-00 --as=system:serviceaccount:rfw-risk-dev-00:ververica-platform-rfw-risk-dev-00-a8634
+
+k auth can-i delete vvpdeploy -n rfw-risk-dev-07 --as=system:serviceaccount:rfw-risk-dev-00:ververica-platform-rfw-risk-dev-00-a8634
+
+k apiserver -A
+k get mutatingwebhookconfiguration -A |grep vvp
+
+K edit deployments
+
+k get cm
+k edit cm abc
+
+k get vvpdeploy -n 	rfw-risk-dev-07
+k get deploy ververica-platform-rfw-risk-dev-00-a8634 -o yaml > deploy
+
+k edit deploy 
+search for operator 
+ deleted env
+ k8soperator:
+ crd:false
+ enable:false
+ 
+helm ls
+
+helm rollback 16
+
+k get vvpdeploy -A |grep IDLING
+k delete vvpdeploy stresstest-pricebeta-*
+k edit vvpdeploy stress
+
+grep -R kubernetes-service_account
+k get clusterrolebinding | grep watcher
+k edit vvpdeploy stresstest-pricebeta-builder-gen
+kg vvpdeploy |grep ERROR | awk'{print $1}'
+
+k edit vvpdeploy strsstest-scenario-gen
+go to finalizers to finalizers :[]
+
+
 Verifying Ververica Deployment
 
 kubectl get deployments -n ververica
@@ -16,3 +81,4 @@ A Flink Cluster in Kubernetes consists of:
 JobManager Pod (Coordinates jobs and checkpoints).
 TaskManager Pods (Execute tasks and store state).
 Persistent Storage (For checkpoints and savepoints in HDFS/S3).
+
