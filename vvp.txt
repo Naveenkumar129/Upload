@@ -1,4 +1,25 @@
 
+kubectl auth can-i get secrets --as=system:serviceaccount:rfw-risk-dev-00:ververica-platform-rfw-risk-dev-00-a8634e -n rfw-risk-dev-00
+
+kubectl auth can-i get secrets --as=system:serviceaccount:rfw-risk-dev-00:ververica-platform-rfw-risk-dev-00-a8634e -n rfw-risk-dev-07
+
+
+kubectl auth can-i delete crd-n <job-namespace> --as=system:serviceaccount:<vvp-namespace>:<sa-name
+  
+
+kubectl auth can-i delete crd-n <job-namespace> --as=system:serviceaccount:<vvp-namespace>:<sa-name>
+--force --grace-period=0
+
+# If that still hangs, try patching to remove finalizers first
+
+kubectl patch pod <pod-name> -n <namespace> -p '{"metadata":{"finalizers":[]}}' --type=merge
+
+
+kubectl patch <resource-type> <resource-name> -p '{"metadata":{"finalizers":[]}}' --type=merge
+
+
+--
+
 helm 
 alias  hgv ='helm get values'
 
@@ -81,4 +102,5 @@ A Flink Cluster in Kubernetes consists of:
 JobManager Pod (Coordinates jobs and checkpoints).
 TaskManager Pods (Execute tasks and store state).
 Persistent Storage (For checkpoints and savepoints in HDFS/S3).
+
 
