@@ -5,6 +5,13 @@ Step	Command	Purpose
 4	kubectl auth can-i delete vvpdeploy -n rfw-risk-dev-07 --as=...	Test specific permission
 5	kubectl auth can-i --list --as=...	View all permissions
 6	kubectl get sa -o yaml	See annotations, tokens, metadata
+
+
+kubectl auth can-i --list \
+  --as=system:serviceaccount:rfw-risk-dev-00:ververica-platform-rfw-risk-dev-00-a8634
+
+
+
 ----
 
 ## Create Kubernetes Service Account
