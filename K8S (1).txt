@@ -1,3 +1,12 @@
+Step	Command	Purpose
+1	kubectl get sa -n rfw-risk-dev-00	Verify the ServiceAccount exists
+2	kubectl get rolebindings/clusterrolebindings	Find its bindings
+3	kubectl describe clusterrole <role>	Check its actual permissions
+4	kubectl auth can-i delete vvpdeploy -n rfw-risk-dev-07 --as=...	Test specific permission
+5	kubectl auth can-i --list --as=...	View all permissions
+6	kubectl get sa -o yaml	See annotations, tokens, metadata
+----
+
 ## Create Kubernetes Service Account
 
 The easiest way to create this account is to login to the OpenShift master to run oadm and oc (these instructions from OpenUnison's product manual):
