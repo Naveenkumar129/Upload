@@ -1,3 +1,8 @@
+
+kubectl exec -it $(kubectl get pod -l app=curl-test -o jsonpath="{.items[0].metadata.name}") -- /bin/sh
+
+
+
 kubectl exec -it flink-job-mdsauth-xxxxx -n rfw-risk-dev -- bash
 kafka-topics --bootstrap-server kafka.src-dev-94-cluster-east2.svc.cluster.local:9092 \
   --list --command-config /etc/flink/mds/mds-client.properties
