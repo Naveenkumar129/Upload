@@ -1,3 +1,18 @@
+# kubectl alias
+alias kda="kubectl describe apps -n argocd"
+alias kdp="kubectl describe pod"
+alias kl="kubectl logs"
+alias klf="kubectl logs -f"
+alias kga="kubectl get apps -n argocd"
+alias kgp="kubectl get pods"
+alias kgs="kubectl get svc"
+alias kpatch="kubectl patch -p '{"metadata":{"finalizers":null}}' --type=merge"
+alias kgd="kubectl get deployment"
+alias kgcm="kubectl get cm"
+alias kexec="kubectl exec -it"
+
+
+
 Initial Setup
 To keep this tutorial isolated from other application running in your Kubernetes cluster and to cleanup easier, we will create a separate namespace for the new resources.
 
@@ -639,4 +654,5 @@ spec:
     value.converter: io.apicurio.registry.utils.converter.AvroConverter
     value.converter.apicurio.registry.url: http://schema-registry:8080/api
     value.converter.apicurio.registry.global-id: io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy
+
 
