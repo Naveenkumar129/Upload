@@ -1,3 +1,9 @@
+kubectl patch vvpdeployment rds-ref-data -n rfw-risk-dev-04 -p '{"metadata":{"finalizers":[]}}' --type=merge
+Force reconcile
+kubectl annotate vvpdeployment <name> -n <ns> platform.ververica.io/force-reconcile=true --overwrite
+kubectl patch pod my-pod -n my-namespace -p '{"metadata":{"labels":{"env":"dev"}}}'
+
+===
 Typical AppManager Rejection Reasons
 Error Type	Example Message	Meaning
 400 Bad Request	“Missing required field artifact.uri”	CR spec incomplete or invalid
@@ -110,6 +116,7 @@ A Flink Cluster in Kubernetes consists of:
 JobManager Pod (Coordinates jobs and checkpoints).
 TaskManager Pods (Execute tasks and store state).
 Persistent Storage (For checkpoints and savepoints in HDFS/S3).
+
 
 
 
