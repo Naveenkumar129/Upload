@@ -1,3 +1,11 @@
+Typical AppManager Rejection Reasons
+Error Type	Example Message	Meaning
+400 Bad Request	“Missing required field artifact.uri”	CR spec incomplete or invalid
+401 Unauthorized	“Unauthorized access to AppManager API”	Operator can’t authenticate to AppManager
+403 Forbidden	“Namespace not managed by AppManager”	The namespace isn’t in AppManager’s allowed list
+404 Not Found	“Flink image not found”	Wrong artifact URI or image
+500 Internal Server Error	“Unexpected server error”	Bug or internal AppManager issue
+----
 
 kubectl auth can-i get secrets --as=system:serviceaccount:rfw-risk-dev-00:ververica-platform-rfw-risk-dev-00-a8634e -n rfw-risk-dev-00
 
@@ -102,5 +110,6 @@ A Flink Cluster in Kubernetes consists of:
 JobManager Pod (Coordinates jobs and checkpoints).
 TaskManager Pods (Execute tasks and store state).
 Persistent Storage (For checkpoints and savepoints in HDFS/S3).
+
 
 
