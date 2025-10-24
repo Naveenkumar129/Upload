@@ -1,3 +1,20 @@
+. What you should verify in your CFK environment
+Run:
+
+kubectl get kafka -n <namespace> -o yaml | grep authorizer
+
+
+If you see something like:
+
+authorizerClassName: kafka.security.authorizer.AclAuthorizer 
+then ACLs are enforced.
+
+You can also check the Kafka config directly:
+
+kubectl exec -it <broker-pod> -n <namespace> -- cat /opt/kafka/config/server.properties | grep autho
+
+
+----
 # kubectl alias
 alias kda="kubectl describe apps -n argocd"
 alias kdp="kubectl describe pod"
@@ -654,5 +671,6 @@ spec:
     value.converter: io.apicurio.registry.utils.converter.AvroConverter
     value.converter.apicurio.registry.url: http://schema-registry:8080/api
     value.converter.apicurio.registry.global-id: io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy
+
 
 
