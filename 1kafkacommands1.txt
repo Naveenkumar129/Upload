@@ -2,6 +2,23 @@ kubectl annotate kafka.platform.confluent.io <kafka-cr-name> \
   platform.confluent.io/block-reconcile=true \
   --namespace <namespace>
 
+
+Create a topic:
+kubectl exec -it <kafka-broker-pod> -n kafka -- \
+  kafka-topics --bootstrap-server kafka:9071 \
+  --create --topic kannika-topic --replication-factor 3 --partitions 6
+
+List topics:
+kubectl exec -it <kafka-broker-pod> -n kafka -- \
+  kafka-topics --bootstrap-server kafka:9071 --list
+
+Describe topic:
+kubectl exec -it <kafka-broker-pod> -n kafka -- \
+  kafka-topics --bootstrap-server kafka:9071 --describe --topic kannika-topic
+
+
+
+
 ---
 uvpasswd affects DataStage internal engine users, not Information Server suite users.
 
@@ -651,6 +668,7 @@ docker tag 0c17f0798823 cloudsihmar/myimages:latest
 docker push cloudsihmar/myimages:latest
 
 =============================================
+
 
 
 
