@@ -1,3 +1,8 @@
+kubectl annotate kafka.platform.confluent.io <kafka-cr-name> \
+  platform.confluent.io/block-reconcile=true \
+  --namespace <namespace>
+
+---
 uvpasswd affects DataStage internal engine users, not Information Server suite users.
 
 DirectoryAdmin.sh affects Information Server internal users, not OS-level users.
@@ -646,6 +651,7 @@ docker tag 0c17f0798823 cloudsihmar/myimages:latest
 docker push cloudsihmar/myimages:latest
 
 =============================================
+
 
 
 
