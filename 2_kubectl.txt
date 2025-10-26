@@ -1,3 +1,50 @@
+//*********************
+k8s stuff
+
+******************************//
+
+kubectl annotate kafka.platform.confluent.io <kafka-cr-name> \
+  platform.confluent.io/block-reconcile=true \
+  --namespace <namespace>
+
+
+
+Use the following command to retrieve the required KafkaUser data, adding the KafkaUser name and your chosen namespace: \
+
+kubectl get kafkauser <name> -o jsonpath='{"username: "}{.status.username}{"\nsecret-name: "}{.status.secret}{"\n"}'
+
+kubectl rollout restart deploy,sts,ds -n <namespace>
+
+kubectl logs kafka-0 -n kafka |grep STARTED
+kubectl logs kafka-1 -n kafka |grep STARTED
+
+kubectl logs kafka-2 -n kafka |grep STARTED
+
+kubectl exec -it kafka-0 -n nnn --bash
+kafka-topics.sh --create --topic mytopic --bootstrap-server
+kafka-svc:9092
+
+kubectl exec -it kafka-0 -n nnn --bash
+kafka-topics.sh --list --topic mytopic --bootstrap-server
+kafka-svc:9092
+
+kubectl exec -it kafka-0 -n nnn --bash
+kafka-console-producer.sh --bootstrap-server kafka-svc:9092 --topic mytopic
+
+
+kafka-console-consumer.sh --bootstrap-server kafka-svc:9092 --topic mytopic
+
+kubectl drain my-cluter --delete-emptydir-data 
+--force --ignore-daemonsets
+
+uncordon 
+kubectl uncordon my-cluster-worker
+
+drain 2 worker node and check status
+k taint nodes mycluter-workeer reserverd-
+-----------
+
+
 . What you should verify in your CFK environment
 Run:
 
@@ -671,6 +718,7 @@ spec:
     value.converter: io.apicurio.registry.utils.converter.AvroConverter
     value.converter.apicurio.registry.url: http://schema-registry:8080/api
     value.converter.apicurio.registry.global-id: io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy
+
 
 
 
