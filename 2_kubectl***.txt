@@ -19,6 +19,28 @@ k get ep
 # ssh to one of the container and run dns check:
 host <httpd-discovery>
 
+
+#### Debugging with an ephemeral debug container
+
+Ephemeral containers are useful for interactive troubleshooting when `kubectl exec` is insufficient because a container has crashed or a container image doesn't include debugging utilities, such as with `distroless` images. 
+
+This allows a user to inspect a running pod without restarting it and without having to enter the container itself to, for example, check the filesystem, execute additional debugging utilities, or initial network requests from the pod network namespace. Part of the motivation for this enhancement is to also eliminate most uses of SSH for node debugging and maintenance
+
+```bash
+# First, create a pod for the example: 
+kubectl run ephemeral-demo --image=k8s.gcr.io/pause:3.1 --restart=Never
+# add a debugging container 
+kubectl alpha debug -it ephemeral-demo --image=busybox --target=ephemeral-demo
+```
+
+#### Generateing k8s YAML from local files using `--dry-run`
+```bash
+# generate a kubernetes tls file
+kubectl create secret tls keycloak-secrets-tls \
+--key tls.key --cert tls.crt \
+-o yaml --dry-run > 02-keycloak-secrets-tls.yml
+```
+
 //*********************
 k8s stuff
 
@@ -739,6 +761,7 @@ spec:
     value.converter: io.apicurio.registry.utils.converter.AvroConverter
     value.converter.apicurio.registry.url: http://schema-registry:8080/api
     value.converter.apicurio.registry.global-id: io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy
+
 
 
 
