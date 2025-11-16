@@ -1,4 +1,25 @@
 //*********************
+k8s  troubleshooting 
+******************************//
+### Tips and Tricks
+```bash
+# Show resource utilization per node:
+kubectl top node
+# Show resource utilization per pod:
+kubectl top pod
+# if you want to have a terminal show the output of these commands every 2 seconds without having to run the command over and over you can use the watch command such as
+watch kubectl top node
+# --v=8 for debuging 
+kubectl get po --v=8
+```
+
+####  troubleshoot headless services  
+```bash
+k get ep
+# ssh to one of the container and run dns check:
+host <httpd-discovery>
+
+//*********************
 k8s stuff
 
 ******************************//
@@ -718,6 +739,7 @@ spec:
     value.converter: io.apicurio.registry.utils.converter.AvroConverter
     value.converter.apicurio.registry.url: http://schema-registry:8080/api
     value.converter.apicurio.registry.global-id: io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy
+
 
 
 
