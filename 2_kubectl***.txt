@@ -330,6 +330,10 @@ Delete the kafka-connect namespace
 
 *************** NEW ********************
 
+//*********************
+k8s  SOME USEFUL  LINKS
+******************************//
+
 https://ehsaniara.medium.com/cdc-with-postgres-debezium-to-kafka-strimzi-bf9212ae9d78
 https://strimzi.io/blog/2021/03/29/connector-build/
 https://strimzi.io/blog/2020/01/27/deploying-debezium-with-kafkaconnector-resource/
@@ -763,6 +767,7 @@ spec:
     value.converter: io.apicurio.registry.utils.converter.AvroConverter
     value.converter.apicurio.registry.url: http://schema-registry:8080/api
     value.converter.apicurio.registry.global-id: io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy
+
 
 
 
