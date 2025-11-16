@@ -86,7 +86,9 @@ kubectl uncordon my-cluster-worker
 drain 2 worker node and check status
 k taint nodes mycluter-workeer reserverd-
 -----------
-
+//*********************
+k8s  CFK  kafka
+******************************//
 
 . What you should verify in your CFK environment
 Run:
@@ -761,6 +763,7 @@ spec:
     value.converter: io.apicurio.registry.utils.converter.AvroConverter
     value.converter.apicurio.registry.url: http://schema-registry:8080/api
     value.converter.apicurio.registry.global-id: io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy
+
 
 
 
