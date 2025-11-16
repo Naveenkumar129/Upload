@@ -1,4 +1,10 @@
 //*********************
+ KAFKA  CFK troubleshooting 
+******************************//
+
+kubectl exec -it <broker-pod> -n <namespace> -- cat /opt/kafka/config/server.properties | grep autho
+
+//*********************
 k8s  troubleshooting 
 ******************************//
 ### Tips and Tricks
@@ -767,6 +773,7 @@ spec:
     value.converter: io.apicurio.registry.utils.converter.AvroConverter
     value.converter.apicurio.registry.url: http://schema-registry:8080/api
     value.converter.apicurio.registry.global-id: io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy
+
 
 
 
