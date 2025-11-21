@@ -1,13 +1,22 @@
 
+curl -X POST -H "  Authorization: Bearer $MCPGATEWAY_BEARER_TOKEN" \
+	-H "  Content-Type: application/json" \
+	-d ' {
+		 "name" : "clock_tool" ,
+		 "url" : "http://localhost:9000/rpc" ,
+		 "description" : "Returns current time" ,
+		 "input_schema" : {
+			 "type" : "object" ,
+			 "properties" : { "timezone" : { "type" : "string" }}
+		}
+	}' \
+	http: //localhost:4444/tools
 
 
 
 
 
-
-
-
-]]]]]]
+-----------
 Describe Topics with Replica Info
 kafka-topics.sh --bootstrap-server <broker> --describe --topic <topic>
 
