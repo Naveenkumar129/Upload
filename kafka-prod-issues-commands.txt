@@ -1,0 +1,11 @@
+Check Kafka server logs for ERROR, WARN, leader change, NetworkProcessor, RequestHandler, DiskError.
+
+Check JMX metrics: request queue sizes, RequestHandlerAvgIdlePercent, replication fetcher times, ISR changes.
+
+Inspect GC logs for pause spikes in same timeframe.
+
+Check disk I/O iostat and iotop to see if storage saturated.
+
+Check network for retransmits and interface errors (/proc/net/snmp, ss -s).
+
+If JVM GC is root cause: consider rolling restart with tuned GC flags; if disk or network is root cause, remediate infra (move partitions, replace disks, fix MTU, NIC drivers).
