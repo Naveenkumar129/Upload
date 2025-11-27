@@ -1,3 +1,146 @@
+Kafka sees this new group.id and creates the group automatically in the __consumer_offsets topic.
+ChatGPT said:
+
+Yes — exactly. Let me explain precisely how Kafka creates consumer groups automatically and what happens internally in the __consumer_offsets topic.
+
+✅ How Kafka Automatically Creates Consumer Groups
+
+When a consumer application first connects to Kafka with:
+
+group.id=my-group
+
+
+Kafka does the following automatically, without any command or admin action:
+
+🔹 Step 1 — Consumer sends JoinGroup request
+
+The consumer sends a JoinGroup request to the Kafka broker (the Group Coordinator for that group).
+
+Kafka checks:
+
+Does this group.id already exist?
+
+Do I (the broker) have metadata for this group?
+
+If not → the group is created in memory.
+
+🔹 Step 2 — Kafka creates a new entry in __consumer_offsets
+
+When a consumer sends its first committed offset, Kafka writes a message to:
+
+__consumer_offsets
+
+
+This is a compact internal topic that stores:
+
+committed offsets
+
+group metadata
+
+generation IDs
+
+leadership info
+
+Kafka writes:
+
+(group.id=my-group, partition=offsets-partition-X) → metadata record
+
+
+This is how the group becomes persistent.
+
+🎯 There is no command like CREATE GROUP.
+The act of connecting with a new group.id creates the group.
+
+🔹 Step 3 — Broker designated as Group Coordinator
+
+Kafka assigns:
+
+every group to one partition of __consumer_offsets
+
+that partition has a leader broker
+
+that broker becomes the Group Coordinator
+
+Example:
+
+group.id = my-group
+→ assigned to __consumer_offsets partition 14
+→ broker 2 is leader → broker 2 is the coordinator
+
+🔹 Step 4 — Group appears in kafka-consumer-groups
+
+Once metadata is written to the offsets topic, running:
+
+kafka-consumer-groups.sh --bootstrap-server ... --list
+
+
+will show:
+
+my-group
+
+
+Even if:
+
+the group has no active members
+
+the consumer app is not running now
+
+🧠 Why this matters for your issue
+
+Your cluster output showed:
+
+Leader: -1 for __consumer_offsets partition(s)
+
+
+If the offsets topic partition that stores your group is leaderless, then:
+
+Kafka cannot create the group
+
+Kafka cannot commit offsets
+
+kafka-exporter cannot read lag
+
+kafka-consumer-groups.sh hangs or errors
+
+This is exactly why you see:
+
+exporter timeouts
+
+“in the middle of a leadership election”
+
+leader = -1
+
+🔍 Want to see which offsets partition your group uses?
+
+Run:
+
+kafka-consumer-groups.sh \
+  --bootstrap-server <broker> \
+  --describe \
+  --group <your-group> \
+  --state
+
+
+It shows:
+
+Coordinator: <broker-id>
+
+
+Then run:
+
+kafka-topics.sh --describe --topic __consumer_offsets --bootstrap-server <broker>
+
+
+Look for the partition where <broker-id> is the leader — that is the partition holding your group.
+
+If you want, tell me the consumer group name
+
+➡ I will tell you which offsets partition it uses,
+➡ and why kafka-exporter fails on that exact partition.
+
+---------
+
+
 Check Kafka server logs for ERROR, WARN, leader change, NetworkProcessor, RequestHandler, DiskError.
 
 Check JMX metrics: request queue sizes, RequestHandlerAvgIdlePercent, replication fetcher times, ISR changes.
@@ -7,5 +150,6 @@ Inspect GC logs for pause spikes in same timeframe.
 Check disk I/O iostat and iotop to see if storage saturated.
 
 Check network for retransmits and interface errors (/proc/net/snmp, ss -s).
+
 
 If JVM GC is root cause: consider rolling restart with tuned GC flags; if disk or network is root cause, remediate infra (move partitions, replace disks, fix MTU, NIC drivers).
