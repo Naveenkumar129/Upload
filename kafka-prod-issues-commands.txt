@@ -1,3 +1,32 @@
+
+2. Check the IP addresses of each NIC
+
+Run:
+
+ip addr show   # Linux
+ipconfig /all # Windows
+
+
+Identify which NIC has an IP in the subnet you intend to use for the tunnel.
+
+Avoid using NICs connected to unrelated networks to prevent routing conflicts.
+
+3. Consider routing and gateway
+
+The NIC must have a route to the tunnel endpoint.
+
+For example, if your tunnel endpoint is 203.0.113.10:
+
+ping -I <nic_ip> 203.0.113.10
+
+
+This tests connectivity via that NIC.
+
+If using Linux, you can specify the outgoing interface when initiating a tunnel:
+
+ip tunnel add tun0 mode gre remote 203.0.113.10 local <NIC_IP> dev <NIC_NAME>
+---
+
 Kafka sees this new group.id and creates the group automatically in the __consumer_offsets topic.
 ChatGPT said:
 
@@ -153,3 +182,4 @@ Check network for retransmits and interface errors (/proc/net/snmp, ss -s).
 
 
 If JVM GC is root cause: consider rolling restart with tuned GC flags; if disk or network is root cause, remediate infra (move partitions, replace disks, fix MTU, NIC drivers).
+
