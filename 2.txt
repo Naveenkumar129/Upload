@@ -1,3 +1,22 @@
+k explain po.spec.volumes | grep required -A 4
+
+
+kubectl explain po
+kubectl explain po.spec
+kubectl explain po.spec.containers
+kubectl explain po.spec.containers.resources
+kubectl explain po.spec.containers.workingDir
+kubectl explain po.spec.containers.securityContext
+kubectl explain po.spec.containers.env
+kubectl explain po.spec.containers.volumeMounts
+kubectl explain po.spec.volumes.secret
+kubectl explain svc.spec.ports
+kubectl explain svc.spec.selector
+kubectl explain rs.spec
+kubectl explain rs.spec.template
+
+
+
 openssl rsa -in venafi-encrypted.key -out venafi-unencrypted.key
 
 curl -X POST -H "  Authorization: Bearer $MCPGATEWAY_BEARER_TOKEN" \
