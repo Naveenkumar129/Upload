@@ -1,3 +1,82 @@
+
+# Dependencies, to update "charts" folder based on requirements.yaml
+helm dependency update
+
+# Use local path in requirements.yaml
+dependencies:
+- name: mychart
+  version: 0.1.0
+  repository: file://../local/path or file:///root/path
+  
+  
+===
+
+# 安装 AWS Load Balancer Controller
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=<cluster-name> \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=aws-load-balancer-controller
+```
+
+===
+
+helm show all [chart名称]     # 显示所有信息
+```
+
+### Release 管理
+
+
+dependencies:
+  - name: postgresql
+    version: 11.9.13
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+  - name: redis
+    version: 17.3.7
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
+	
+	
+	
+	
+	 script:
+    - echo "$KUBE_CONFIG" | base64 -d > kubeconfig.yaml
+    - export KUBECONFIG=kubeconfig.yaml
+    - kubectl config set-context $(kubectl config current-context) --namespace=$PRODUCTION_ENV_NAME
+    - helm upgrade --install $HELM_CHART_NAME ./path/to/your/helm/chart \
+        --set image.repository=$IMAGE_NAME \
+        --set image.tag=$CI_COMMIT_TAG \
+        --set envName=$PRODUCTION_ENV_NAME
+  only:
+    - tags
+  when: manual
+  
+  
+   # Getting info
+    helm show chart repo/chartname     # Show chart metadata
+    helm show values repo/chartname    # Show default values
+    helm get values release-name       # Show values used by release
+    helm status release-name           # Show release status
+    ```
+	
+	
+	
+	terraform {                    # Main Terraform configuration block
+  required_providers {         # Which providers this code needs
+    aws = {                    # Name you'll use to reference this provider
+      source  = "hashicorp/aws"     # Where to download the provider from
+      version = "~> 5.0"            # Which version to use (~> means "5.x but not 6.x")
+    }
+  }
+}
+
+provider "aws" {               # Configure the AWS provider
+  region  = "us-east-1"        # Which AWS region to create resources in
+  profile = "default"          # Which AWS profile from ~/.aws/credentials to use
+}
+
+
 kubectl annotate kafka.platform.confluent.io <kafka-cr-name> \
   platform.confluent.io/block-reconcile=true \
   --namespace <namespace>
@@ -668,6 +747,7 @@ docker tag 0c17f0798823 cloudsihmar/myimages:latest
 docker push cloudsihmar/myimages:latest
 
 =============================================
+
 
 
 
