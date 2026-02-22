@@ -1,3 +1,13 @@
+#kubectl get secret mysecretname -o jsonpath="{.data['ca\.crt']}" | base64 --decode > ca1.crt
+# Not Worked kubectl get secret mysecretname -o jsonpath="{.data['ca\.crt']}"  > ca.crt
+kubectl get secret mysecretname -o jsonpath="{.data['token']}" | base64 --decode > token.txt
+##
+#kubectl exec -it vault-auth-pod -- cat /var/run/secrets/kubernetes.io/serviceaccount/token > tokenin.txt
+#changed name
+kubectl exec -it vault-auth-pod -- cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt > ca.crt
+helm upgrade --install mphook banzaicloud/vault-secrets-webhook --set='env.VAULT_ROLE=full-access-role'
+
+----
 
 # Dependencies, to update "charts" folder based on requirements.yaml
 helm dependency update
@@ -747,6 +757,7 @@ docker tag 0c17f0798823 cloudsihmar/myimages:latest
 docker push cloudsihmar/myimages:latest
 
 =============================================
+
 
 
 
