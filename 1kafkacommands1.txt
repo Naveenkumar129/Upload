@@ -1,3 +1,24 @@
+
+
+# Vault AppRole check
+vault list auth/approle/role
+vault read auth/approle/role/<name>/role-id
+
+
+# Verify token policy
+vault token lookup <token>
+vault policy read prometheus-metrics
+
+export VAULT_SA_NAME=$(kubectl get sa ${service_account} -n vault -o jsonpath="{.secrets[*]['name']}")
+export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -n vault -o jsonpath="{.data.token}" | base64 --decode; echo)
+export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -n vault -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
+vault write auth/kubernetes/config \
+  token_reviewer_jwt="$SA_JWT_TOKEN" \
+  kubernetes_host="https://${k8s_host}" \
+  kubernetes_ca_cert="$SA_CA_CRT"
+  
+==
+
 #kubectl get secret mysecretname -o jsonpath="{.data['ca\.crt']}" | base64 --decode > ca1.crt
 # Not Worked kubectl get secret mysecretname -o jsonpath="{.data['ca\.crt']}"  > ca.crt
 kubectl get secret mysecretname -o jsonpath="{.data['token']}" | base64 --decode > token.txt
@@ -757,6 +778,7 @@ docker tag 0c17f0798823 cloudsihmar/myimages:latest
 docker push cloudsihmar/myimages:latest
 
 =============================================
+
 
 
 
