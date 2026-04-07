@@ -1,7 +1,113 @@
 
+<mxfile>
+  <diagram name="Kannika Multi-Region Architecture">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
 
-# Vault AppRole check
-vault list auth/approle/role
+        <!-- Top Layer -->
+        <mxCell id="uc4" value="UC4 Scheduler&#xa;Triggers backup & restore"
+          style="rounded=1;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="300" y="20" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="forgerock" value="ForgeRock&#xa;Identity & Auth Provider"
+          style="rounded=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="620" y="20" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Kannika Services -->
+        <mxCell id="k_east" value="Kannika — East&#xa;Backup & Restore"
+          style="rounded=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="100" y="120" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="k_west" value="Kannika — West&#xa;Backup & Restore"
+          style="rounded=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="380" y="120" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="k_rtop" value="Kannika — RTOP&#xa;Backup & Restore"
+          style="rounded=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="660" y="120" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Kafka -->
+        <mxCell id="kafka_e" value="Kafka MRC — East"
+          style="rounded=1;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="100" y="220" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="kafka_w" value="Kafka MRC — West"
+          style="rounded=1;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="380" y="220" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="kafka_r" value="Kafka MRC — RTOP"
+          style="rounded=1;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="660" y="220" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- S3 -->
+        <mxCell id="s3_e" value="S3 — East"
+          style="rounded=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="100" y="320" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s3_r" value="S3 — RTOP"
+          style="rounded=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="660" y="320" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Event Gateway -->
+        <mxCell id="gateway" value="Event Gateway"
+          style="rounded=1;fillColor=#f5f5f5;" vertex="1" parent="1">
+          <mxGeometry x="380" y="320" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Armory -->
+        <mxCell id="armory" value="Armory Console"
+          style="rounded=1;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="380" y="420" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Splunk -->
+        <mxCell id="splunk" value="Splunk"
+          style="rounded=1;fillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="660" y="420" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- NGINX -->
+        <mxCell id="nginx" value="NGINX Ingress&#xa;TLS termination"
+          style="rounded=1;fillColor=#e1d5e7;" vertex="1" parent="1">
+          <mxGeometry x="380" y="520" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Connections -->
+        <mxCell id="e1" style="endArrow=block;" edge="1" parent="1" source="uc4" target="k_east"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="endArrow=block;" edge="1" parent="1" source="uc4" target="k_west"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e3" style="endArrow=block;" edge="1" parent="1" source="k_east" target="kafka_e"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="endArrow=block;" edge="1" parent="1" source="k_west" target="kafka_w"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e5" style="endArrow=block;" edge="1" parent="1" source="kafka_e" target="s3_e"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" style="endArrow=block;" edge="1" parent="1" source="kafka_r" target="s3_r"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e7" style="endArrow=block;" edge="1" parent="1" source="kafka_w" target="gateway"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" style="endArrow=block;" edge="1" parent="1" source="gateway" target="armory"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e9" style="endArrow=block;" edge="1" parent="1" source="armory" target="nginx"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" style="endArrow=block;" edge="1" parent="1" source="armory" target="splunk"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+
+
+
+# auth/approle/role
 vault read auth/approle/role/<name>/role-id
 
 
