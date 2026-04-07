@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- REGION CONTAINERS                                       -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- East Region -->
+    <mxCell id="region-east" value="East region" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;whiteSpace=wrap;container=1;collapsible=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=10;rounded=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="30" width="420" height="680" as="geometry" />
+    </mxCell>
+
+    <!-- West Region -->
+    <mxCell id="region-west" value="West region" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;whiteSpace=wrap;container=1;collapsible=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=10;rounded=1;" vertex="1" parent="1">
+      <mxGeometry x="500" y="30" width="420" height="680" as="geometry" />
+    </mxCell>
+
+    <!-- RTOP Region -->
+    <mxCell id="region-rtop" value="RTOP region" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;whiteSpace=wrap;container=1;collapsible=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;verticalAlign=top;align=center;spacingTop=10;rounded=1;" vertex="1" parent="1">
+      <mxGeometry x="960" y="30" width="420" height="680" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- UC4 SCHEDULER (East region, top)                        -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mxCell id="uc4" value="&lt;b&gt;UC4 scheduler&lt;/b&gt;&lt;br/&gt;Triggers backup &amp;amp; restore" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;arcSize=10;" vertex="1" parent="region-east">
+      <mxGeometry x="110" y="60" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- FORGEROCK (RTOP region, top)                            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mxCell id="forgerock" value="&lt;b&gt;ForgeRock&lt;/b&gt;&lt;br/&gt;Identity &amp;amp; auth provider" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=10;" vertex="1" parent="region-rtop">
+      <mxGeometry x="110" y="60" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- KANNIKA SERVICES                                        -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- Kannika East -->
+    <mxCell id="kannika-east" value="&lt;b&gt;Kannika — East&lt;/b&gt;&lt;br/&gt;Backup &amp;amp; restore service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;arcSize=10;" vertex="1" parent="region-east">
+      <mxGeometry x="110" y="200" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Kannika West -->
+    <mxCell id="kannika-west" value="&lt;b&gt;Kannika — West&lt;/b&gt;&lt;br/&gt;Backup &amp;amp; restore service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;arcSize=10;" vertex="1" parent="region-west">
+      <mxGeometry x="110" y="200" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Kannika RTOP -->
+    <mxCell id="kannika-rtop" value="&lt;b&gt;Kannika — RTOP&lt;/b&gt;&lt;br/&gt;Backup &amp;amp; restore service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;arcSize=10;" vertex="1" parent="region-rtop">
+      <mxGeometry x="110" y="200" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- KAFKA MRC CLUSTERS                                      -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- Kafka MRC East -->
+    <mxCell id="kafka-east" value="&lt;b&gt;Kafka MRC — East&lt;/b&gt;&lt;br/&gt;Multi-region cluster" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;arcSize=10;" vertex="1" parent="region-east">
+      <mxGeometry x="110" y="360" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Kafka MRC West -->
+    <mxCell id="kafka-west" value="&lt;b&gt;Kafka MRC — West&lt;/b&gt;&lt;br/&gt;Multi-region cluster" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;arcSize=10;" vertex="1" parent="region-west">
+      <mxGeometry x="110" y="360" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Kafka MRC RTOP -->
+    <mxCell id="kafka-rtop" value="&lt;b&gt;Kafka MRC — RTOP&lt;/b&gt;&lt;br/&gt;Multi-region cluster" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;arcSize=10;" vertex="1" parent="region-rtop">
+      <mxGeometry x="110" y="360" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- S3 BUCKETS                                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- S3 East -->
+    <mxCell id="s3-east" value="&lt;b&gt;S3 — East&lt;/b&gt;&lt;br/&gt;kannika-backups-east" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=10;" vertex="1" parent="region-east">
+      <mxGeometry x="110" y="520" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- S3 RTOP -->
+    <mxCell id="s3-rtop" value="&lt;b&gt;S3 — RTOP&lt;/b&gt;&lt;br/&gt;kannika-backups-rtop" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=10;" vertex="1" parent="region-rtop">
+      <mxGeometry x="110" y="520" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- EVENT GATEWAY (West region, center)                     -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mxCell id="event-gw" value="&lt;b&gt;Event gateway&lt;/b&gt;&lt;br/&gt;ClusterIP · port 8082" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;arcSize=10;" vertex="1" parent="region-west">
+      <mxGeometry x="110" y="510" width="200" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- SHARED / BOTTOM COMPONENTS (outside regions)            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- Armory Console -->
+    <mxCell id="armory" value="&lt;b&gt;Armory console&lt;/b&gt;&lt;br/&gt;Job progress &amp;amp; status UI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="577" y="760" width="210" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Splunk -->
+    <mxCell id="splunk" value="&lt;b&gt;Splunk&lt;/b&gt;&lt;br/&gt;Metrics, logs &amp;amp; alerting" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1050" y="760" width="210" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- NGINX Ingress -->
+    <mxCell id="nginx" value="&lt;b&gt;NGINX ingress&lt;/b&gt;&lt;br/&gt;TLS termination — all regions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;arcSize=10;" vertex="1" parent="1">
+      <mxGeometry x="577" y="870" width="210" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- LEGEND                                                  -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mxCell id="legend" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="760" width="80" height="30" as="geometry" />
+    </mxCell>
+
+    <!-- Legend: UC4 trigger -->
+    <mxCell id="leg1-line" value="" style="endArrow=block;endFill=1;strokeColor=#d79b00;strokeWidth=2;" edge="1" parent="1">
+      <mxGeometry x="40" y="805" width="50" height="10" as="geometry" relative="0">
+        <Array as="points" />
+        <mxPoint x="40" y="805" as="sourcePoint" />
+        <mxPoint x="100" y="805" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg1-lbl" value="UC4 trigger" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="108" y="795" width="110" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- Legend: Auth / token -->
+    <mxCell id="leg2-line" value="" style="endArrow=open;endFill=0;dashed=1;strokeColor=#6c8ebf;strokeWidth=1.5;" edge="1" parent="1">
+      <mxGeometry x="40" y="830" width="50" height="10" as="geometry" relative="0">
+        <Array as="points" />
+        <mxPoint x="40" y="830" as="sourcePoint" />
+        <mxPoint x="100" y="830" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg2-lbl" value="Auth / token" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="108" y="820" width="110" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- Legend: Metrics push -->
+    <mxCell id="leg3-line" value="" style="endArrow=open;endFill=0;dashed=1;strokeColor=#82b366;strokeWidth=1.5;" edge="1" parent="1">
+      <mxGeometry x="40" y="855" width="50" height="10" as="geometry" relative="0">
+        <Array as="points" />
+        <mxPoint x="40" y="855" as="sourcePoint" />
+        <mxPoint x="100" y="855" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg3-lbl" value="Metrics push" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="108" y="845" width="110" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- Legend: Data / control flow -->
+    <mxCell id="leg4-line" value="" style="endArrow=block;endFill=1;strokeColor=#555555;strokeWidth=1.5;" edge="1" parent="1">
+      <mxGeometry x="40" y="880" width="50" height="10" as="geometry" relative="0">
+        <Array as="points" />
+        <mxPoint x="40" y="880" as="sourcePoint" />
+        <mxPoint x="100" y="880" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg4-lbl" value="Data / control flow" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="108" y="870" width="130" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- EDGES — UC4 TRIGGERS (orange solid)                    -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- UC4 → Kannika East (trigger) -->
+    <mxCell id="e-uc4-kanneast" value="trigger" style="endArrow=block;endFill=1;strokeColor=#d79b00;strokeWidth=2;fontSize=10;labelBackgroundColor=none;" edge="1" source="uc4" target="kannika-east" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- UC4 → Kannika West (trigger) -->
+    <mxCell id="e-uc4-kannwest" value="trigger" style="endArrow=block;endFill=1;strokeColor=#d79b00;strokeWidth=2;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;labelBackgroundColor=none;" edge="1" source="uc4" target="kannika-west" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="370" y="320" />
+          <mxPoint x="710" y="320" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- UC4 → Kannika RTOP (trigger) -->
+    <mxCell id="e-uc4-kannrtop" value="trigger" style="endArrow=block;endFill=1;strokeColor=#d79b00;strokeWidth=2;fontSize=10;labelBackgroundColor=none;" edge="1" source="uc4" target="kannika-rtop" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="370" y="295" />
+          <mxPoint x="1170" y="295" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- EDGES — FORGEROCK AUTH / TOKEN (blue dashed)           -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- ForgeRock → Kannika East -->
+    <mxCell id="e-fr-kanneast" value="auth / token" style="endArrow=open;endFill=0;dashed=1;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="forgerock" target="kannika-east" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1170" y="155" />
+          <mxPoint x="710" y="155" />
+          <mxPoint x="270" y="155" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- ForgeRock → Kannika West -->
+    <mxCell id="e-fr-kannwest" value="auth / token" style="endArrow=open;endFill=0;dashed=1;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="forgerock" target="kannika-west" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1170" y="170" />
+          <mxPoint x="710" y="170" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- ForgeRock → Kannika RTOP -->
+    <mxCell id="e-fr-kannrtop" value="auth / token" style="endArrow=open;endFill=0;dashed=1;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="forgerock" target="kannika-rtop" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- EDGES — KANNIKA ↔ KAFKA (read/write, data flow)        -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- Kannika East ↔ Kafka East (read/write) -->
+    <mxCell id="e-ke-kfe" value="read/write" style="endArrow=block;endFill=1;startArrow=block;startFill=1;strokeColor=#555555;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kannika-east" target="kafka-east" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Kannika West ↔ Kafka West (read/write) -->
+    <mxCell id="e-kw-kfw" value="read/write" style="endArrow=block;endFill=1;startArrow=block;startFill=1;strokeColor=#555555;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kannika-west" target="kafka-west" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Kannika RTOP ↔ Kafka RTOP (read/write) -->
+    <mxCell id="e-kr-kfr" value="read/write" style="endArrow=block;endFill=1;startArrow=block;startFill=1;strokeColor=#555555;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kannika-rtop" target="kafka-rtop" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- EDGES — KAFKA MRC SYNC (East→West→RTOP)                -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- Kafka East → Kafka West (sync) -->
+    <mxCell id="e-kfe-kfw" value="sync" style="endArrow=block;endFill=1;dashed=1;strokeColor=#555555;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kafka-east" target="kafka-west" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Kafka West → Kafka RTOP (sync) -->
+    <mxCell id="e-kfw-kfr" value="sync" style="endArrow=block;endFill=1;dashed=1;strokeColor=#555555;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kafka-west" target="kafka-rtop" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- EDGES — BACKUP DATA → S3                               -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- Kafka East → S3 East (backup data) -->
+    <mxCell id="e-kfe-s3e" value="backup data" style="endArrow=block;endFill=1;strokeColor=#555555;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kafka-east" target="s3-east" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Kafka RTOP → S3 RTOP (backup data) -->
+    <mxCell id="e-kfr-s3r" value="backup data" style="endArrow=block;endFill=1;strokeColor=#555555;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kafka-rtop" target="s3-rtop" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- EDGES — METRICS PUSH → EVENT GATEWAY (port 8082)       -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- Kafka East → Event Gateway (metrics push port 8082) -->
+    <mxCell id="e-kfe-evgw" value="metrics push&#xa;port 8082" style="endArrow=open;endFill=0;dashed=1;strokeColor=#82b366;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kafka-east" target="event-gw" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="270" y="500" />
+          <mxPoint x="710" y="630" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- Kafka West → Event Gateway (metrics push port 8082) -->
+    <mxCell id="e-kfw-evgw" value="metrics push&#xa;port 8082" style="endArrow=open;endFill=0;dashed=1;strokeColor=#82b366;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kafka-west" target="event-gw" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Kafka RTOP → Event Gateway (metrics push port 8082) -->
+    <mxCell id="e-kfr-evgw" value="metrics push&#xa;port 8082" style="endArrow=open;endFill=0;dashed=1;strokeColor=#82b366;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kafka-rtop" target="event-gw" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1170" y="500" />
+          <mxPoint x="710" y="630" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- EDGES — EVENT GATEWAY → ARMORY CONSOLE (job progress)  -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mxCell id="e-evgw-armory" value="job progress" style="endArrow=block;endFill=1;strokeColor=#555555;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="event-gw" target="armory" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- EDGES — LOG STREAM → SPLUNK                            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- Kannika East → Splunk (log stream) -->
+    <mxCell id="e-ke-splunk" value="log stream" style="endArrow=open;endFill=0;dashed=1;strokeColor=#b85450;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kannika-east" target="splunk" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="270" y="700" />
+          <mxPoint x="1155" y="700" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- Kafka East → Splunk (log stream) -->
+    <mxCell id="e-kfe-splunk" value="" style="endArrow=open;endFill=0;dashed=1;strokeColor=#b85450;strokeWidth=1.5;" edge="1" source="kafka-east" target="splunk" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="270" y="720" />
+          <mxPoint x="1155" y="720" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- Kafka RTOP → Splunk (log stream) -->
+    <mxCell id="e-kfr-splunk" value="log stream" style="endArrow=open;endFill=0;dashed=1;strokeColor=#b85450;strokeWidth=1.5;fontSize=10;labelBackgroundColor=none;" edge="1" source="kafka-rtop" target="splunk" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- EDGES — NGINX INGRESS connections                       -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+
+    <!-- Armory Console → NGINX ingress -->
+    <mxCell id="e-armory-nginx" value="" style="endArrow=block;endFill=1;strokeColor=#9673a6;strokeWidth=1.5;" edge="1" source="armory" target="nginx" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Kannika East → NGINX ingress -->
+    <mxCell id="e-ke-nginx" value="" style="endArrow=block;endFill=1;strokeColor=#9673a6;strokeWidth=1.5;" edge="1" source="kannika-east" target="nginx" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="210" y="740" />
+          <mxPoint x="682" y="740" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- Kannika RTOP → NGINX ingress -->
+    <mxCell id="e-kr-nginx" value="" style="endArrow=block;endFill=1;strokeColor=#9673a6;strokeWidth=1.5;" edge="1" source="kannika-rtop" target="nginx" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1170" y="750" />
+          <mxPoint x="750" y="750" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+  </root>
+</mxGraphModel>
