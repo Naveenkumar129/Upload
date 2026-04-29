@@ -1,3 +1,30 @@
+# Configure Vault provider
+provider "vault" {
+  address = "https://vault.example.com:8200"
+  token   = var.vault_token
+}
+
+# Read license from Vault
+data "vault_generic_secret" "kannika_license" {
+  path = "secret/data/kannika"
+}
+
+# Use in application
+resource "helm_release" "kannika" {
+  name      = "kannika"
+  chart     = "kannika"
+  namespace = "default"
+
+  values = [
+    yamlencode({
+      license = {
+        key = data.vault_generic_secret.kannika_license.data["license_key"]
+        file = data.vault_generic_secret.kannika_license.data["license_file"]
+      }
+    })
+  ]
+}
+----
 Checking the Health of the Cluster
 Replace <your-haproxy-hostname> with your HAProxy hostname and update the certificate paths accordingly.
 
