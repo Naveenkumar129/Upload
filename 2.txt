@@ -1,3 +1,47 @@
+Great question. Cloudian HyperStore uses a different integration model than AWS EBS — it's primarily an S3-compatible object store, so the Kubernetes interaction is through COSI (Container Object Storage Interface) rather than a traditional StorageClass + CSI block driver. Here's the equivalent set of manifests:
+
+Cloudian HyperStore — Kubernetes COSI Manifests
+Cloudian provides a dedicated COSI driver (cloudian-cosi-driver) to allow Kubernetes to manage object storage on HyperStore. GitHub
+1. BucketClass (analogous to StorageClass)
+yamlapiVersion: objectstorage.k8s.io/v1alpha1
+kind: BucketClass
+metadata:
+  name: cloudian-bucketclass
+driverName: cloudian-cosi-driver
+deletionPolicy: Delete   # or Retain
+2. BucketClaim (analogous to PersistentVolumeClaim)
+yamlapiVersion: objectstorage.k8s.io/v1alpha1
+kind: BucketClaim
+metadata:
+  name: cloudian-bucketclaim
+spec:
+  bucketClassName: cloudian-bucketclass
+  protocols:
+    - S3
+3. BucketAccessClass (defines auth method)
+yamlapiVersion: objectstorage.k8s.io/v1alpha1
+kind: BucketAccessClass
+metadata:
+  name: cloudian-bucketaccessclass
+driverName: cloudian-cosi-driver
+authenticationType: IAM   # IAM (recommended) or KEY
+4. BucketAccess (binds access credentials to a claim)
+yamlapiVersion: objectstorage.k8s.io/v1alpha1
+kind: BucketAccess
+metadata:
+  name: cloudian-bucketaccess
+spec:
+  bucketClaimName: cloudian-bucketclaim
+  bucketAccessClassName: cloudian-bucketaccessclass
+  credentialsSecretName: cloudian-secret
+  serviceAccountName: cloudian-sa
+
+Key Differences vs. Your AWS EBS StorageClass
+ConceptAWS EBS (block)Cloudian HyperStore (object)API KindStorageClassBucketClassProvisionerkubernetes.io/aws-ebscloudian-cosi-driverInterfaceCSICOSIProtocolBlock / filesystemS3ReclaimreclaimPolicy: RetaindeletionPolicy: Retain/DeleteAuthNode IAM roleIAM user or Cloudian KEY
+
+---
+
+
 Account id - techlanders
 Username - sandeep
 Password - Techlanders@2025
