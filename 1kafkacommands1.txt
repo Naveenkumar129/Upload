@@ -1,4 +1,18 @@
+# Get revision history
+helm history myrelease 
 
+# Rollback release, e.g. rollback myrelease to revision number 5
+helm rollback myrelease 5
+
+# Upgrade release and automatically rollback on failure
+helm upgrade myrelease stable/redis --atomic [--timeout 600]
+
+# Delete and purge release by name
+helm delete --purge $(helm list | grep <search_term> | cut -f1 | tr -d '\n' | tr -s ' ')
+
+# List recent 5 releases
+helm list --all --date --reverse --max 5
+-----------------
 <mxfile>
   <diagram name="Kannika Multi-Region Architecture">
     <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10">
