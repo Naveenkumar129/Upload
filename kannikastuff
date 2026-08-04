@@ -1,3 +1,78 @@
+
+# 6. Job Pod CPU/Memory Usage
+echo -e "\n## 6. Job Pod 资源使用 (CPU/Memory by Job)"
+echo "NAMESPACE|JOB|POD|STATUS|CPU|MEMORY|DURATION_MINS" > $REPORT_DIR/job-resources.csv
+
+# Get all pods owned by a Job
+kubectl get pods -A -o json | jq -r '
+  .items[] |
+  select(.metadata.ownerReferences != null) |
+  select(.metadata.ownerReferences[].kind == "Job") |
+  "\(.metadata.namespace)|\(.metadata.name)|\(.metadata.ownerReferences[0].name)|\(.status.phase)"
+' | while IFS='|' read ns pod job phase; do
+
+  # Live CPU/Memory from metrics-server
+  cpu=$(kubectl top pod "$pod" -n "$ns" --no-headers 2>/dev/null | awk '{print $2}')
+  mem=$(kubectl top pod "$pod" -n "$ns" --no-headers 2>/dev/null | awk '{print $3}')
+
+  # Fallback if pod finished (metrics-server won't show completed pods)
+  if [ -z "$cpu" ]; then
+    cpu="N/A (completed)"
+    mem="N/A (completed)"
+  fi
+
+  # Calculate duration from startTime to now (or completionTime)
+  start=$(kubectl -n "$ns" get pod "$pod" \
+    -o jsonpath='{.status.startTime}' 2>/dev/null)
+  end=$(kubectl -n "$ns" get pod "$pod" \
+    -o jsonpath='{.status.containerStatuses[0].state.terminated.finishedAt}' 2>/dev/null)
+
+  if [ -n "$end" ]; then
+    start_s=$(date -d "$start" +%s 2>/dev/null || echo 0)
+    end_s=$(date -d "$end" +%s 2>/dev/null || echo 0)
+    duration=$(( (end_s - start_s) / 60 ))
+  else
+    start_s=$(date -d "$start" +%s 2>/dev/null || echo 0)
+    now_s=$(date +%s)
+    duration=$(( (now_s - start_s) / 60 ))
+  fi
+
+  echo "$ns|$job|$pod|$phase|$cpu|$mem|${duration}m" >> $REPORT_DIR/job-resources.csv
+done
+
+echo "Job Resource Usage:"
+column -t -s'|' $REPORT_DIR/job-resources.csv
+
+# ── Job-level summary (requests vs limits from spec) ─────────────────
+echo -e "\n## 6b. Job Resource REQUESTS vs LIMITS (from spec)"
+echo "NAMESPACE|JOB|CONTAINER|REQ_CPU|REQ_MEM|LIM_CPU|LIM_MEM" > $REPORT_DIR/job-spec-resources.csv
+
+kubectl get jobs -A -o json | jq -r '
+  .items[] |
+  . as $job |
+  .spec.template.spec.containers[] |
+  {
+    ns:      $job.metadata.namespace,
+    job:     $job.metadata.name,
+    cname:   .name,
+    req_cpu: (.resources.requests.cpu     // "none"),
+    req_mem: (.resources.requests.memory  // "none"),
+    lim_cpu: (.resources.limits.cpu       // "none"),
+    lim_mem: (.resources.limits.memory    // "none")
+  } |
+  "\(.ns)|\(.job)|\(.cname)|\(.req_cpu)|\(.req_mem)|\(.lim_cpu)|\(.lim_mem)"
+' >> $REPORT_DIR/job-spec-resources.csv
+
+echo "Job Spec Resources:"
+column -t -s'|' $REPORT_DIR/job-spec-resources.csv
+
+# ── Flag Jobs with NO resource requests (waste risk) ─────────────────
+echo -e "\n## 6c. Jobs with MISSING resource requests (risk: unbounded usage)"
+grep "none" $REPORT_DIR/job-spec-resources.csv | column -t -s'|'
+
+
+----
+
 # Configure Vault provider
 provider "vault" {
   address = "https://vault.example.com:8200"
