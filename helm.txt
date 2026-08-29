@@ -1,3 +1,121 @@
+waste resources /meme
+
+#!/bin/bash
+# waste-detector.sh
+set -e
+
+CLUSTER=${1:-my-cluster}
+REPORT_DIR=/tmp/waste-report
+mkdir -p $REPORT_DIR
+
+echo "===== 集群 $CLUSTER 浪费识别报告 $(date) ====="
+
+# 1. 低利用率 Pod(requests 远超实际)
+echo -e "\n## 1. 低利用率 Pod(实际/请求 < 30%)"
+echo "NAMESPACE|POD|CONTAINER|REQ_CPU|REQ_MEM|USAGE_CPU|USAGE_MEM|RATE" > $REPORT_DIR/low-util.csv
+kubectl top pods -A --no-headers | awk '{print $1","$2","$3","$4}' > /tmp/top.csv
+kubectl get pods -A -o json | jq -r '
+  .items[] |
+  {
+    ns: .metadata.namespace,
+    pod: .metadata.name,
+    containers: .spec.containers[] | {
+      name: .name,
+      cpu: .resources.requests.cpu // "0",
+      mem: .resources.requests.memory // "0"
+    }
+  }
+' > /tmp/req.json
+
+# 简化版:用 kubectl 直接对比
+for ns in $(kubectl get ns -o name | cut -d/ -f2); do
+  for pod in $(kubectl -n $ns get pods -o name | cut -d/ -f2); do
+    for c in $(kubectl -n $ns get pod $pod -o jsonpath='{.spec.containers[*].name}'); do
+      req_cpu=$(kubectl -n $ns get pod $pod -o jsonpath="{.spec.containers[?(@.name=='$c')].resources.requests.cpu}" 2>/dev/null)
+      req_mem=$(kubectl -n $ns get pod $pod -o jsonpath="{.spec.containers[?(@.name=='$c')].resources.requests.memory}" 2>/dev/null)
+      # 用 prom-adapter 查询实际用量,这里简化为占位
+      echo "$ns|$pod|$c|$req_cpu|$req_mem|?-?-?|0.3" >> $REPORT_DIR/low-util.csv
+    done
+  done
+done
+
+# 2. 闲置节点(分配率 < 30%)
+echo -e "\n## 2. 闲置节点(分配率 < 30%)"
+kubectl describe nodes | grep -A 5 "Allocated" | awk '
+  /Allocated/ {found=1}
+  found && /cpu/ {print}
+  found && /memory/ {print}
+'
+# 用 kubectl 的更精确版本
+echo "NODE|ALLOCATABLE_CPU|ALLOCATABLE_MEM|REQUEST_CPU|REQUEST_MEM|RATE" > $REPORT_DIR/low-alloc-nodes.csv
+for n in $(kubectl get nodes -o name | cut -d/ -f2); do
+  alloc_cpu=$(kubectl describe node $n | grep "Allocatable:" -A 5 | grep cpu | awk '{print $2}')
+  req_cpu=$(kubectl describe node $n | grep "Allocated resources:" -A 5 | grep cpu | awk '{print $2}' | cut -d'(' -f1)
+  # 计算
+  echo "$n|$alloc_cpu|$req_cpu" >> $REPORT_DIR/low-alloc-nodes.csv
+done
+
+# 3. 闲置 PVC(没被 Pod 挂载)
+echo -e "\n## 3. 闲置 PVC(没被 Pod 挂载)"
+echo "NAMESPACE|PVC|SIZE|AGE_DAYS" > $REPORT_DIR/idle-pvc.csv
+kubectl get pvc -A -o json | jq -r '
+  .items[] |
+  select(.status.phase == "Bound") |
+  {
+    ns: .metadata.namespace,
+    name: .metadata.name,
+    size: .spec.resources.requests.storage
+  }
+' > /tmp/all-pvc.csv
+
+# 对比 Pod 挂载
+kubectl get pods -A -o json | jq -r '
+  .items[] |
+  .spec.volumes[]? |
+  select(.persistentVolumeClaim != null) |
+  "\(.persistentVolumeClaim.claimName)"
+' | sort -u > /tmp/used-pvc.txt
+
+kubectl get pvc -A -o json | jq -r '
+  .items[] |
+  "\(.metadata.namespace)|\(.metadata.name)|\(.spec.resources.requests.storage)"
+' | while IFS='|' read ns name size; do
+  if ! grep -q "^${name}$" /tmp/used-pvc.txt; then
+    age=$(kubectl -n $ns get pvc $name -o jsonpath='{.metadata.creationTimestamp}' | xargs -I{} date -d {} +%s 2>/dev/null)
+    now=$(date +%s)
+    age_days=$(( (now - age) / 86400 ))
+    echo "$ns|$name|$size|$age_days" >> $REPORT_DIR/idle-pvc.csv
+  fi
+done
+
+echo "闲置 PVC 列表:"
+column -t -s'|' $REPORT_DIR/idle-pvc.csv | head -20
+
+# 4. 孤儿 Service(没 endpoints)
+echo -e "\n## 4. 孤儿 Service(没有 Endpoints)"
+kubectl get svc -A -o json | jq -r '
+  .items[] |
+  select(.spec.type != "ExternalName") |
+  select(.spec.clusterIP != "None") |
+  "\(.metadata.namespace)|\(.metadata.name)"
+' | while IFS='|' read ns name; do
+  ep_count=$(kubectl -n $ns get endpoints $name -o jsonpath='{.subsets[*].addresses[*].ip}' 2>/dev/null | wc -w)
+  if [ "$ep_count" = "0" ]; then
+    echo "$ns | $name"
+  fi
+done
+
+# 5. 失败 / 卡住的 Pod
+echo -e "\n## 5. 失败 / 卡住的 Pod(>1天)"
+kubectl get pods -A -o json | jq -r '
+  .items[] |
+  select(.status.phase == "Failed" or .status.phase == "Pending") |
+  "\(.metadata.namespace)|\(.metadata.name)|\(.status.phase)"
+'
+
+----------
+
+
 hehelm -h --- help command
 helm completion bash  --- to display the output of shell script
 helm list  ---- to display the version
