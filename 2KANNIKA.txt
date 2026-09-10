@@ -1,3 +1,31 @@
+Common causes and solutions :
+
+Insufficient cpu/memory:requests is too large, or nodes are full → reduce requests or add nodes
+had untolerated taintThe node has a taint, but the Pod doesn't have a toleration. → Add a toleration or remove the taint.
+didn't match node selector/affinity:label mismatch → Modify nodeSelector or add a label to the node.
+node(s) had volume node affinity conflict: PVC zone and Pod affinity conflict → Unify zone configuration
+Pitfall 2: podAntiAffinity causes scheduling failures when the number of replicas exceeds the number of nodes.
+Observation :  Deployment replicas=5, but there are only 3 nodes. podAntiAffinity is set required, but only 3 Pods are Ready, and 2 are in a pending state.
+
+Reason : requiredpodAntiAffinity forces a maximum of 1 Pod per node, so 5 Pods require 5 nodes.
+
+solve :
+
+Change to preferred(soft) to allow multiple nodes of the same type;
+Or use topologySpreadConstraints(more flexible);
+Or add nodes.
+Pitfall 3: TopologySpreadConstraints lead to uneven scheduling
+Phenomenon : The distribution was set maxSkew=1, but the actual distribution was uneven.
+
+reason :
+
+topologyKeyThe labels are incomplete (some nodes lack this label and are not included in the calculation);
+whenUnsatisfiable: DoNotScheduleToo strict, some Pods are pending;
+It conflicts with nodeAffinity/taint (there are too few feasible nodes to distribute them evenly).
+=================
+
+
+---
 https://github.com/osodevops/kafka-backup/tree/main
 ----------------
 
