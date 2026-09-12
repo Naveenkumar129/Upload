@@ -1,3 +1,14 @@
+
+Pitfall 1: Without resource limits configured, a single Pod crashes the entire node.
+Pitfall 3: Health checks were not configured, resulting in traffic being sent to unready Pods.
+Pitfall 5: Without HPA configured, sudden traffic spikes can cause system crashes.
+Pitfall 8: Pod anti-affinity not configured, all replicas running on the same node.
+Pitfall 10: Namespaces lack resource quotas, causing the Dev environment to exhaust production resources.
+
+
+---
+
+
 waste resources /meme
 
 #!/bin/bash
