@@ -1,0 +1,19 @@
+Kannika restore issues 
+
+itfall 2: The PVC keeps pending after restoration.
+Symptom : The restore is complete, but the PVC is stuck in the Pending state, and the Pod cannot be started.
+
+Cause : During cross-cloud recovery, the snapshot referenced by VolumeSnapshotContent does not exist in the new cloud; or StorageClass is unavailable.
+kubectl get storageclass
+===
+
+
+If both CSI VolumeSnapshot and restic backups are made for the same volume, which one should kannika use for restoration?
+When migrating across clouds (AWS → Alibaba Cloud), should page view (PV) data be generated using cloud snapshots or restic data? Why?
+
+
+  --node-agent-configmap node-agent-config \
+  --velero-pod-cpu-request 500m \
+  --velero-pod-mem-request 512Mi \
+  --velero-pod-cpu-limit 2 \
+  --velero-pod-mem-limit 2Gi \
