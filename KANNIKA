@@ -4,7 +4,13 @@ itfall 2: The PVC keeps pending after restoration.
 Symptom : The restore is complete, but the PVC is stuck in the Pending state, and the Pod cannot be started.
 
 Cause : During cross-cloud recovery, the snapshot referenced by VolumeSnapshotContent does not exist in the new cloud; or StorageClass is unavailable.
-kubectl get storageclass
+kubectl get storageclass;
+// MONITORING
+Monitoring backup success rate, Prometheus alerts
+Minimize permissions for backup buckets and rotate credentials periodically.
+node-agent has sufficient resources (large PV backups consume a lot of memory).
+Off-site replication of backup object storage (to protect against regional disasters)
+think from kannika's perspective ,https://docs.kannika.io/tutorials/compliance/schedule-snapshots/
 ===
 
 
